@@ -7,11 +7,11 @@ import ws.prova.reference2.ProvaConstantImpl;
 
 public class ProvaESBMessageImpl implements ProvaDelayedCommand {
 
-	private String dest;
+	private final String dest;
 	
-	private ProvaList terms;
+	private final ProvaList terms;
 	
-	private ProvaAgent esb;
+	private final ProvaAgent esb;
 	
 	public ProvaESBMessageImpl(String dest, ProvaList terms,
 			ProvaAgent esb) {

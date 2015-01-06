@@ -2,7 +2,6 @@ package ws.prova.kernel2.messaging;
 
 import java.util.List;
 import java.util.Map;
-
 import ws.prova.kernel2.ProvaConstant;
 import ws.prova.kernel2.ProvaGoal;
 import ws.prova.kernel2.ProvaList;

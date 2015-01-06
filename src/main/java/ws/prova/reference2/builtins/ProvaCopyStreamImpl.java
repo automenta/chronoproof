@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
-
 import ws.prova.agent2.ProvaReagent;
 import ws.prova.kernel2.ProvaConstant;
 import ws.prova.kernel2.ProvaDerivationNode;

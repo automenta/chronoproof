@@ -2,11 +2,11 @@ package ws.prova.reference2.cache;
 
 public class ProvaTabletKeyImpl {
 
-	private String symbol;
+	private final String symbol;
 
-	private int arity;
+	private final int arity;
 
-	private int mask;
+	private final int mask;
 
 	public ProvaTabletKeyImpl(String symbol, int arity, int mask) {
 		this.symbol = symbol;

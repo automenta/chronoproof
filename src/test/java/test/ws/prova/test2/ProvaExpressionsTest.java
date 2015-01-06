@@ -1,14 +1,12 @@
 package test.ws.prova.test2;
 
 import java.util.List;
-
 import org.junit.After;
 import org.junit.Test;
-
 import ws.prova.api2.ProvaCommunicator;
 import ws.prova.api2.ProvaCommunicatorImpl;
-import ws.prova.kernel2.ProvaConstant;
 import ws.prova.exchange.ProvaSolution;
+import ws.prova.kernel2.ProvaConstant;
 
 public class ProvaExpressionsTest {
 

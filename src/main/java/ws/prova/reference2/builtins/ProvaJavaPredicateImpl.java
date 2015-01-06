@@ -3,9 +3,7 @@ package ws.prova.reference2.builtins;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.commons.beanutils.MethodUtils;
-
 import ws.prova.agent2.ProvaReagent;
 import ws.prova.kernel2.ProvaConstant;
 import ws.prova.kernel2.ProvaDerivationNode;

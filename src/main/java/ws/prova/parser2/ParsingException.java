@@ -20,6 +20,7 @@ public class ParsingException extends Exception {
 		super(message);
 	}
 
+        @Override
 	public String toString() {
 		return desc + " in " + src;
 	}
@@ -54,6 +55,6 @@ public class ParsingException extends Exception {
 	}
 
 	public void addError(final int line, final String desc) {
-		errors.put(new Integer(line), desc);
+		errors.put(line, desc);
 	}
 }

@@ -6,11 +6,11 @@ import ws.prova.kernel2.ProvaRule;
 
 public class ProvaMessageImpl implements ProvaDelayedCommand {
 
-	private long id;
+	private final long id;
 	
-	private ProvaRule goal;
+	private final ProvaRule goal;
 	
-	private ProvaThreadpoolEnum pool;
+	private final ProvaThreadpoolEnum pool;
 	
 	public ProvaMessageImpl(long id, ProvaRule goal,
 			ProvaThreadpoolEnum pool) {

@@ -60,6 +60,7 @@ public class ProvaDerivationNodeImpl implements ProvaDerivationNode {
      *
      * @return the query
      */
+    @Override
     public ProvaRule getQuery() {
         return query;
     }
@@ -128,6 +129,7 @@ public class ProvaDerivationNodeImpl implements ProvaDerivationNode {
      *
      * @return the string representation of this object
      */
+    @Override
     public String toString() {
 //        if (cachedToString == null) {
             StringBuffer buf = new StringBuffer();

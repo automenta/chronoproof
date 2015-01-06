@@ -17,15 +17,15 @@ public class IBMPortfolio extends Portfolio {
     }
 
     public Object[] getObjectArray() {
-    	Object[] objects = new Object[]{"A",new Double(3.14),new Integer(4)}; 
+    	Object[] objects = new Object[]{"A", 3.14, 4}; 
         return objects;
     }
 
     public List<Object> getJavaList() {
     	List<Object> list = new ArrayList<Object>(3);
     	list.add("A");
-    	list.add(new Double(3.14));
-    	list.add(new Integer(4));
+    	list.add(3.14);
+    	list.add(4);
         return list;
     }
 

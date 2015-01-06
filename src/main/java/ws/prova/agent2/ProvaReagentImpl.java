@@ -16,14 +16,12 @@ import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadFactory;
-
 import javax.swing.SwingUtilities;
-
 import org.apache.commons.beanutils.MethodUtils;
 import org.apache.log4j.Logger;
-
 import ws.prova.api2.ProvaCommunicator;
 import ws.prova.esb2.ProvaAgent;
+import ws.prova.exchange.ProvaSolution;
 import ws.prova.kernel2.ProvaConstant;
 import ws.prova.kernel2.ProvaDerivationNode;
 import ws.prova.kernel2.ProvaKnowledgeBase;
@@ -31,7 +29,6 @@ import ws.prova.kernel2.ProvaList;
 import ws.prova.kernel2.ProvaObject;
 import ws.prova.kernel2.ProvaResolutionInferenceEngine;
 import ws.prova.kernel2.ProvaRule;
-import ws.prova.exchange.ProvaSolution;
 import ws.prova.kernel2.messaging.ProvaMessenger;
 import ws.prova.kernel2.messaging.ProvaWorkflows;
 import ws.prova.parser2.ProvaParsingException;
@@ -136,6 +133,7 @@ public class ProvaReagentImpl implements ProvaReagent {
         this.workflows = new ProvaWorkflowsImpl(kb);
 
         Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
             public void run() {
                 shutdown();
             }
@@ -198,6 +196,7 @@ public class ProvaReagentImpl implements ProvaReagent {
     public Future<List<ProvaSolution[]>> consultSync(final String src,
             final String key, final Object[] objects) {
         Callable<List<ProvaSolution[]>> task = new Callable<List<ProvaSolution[]>>() {
+            @Override
             public List<ProvaSolution[]> call() {
                 return ProvaReagentImpl.this.consultSyncInternal(src, key,
                         objects);
@@ -213,6 +212,7 @@ public class ProvaReagentImpl implements ProvaReagent {
     public Future<List<ProvaSolution[]>> consultSync(final BufferedReader in,
             final String key, final Object[] objects) {
         Callable<List<ProvaSolution[]>> task = new Callable<List<ProvaSolution[]>>() {
+            @Override
             public List<ProvaSolution[]> call() {
                 return ProvaReagentImpl.this.consultSyncInternal(in, key,
                         objects);

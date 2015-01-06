@@ -2,19 +2,17 @@ package test.ws.prova.test2;
 
 import java.io.IOException;
 import java.util.List;
-
 import org.junit.After;
 import org.junit.Test;
-
 import ws.prova.api2.ProvaCommunicator;
 import ws.prova.api2.ProvaCommunicatorImpl;
+import ws.prova.exchange.ProvaSolution;
 import ws.prova.kernel2.ProvaKnowledgeBase;
 import ws.prova.kernel2.ProvaResolutionInferenceEngine;
 import ws.prova.kernel2.ProvaResultSet;
 import ws.prova.kernel2.ProvaRule;
-import ws.prova.exchange.ProvaSolution;
-import ws.prova.parser2.ProvaParsingException;
 import ws.prova.parser2.ProvaParserImpl;
+import ws.prova.parser2.ProvaParsingException;
 import ws.prova.reference2.ProvaKnowledgeBaseImpl;
 import ws.prova.reference2.ProvaResolutionInferenceEngineImpl;
 import ws.prova.reference2.ProvaResultSetImpl;

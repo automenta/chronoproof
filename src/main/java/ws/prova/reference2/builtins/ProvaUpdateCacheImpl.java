@@ -1,7 +1,7 @@
 package ws.prova.reference2.builtins;
 
 import java.util.List;
-
+import ws.prova.agent2.ProvaReagent;
 import ws.prova.kernel2.ProvaConstant;
 import ws.prova.kernel2.ProvaDerivationNode;
 import ws.prova.kernel2.ProvaGoal;
@@ -16,7 +16,6 @@ import ws.prova.kernel2.cache.ProvaCachedLiteral;
 import ws.prova.kernel2.cache.ProvaLocalAnswers;
 import ws.prova.reference2.ProvaListImpl;
 import ws.prova.reference2.cache.ProvaCacheStateImpl.ProvaCacheAnswerKey;
-import ws.prova.agent2.ProvaReagent;
 
 public class ProvaUpdateCacheImpl extends ProvaBuiltinImpl {
 

@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import ws.prova.kernel2.ProvaConstant;
 import ws.prova.kernel2.ProvaGoal;
 import ws.prova.kernel2.ProvaList;
@@ -23,9 +22,9 @@ public class ProvaCacheStateImpl implements ProvaCacheState {
 	
 	private boolean complete;
 
-	private Map<ProvaCacheAnswerKey,ProvaList> answers;
+	private final Map<ProvaCacheAnswerKey,ProvaList> answers;
 	
-	private List<ProvaGoal> goals;
+	private final List<ProvaGoal> goals;
 	
 	public ProvaCacheStateImpl() {
 		this.open = false;
@@ -124,9 +123,9 @@ public class ProvaCacheStateImpl implements ProvaCacheState {
 	
 	public class ProvaCacheAnswerKey {
 		
-		private int mask;
+		private final int mask;
 		
-		private ProvaGroundKey groundKey;
+		private final ProvaGroundKey groundKey;
 
 		public ProvaCacheAnswerKey(int mask, Object[] data) {
 			this.mask = mask;
@@ -157,9 +156,7 @@ public class ProvaCacheStateImpl implements ProvaCacheState {
 					return false;
 			} else if (!groundKey.equals(other.groundKey))
 				return false;
-			if (mask != other.mask)
-				return false;
-			return true;
+			return mask == other.mask;
 		}
 
 	}

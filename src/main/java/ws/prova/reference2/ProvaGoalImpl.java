@@ -5,9 +5,7 @@ import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.log4j.Logger;
-
 import ws.prova.kernel2.ProvaConstant;
 import ws.prova.kernel2.ProvaGoal;
 import ws.prova.kernel2.ProvaKnowledgeBase;

@@ -17,6 +17,7 @@ public class ProvaAST extends CommonTree {
         }
     }
     
+        @Override
     public int getLine() {
     	return line;
     }

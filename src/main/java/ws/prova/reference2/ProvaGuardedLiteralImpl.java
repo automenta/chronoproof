@@ -2,7 +2,6 @@ package ws.prova.reference2;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import ws.prova.kernel2.ProvaList;
 import ws.prova.kernel2.ProvaLiteral;
 import ws.prova.kernel2.ProvaObject;
@@ -146,6 +145,7 @@ public class ProvaGuardedLiteralImpl extends ProvaLiteralImpl implements
 		return newLit;
 	}
 
+        @Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder(predicate.getSymbol());
 		sb.append('(');

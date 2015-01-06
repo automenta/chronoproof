@@ -1,7 +1,7 @@
 package ws.prova.reference2.builtins;
 
 import java.util.List;
-
+import ws.prova.agent2.ProvaReagent;
 import ws.prova.kernel2.ProvaConstant;
 import ws.prova.kernel2.ProvaDerivationNode;
 import ws.prova.kernel2.ProvaGoal;
@@ -13,7 +13,6 @@ import ws.prova.kernel2.ProvaRule;
 import ws.prova.kernel2.ProvaVariable;
 import ws.prova.kernel2.ProvaVariablePtr;
 import ws.prova.reference2.ProvaConstantImpl;
-import ws.prova.agent2.ProvaReagent;
 
 public class ProvaMathDivideImpl extends ProvaBuiltinImpl {
 

@@ -4,13 +4,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.locks.ReentrantLock;
-
 import org.apache.log4j.Logger;
-
 import ws.prova.kernel2.ProvaConstant;
 import ws.prova.kernel2.ProvaKnowledgeBase;
 import ws.prova.kernel2.ProvaList;
@@ -29,13 +26,13 @@ public class ProvaWorkflowsImpl implements ProvaWorkflows {
 
 	private final static Logger log = Logger.getLogger("prova");
 
-	private ProvaKnowledgeBase kb;
+	private final ProvaKnowledgeBase kb;
 
-	private ConcurrentMap<String,List<List<ProvaObject>>> join_record = new ConcurrentHashMap<String, List<List<ProvaObject>>>();
+	private final ConcurrentMap<String,List<List<ProvaObject>>> join_record = new ConcurrentHashMap<String, List<List<ProvaObject>>>();
 
-	private ConcurrentMap<String,Object[]> predicate_join_record = new ConcurrentHashMap<String,Object[]>();
+	private final ConcurrentMap<String,Object[]> predicate_join_record = new ConcurrentHashMap<String,Object[]>();
 
-	private ConcurrentMap<String,ReentrantLock> predicate_join_locks = new ConcurrentHashMap<String,ReentrantLock>();
+	private final ConcurrentMap<String,ReentrantLock> predicate_join_locks = new ConcurrentHashMap<String,ReentrantLock>();
 
 	public ProvaWorkflowsImpl(ProvaKnowledgeBase kb) {
 		this.kb = kb;

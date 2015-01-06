@@ -3,7 +3,6 @@ package ws.prova.reference2.builtins;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
 import ws.prova.agent2.ProvaReagent;
 import ws.prova.kernel2.ProvaDerivationNode;
 import ws.prova.kernel2.ProvaGoal;

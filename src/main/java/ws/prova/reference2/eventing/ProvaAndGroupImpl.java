@@ -10,9 +10,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-
 import org.apache.log4j.Logger;
-
 import ws.prova.agent2.ProvaReagent;
 import ws.prova.kernel2.ProvaConstant;
 import ws.prova.kernel2.ProvaKnowledgeBase;

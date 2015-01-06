@@ -1,7 +1,6 @@
 package ws.prova.kernel2;
 
 import java.util.List;
-
 import ws.prova.reference2.ProvaRuleImpl;
 
 public interface ProvaRuleSet {

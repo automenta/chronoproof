@@ -12,10 +12,9 @@ import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicLong;
-
 import org.apache.log4j.Logger;
-
 import ws.prova.agent2.ProvaReagent;
+import ws.prova.exchange.ProvaSolution;
 import ws.prova.kernel2.ProvaBuiltin;
 import ws.prova.kernel2.ProvaConstant;
 import ws.prova.kernel2.ProvaDerivationNode;
@@ -29,9 +28,8 @@ import ws.prova.kernel2.ProvaResultSet;
 import ws.prova.kernel2.ProvaRule;
 import ws.prova.kernel2.ProvaRuleSet;
 import ws.prova.kernel2.ProvaUnification;
-import ws.prova.kernel2.ProvaVariablePtr;
-import ws.prova.exchange.ProvaSolution;
 import ws.prova.kernel2.ProvaVariable;
+import ws.prova.kernel2.ProvaVariablePtr;
 import ws.prova.kernel2.cache.ProvaCacheState;
 import ws.prova.kernel2.cache.ProvaLocalAnswers;
 import ws.prova.parser2.ProvaParserImpl;
@@ -116,17 +114,17 @@ public class ProvaKnowledgeBaseImpl implements ProvaKnowledgeBase {
 
 	private static final ProvaSolution[] noSolutions = new ProvaSolution[0];
 	
-	private AtomicLong seqRuleId = new AtomicLong();
+	private final AtomicLong seqRuleId = new AtomicLong();
 	
-	private ConcurrentMap<String,ProvaPredicate> predicates;
+	private final ConcurrentMap<String,ProvaPredicate> predicates;
 
-	private Map<String,ProvaBuiltin> builtins;
+	private final Map<String,ProvaBuiltin> builtins;
 
 	private PrintWriter printWriter = new PrintWriter(System.out,true);
 
-	private ConcurrentMap<String,ProvaConstant> globals;
+	private final ConcurrentMap<String,ProvaConstant> globals;
 	
-	private NavigableSet<String> cachePredicateSymbols;
+	private final NavigableSet<String> cachePredicateSymbols;
 	
 	private final Map<String,List<ProvaRuleSet>> srcMap = new HashMap<String,List<ProvaRuleSet>>();
 

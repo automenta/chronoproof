@@ -6,10 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.RejectedExecutionException;
-
 import org.apache.log4j.Logger;
 import ws.prova.agent2.ProvaReagentImpl;
-
 import ws.prova.kernel2.ProvaConstant;
 import ws.prova.kernel2.ProvaDerivationNode;
 import ws.prova.kernel2.ProvaLiteral;
@@ -294,10 +292,7 @@ public class ProvaRuleImpl implements ProvaRule {
      */
     public boolean advance() {
         offset++;
-        if (offset != body.length && body[offset].getTerms() == null) {
-            return true;
-        }
-        return false;
+        return offset != body.length && body[offset].getTerms() == null;
     }
 
     @Override
@@ -305,6 +300,7 @@ public class ProvaRuleImpl implements ProvaRule {
         return offset < body.length ? body[offset] : null;
     }
 
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         if (head != null) {

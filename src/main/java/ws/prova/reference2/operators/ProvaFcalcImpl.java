@@ -3,18 +3,16 @@ package ws.prova.reference2.operators;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.commons.beanutils.MethodUtils;
-
 import ws.prova.kernel2.ProvaConstant;
 import ws.prova.kernel2.ProvaList;
 import ws.prova.kernel2.ProvaObject;
 
 public class ProvaFcalcImpl implements ProvaOperator {
 
-	private String type;
+	private final String type;
 	
-	private String method;
+	private final String method;
 	
 	public ProvaFcalcImpl(String type, String method) {
 		this.type = type;
@@ -70,6 +68,7 @@ public class ProvaFcalcImpl implements ProvaOperator {
 		}
 	}
 
+        @Override
 	public String toString() {
 		return "f";
 	}

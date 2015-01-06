@@ -1,7 +1,6 @@
 package ws.prova.reference2.cache;
 
 import java.util.List;
-
 import ws.prova.kernel2.ProvaGoal;
 import ws.prova.kernel2.ProvaList;
 import ws.prova.kernel2.ProvaLiteral;
@@ -22,9 +21,9 @@ public class ProvaCachedLiteralImpl extends ProvaLiteralImpl implements ProvaCac
 
 	private ProvaGoal goal;
 	
-	private ProvaCacheState cacheState;
+	private final ProvaCacheState cacheState;
 
-	private ProvaLocalAnswers answers;
+	private final ProvaLocalAnswers answers;
 	
 	public ProvaCachedLiteralImpl(ProvaPredicate predicate, ProvaList terms,
 			ProvaCacheState cacheState, ProvaLocalAnswers answers) {
@@ -43,6 +42,7 @@ public class ProvaCachedLiteralImpl extends ProvaLiteralImpl implements ProvaCac
 		return cachedLit;
 	}
 
+        @Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder(predicate.getSymbol());
 		sb.append('(');

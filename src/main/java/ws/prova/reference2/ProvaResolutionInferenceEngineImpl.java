@@ -4,9 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Stack;
-
 import org.apache.log4j.Logger;
-
 import ws.prova.agent2.ProvaReagent;
 import ws.prova.kernel2.ProvaBuiltin;
 import ws.prova.kernel2.ProvaConstant;
@@ -30,11 +28,11 @@ public class ProvaResolutionInferenceEngineImpl implements ProvaResolutionInfere
 
     private ProvaKnowledgeBase kb;
 
-    private Stack<ProvaDerivationNode> tabledNodes;
+    private final Stack<ProvaDerivationNode> tabledNodes;
 
     private ProvaDerivationNode node;
 
-    private ProvaDerivationStepCounter counter;
+    private final ProvaDerivationStepCounter counter;
 
     private ProvaReagent prova;
 
@@ -202,9 +200,8 @@ public class ProvaResolutionInferenceEngineImpl implements ProvaResolutionInfere
                 if (node != null) {
                     tabledNodes.push(node);
                 }
-                continue;
             }
-        };
+        }
         return null;
     }
 

@@ -8,11 +8,11 @@ import java.util.Map;
 
 public class Order implements Serializable {
 	private static final long serialVersionUID = 8634610276409403898L;
-	private String customer;
+	private final String customer;
 
-	private List<Object> items;
+	private final List<Object> items;
 
-	private Map<Object,Double> discounts;
+	private final Map<Object,Double> discounts;
 
 	public Order(String customer) {
 		this.customer = customer;
@@ -20,6 +20,7 @@ public class Order implements Serializable {
 		discounts = new HashMap<Object,Double>();
 	}
 
+        @Override
 	public String toString() {
 		String res = "Order(" + customer + ",(";
 		for (int i = 0; i < items.size(); i++) {
@@ -42,15 +43,15 @@ public class Order implements Serializable {
 
 	public void addItem(Object item) {
 		items.add(item);
-		discounts.put(item, new Double(1.0));
+		discounts.put(item, 1.0);
 	}
 
 	public void setDiscount(String item, double d) {
 		Double discount0 = discounts.get(item);
 		if (discount0 == null) {
-			discounts.put(item, new Double(1 - d));
+			discounts.put(item, 1 - d);
 			return;
 		}
-		discounts.put(item, new Double(discount0.doubleValue() * (1 - d)));
+		discounts.put(item, discount0 * (1 - d));
 	}
 }

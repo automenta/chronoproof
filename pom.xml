@@ -250,7 +250,23 @@
         </pluginManagement>
     </build>
 
-
+    <!-- https://github.com/github/maven-plugins -->
+    <!-- http://www.ensor.cc/2013/01/how-to-publish-maven-site-docs-to.html -->
+    <!-- http://maven.apache.org/wagon/wagon-providers/wagon-scm/usage.html -->
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>jdepend-maven-plugin</artifactId>
+                <version>2.0</version>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>cobertura-maven-plugin</artifactId>
+                <version>2.6</version>
+            </plugin>
+        </plugins>
+    </reporting>  
 
 </project>
 

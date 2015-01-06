@@ -1,7 +1,6 @@
 package ws.prova.reference2.messaging;
 
 import java.util.Map;
-
 import ws.prova.agent2.ProvaReagent;
 import ws.prova.kernel2.ProvaConstant;
 import ws.prova.kernel2.ProvaList;
@@ -11,17 +10,17 @@ import ws.prova.service.ProvaMiniService;
 
 public class ProvaServiceMessageImpl implements ProvaDelayedCommand {
 
-	private String dest;
+	private final String dest;
 	
-	private ProvaMiniService service;
+	private final ProvaMiniService service;
 
-	private String xid;
+	private final String xid;
 
 	private Object payload;
 
-	private String agent;
+	private final String agent;
 
-	private String verb;
+	private final String verb;
 	
 	public ProvaServiceMessageImpl(String dest, ProvaList terms,
 			String agent, ProvaMiniService service2) {

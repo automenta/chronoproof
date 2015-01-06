@@ -2,7 +2,6 @@ package ws.prova.reference2;
 
 import java.util.Arrays;
 import java.util.List;
-
 import ws.prova.kernel2.ProvaComputable;
 import ws.prova.kernel2.ProvaConstant;
 import ws.prova.kernel2.ProvaList;
@@ -490,10 +489,8 @@ public class ProvaListImpl extends ProvaTermImpl implements ProvaList, ProvaComp
             for (int i = offset; i < fixedLength; i++) {
                 if (fixed[i] instanceof ProvaVariablePtr) {
                     newFixed[i - offset] = unification.rebuild((ProvaVariablePtr) fixed[i]);
-                    continue;
                 } else if (fixed[i] instanceof ProvaList) {
                     newFixed[i - offset] = ((ProvaList) fixed[i]).rebuild(unification);
-                    continue;
                 } else {
                     newFixed[i - offset] = fixed[i];
                 }
@@ -589,10 +586,8 @@ public class ProvaListImpl extends ProvaTermImpl implements ProvaList, ProvaComp
             for (int i = offset; i < fixedLength; i++) {
                 if (fixed[i] instanceof ProvaVariablePtr) {
                     newFixed[i - offset] = unification.rebuildSource((ProvaVariablePtr) fixed[i]);
-                    continue;
                 } else if (fixed[i] instanceof ProvaList) {
                     newFixed[i - offset] = ((ProvaList) fixed[i]).rebuildSource(unification);
-                    continue;
                 } else {
                     newFixed[i - offset] = fixed[i];
                 }
@@ -628,6 +623,7 @@ public class ProvaListImpl extends ProvaTermImpl implements ProvaList, ProvaComp
         return null;
     }
 
+    @Override
     public String toString() {
         if (this == emptyRList) {
             return "[]";

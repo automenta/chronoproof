@@ -1,9 +1,7 @@
 package test.ws.prova.test2;
 
 import java.util.Vector;
-
 import org.junit.Test;
-
 import ws.prova.kernel2.ProvaConstant;
 import ws.prova.kernel2.ProvaVariable;
 import ws.prova.reference2.ProvaConstantImpl;

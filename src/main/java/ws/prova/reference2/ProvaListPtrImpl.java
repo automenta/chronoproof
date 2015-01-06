@@ -2,7 +2,6 @@ package ws.prova.reference2;
 
 import java.util.Arrays;
 import java.util.List;
-
 import ws.prova.kernel2.ProvaList;
 import ws.prova.kernel2.ProvaListPtr;
 import ws.prova.kernel2.ProvaObject;
@@ -89,6 +88,7 @@ public class ProvaListPtrImpl implements ProvaListPtr {
 		return assigned.rebuildSource(unification, offset);
 	}
 
+        @Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder("[");
 		for( int i=offset; i<assigned.getFixed().length; i++ ) {

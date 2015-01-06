@@ -5,9 +5,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.log4j.Logger;
-
 import ws.prova.agent2.ProvaReagent;
 import ws.prova.eventing.ProvaEventsAccumulator;
 import ws.prova.kernel2.ProvaKnowledgeBase;

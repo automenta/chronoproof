@@ -4,16 +4,14 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.List;
-
 import org.junit.Test;
-
 import ws.prova.api2.ProvaCommunicatorImpl;
 import ws.prova.kernel2.ProvaKnowledgeBase;
 import ws.prova.kernel2.ProvaResolutionInferenceEngine;
 import ws.prova.kernel2.ProvaResultSet;
 import ws.prova.kernel2.ProvaRule;
-import ws.prova.parser2.ProvaParsingException;
 import ws.prova.parser2.ProvaParserImpl;
+import ws.prova.parser2.ProvaParsingException;
 import ws.prova.reference2.ProvaKnowledgeBaseImpl;
 import ws.prova.reference2.ProvaResolutionInferenceEngineImpl;
 import ws.prova.reference2.ProvaResultSetImpl;

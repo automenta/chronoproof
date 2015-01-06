@@ -3,7 +3,6 @@ package ws.prova.examples.runner;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
-
 import ws.prova.api2.ProvaCommunicator;
 import ws.prova.api2.ProvaCommunicatorImpl;
 import ws.prova.kernel2.ProvaList;

@@ -2,7 +2,6 @@ package ws.prova.reference2.messaging;
 
 import java.util.List;
 import java.util.Map;
-
 import ws.prova.agent2.ProvaReagent;
 import ws.prova.kernel2.ProvaObject;
 import ws.prova.kernel2.ProvaPredicate;

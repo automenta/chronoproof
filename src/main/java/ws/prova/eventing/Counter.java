@@ -23,6 +23,7 @@ public class Counter extends ProvaBasicEventsAccumulatorImpl {
 		return count;
 	}
 
+        @Override
 	public long totalCount() {
 		return count;
 	}

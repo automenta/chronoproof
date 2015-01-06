@@ -2,16 +2,15 @@ package ws.prova.reference2.cache;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import ws.prova.kernel2.cache.ProvaCacheState;
 import ws.prova.kernel2.cache.ProvaCacheTablet;
 import ws.prova.kernel2.cache.ProvaGroundKey;
 
 public class ProvaCacheTabletImpl implements ProvaCacheTablet {
 
-	private int arity;
+	private final int arity;
 
-	private Map<ProvaGroundKey,ProvaCacheState> cacheStates;
+	private final Map<ProvaGroundKey,ProvaCacheState> cacheStates;
 	
 	public ProvaCacheTabletImpl(int arity) {
 		this.arity = arity;

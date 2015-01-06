@@ -21,6 +21,7 @@ public interface ProvaList extends ProvaObject {
 
 	public ProvaObject rebuildSource(ProvaUnification unification, int offset);
 
+        @Override
 	public boolean isGround();
 
 	public String performative();
@@ -31,6 +32,7 @@ public interface ProvaList extends ProvaObject {
 
 	public ProvaList copyWithVariables(List<ProvaVariable> variables);
 
+        @Override
 	public ProvaObject cloneWithBoundVariables(List<ProvaVariable> variables, List<Boolean> changed);
 
 	public ProvaList copyWithBoundVariables(List<ProvaVariable> variables, List<Boolean> changed);

@@ -1,12 +1,11 @@
 package ws.prova.reference2.operators;
 
 import java.util.List;
-
+import ws.prova.kernel2.ProvaComputable;
 import ws.prova.kernel2.ProvaConstant;
 import ws.prova.kernel2.ProvaKnowledgeBase;
 import ws.prova.kernel2.ProvaLiteral;
 import ws.prova.kernel2.ProvaObject;
-import ws.prova.kernel2.ProvaComputable;
 import ws.prova.kernel2.ProvaVariable;
 import ws.prova.reference2.ProvaConstantImpl;
 
@@ -24,6 +23,7 @@ public class ProvaBinaryNotEqualsImpl implements ProvaBinaryOperator {
 		return !((ProvaConstant) o1).getObject().equals(n2);
 	}
 
+        @Override
 	public String toString() {
 		return "!=";
 	}

@@ -94,6 +94,7 @@ public class ProvaConstantImpl<O> extends ProvaTermImpl implements ProvaConstant
         return false;
     }
 
+    @Override
     public String toString() {
 //		if( object instanceof String ) {
 //			StringBuilder sb = new StringBuilder("\'");

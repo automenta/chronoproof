@@ -2,7 +2,6 @@ package ws.prova.kernel2.cache;
 
 import java.util.Collection;
 import java.util.List;
-
 import ws.prova.kernel2.ProvaGoal;
 import ws.prova.kernel2.ProvaList;
 import ws.prova.kernel2.ProvaVariable;

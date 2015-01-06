@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
-
 import ws.prova.agent2.ProvaReagent;
 import ws.prova.agent2.ProvaReagentImpl;
 import ws.prova.esb2.ProvaAgent;

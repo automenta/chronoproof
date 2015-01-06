@@ -1,7 +1,6 @@
 package ws.prova.reference2;
 
 import java.util.List;
-
 import ws.prova.kernel2.ProvaComputable;
 import ws.prova.kernel2.ProvaConstant;
 import ws.prova.kernel2.ProvaObject;
@@ -44,6 +43,7 @@ public class ProvaAnyImpl extends ProvaTermImpl implements ProvaConstant, ProvaC
 		return true;
 	}
 
+        @Override
 	public String toString() {
 		return "_";
 	}

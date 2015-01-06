@@ -1,7 +1,6 @@
 package ws.prova.reference2.builtins;
 
 import java.util.List;
-
 import ws.prova.agent2.ProvaReagent;
 import ws.prova.kernel2.ProvaComputable;
 import ws.prova.kernel2.ProvaConstant;

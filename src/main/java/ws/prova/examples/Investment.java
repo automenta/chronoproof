@@ -7,9 +7,9 @@ public class Investment implements Serializable {
 
 	private static final long serialVersionUID = -2412101758244733942L;
 
-	private String symbol;
+	private final String symbol;
 
-	private double at;
+	private final double at;
 
 	public Investment(String _symbol, double _at) {
 		super();
@@ -17,6 +17,7 @@ public class Investment implements Serializable {
 		at = _at;
 	}
 
+        @Override
 	public String toString() {
 		return "Investment(" + symbol + ',' + at + ")";
 	}
@@ -24,19 +25,19 @@ public class Investment implements Serializable {
 	public Boolean stopLoss(Object arg1) {
 		// We have a stock quote that is below the original buy price * 0.95
 		Double in = (Double) arg1;
-		return Boolean.valueOf(in.doubleValue() < at * 0.95);
+		return in < at * 0.95;
 	}
 
 	public Boolean sell(Object arg1) {
 		// Sell the investment
 		Double in = (Double) arg1;
-		System.out.println(this.toString() + ": sold at " + in.doubleValue());
+		System.out.println(this.toString() + ": sold at " + in);
 		return Boolean.TRUE;
 	}
 
 	public Boolean check_price(Object arg1) {
 		Double in = (Double) arg1;
-		return (in.doubleValue() == at) ? Boolean.TRUE : Boolean.FALSE;
+		return (in == at) ? Boolean.TRUE : Boolean.FALSE;
 	}
 
 	public Boolean send(Object arg1, Object arg2) {
@@ -47,7 +48,7 @@ public class Investment implements Serializable {
 	}
 
 	public Boolean purchased_at(List<Object> ret) {
-		ret.add(new Double(at));
+		ret.add(at);
 		return Boolean.TRUE;
 	}
 
@@ -62,7 +63,7 @@ public class Investment implements Serializable {
 		// The only parameter: the number of seconds to sleep
 		Integer nsec = (Integer) arg1;
 		try {
-			Thread.sleep(nsec.intValue() * 1000);
+			Thread.sleep(nsec * 1000);
 		} catch (Exception exc) {
 		}
 		// Add returned objects to the return list

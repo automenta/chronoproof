@@ -1,5 +1,7 @@
 package ws.prova.service.impl;
 
+import java.io.BufferedReader;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -8,11 +10,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.io.BufferedReader;
-import java.io.PrintWriter;
-
 import org.apache.log4j.Logger;
-
 import ws.prova.api2.ProvaCommunicator;
 import ws.prova.api2.ProvaCommunicatorImpl;
 import ws.prova.exchange.ProvaSolution;
@@ -34,9 +32,9 @@ public class ProvaServiceImpl implements ProvaService {
 	
 	private ConcurrentMap<String,ProvaCommunicator> engines;
 
-	private ConcurrentMap<String, List<String>> topicDestinations = new ConcurrentHashMap<String, List<String>>();
+	private final ConcurrentMap<String, List<String>> topicDestinations = new ConcurrentHashMap<String, List<String>>();
 
-	private ConcurrentMap<String, EPService> callbacks = new ConcurrentHashMap<String, EPService>();
+	private final ConcurrentMap<String, EPService> callbacks = new ConcurrentHashMap<String, EPService>();
 	
 	@Override
 	public void init() {

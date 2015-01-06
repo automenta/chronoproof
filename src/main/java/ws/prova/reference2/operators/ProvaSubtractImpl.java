@@ -19,6 +19,7 @@ public class ProvaSubtractImpl implements ProvaOperator {
 		return na1.byteValue()-na2.byteValue();
 	}
 
+        @Override
 	public String toString() {
 		return "-";
 	}

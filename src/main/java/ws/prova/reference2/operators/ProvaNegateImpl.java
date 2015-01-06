@@ -18,6 +18,7 @@ public class ProvaNegateImpl implements ProvaOperator {
 		return -na1.byteValue();
 	}
 	
+        @Override
 	public String toString() {
 		return "-";
 	}

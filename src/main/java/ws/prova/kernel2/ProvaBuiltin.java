@@ -1,7 +1,6 @@
 package ws.prova.kernel2;
 
 import java.util.List;
-
 import ws.prova.agent2.ProvaReagent;
 
 public interface ProvaBuiltin extends ProvaPredicate {

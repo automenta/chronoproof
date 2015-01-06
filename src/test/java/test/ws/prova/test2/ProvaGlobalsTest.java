@@ -2,9 +2,7 @@ package test.ws.prova.test2;
 
 import java.io.IOException;
 import java.util.List;
-
 import org.junit.Test;
-
 import ws.prova.kernel2.ProvaKnowledgeBase;
 import ws.prova.kernel2.ProvaResolutionInferenceEngine;
 import ws.prova.kernel2.ProvaResultSet;

@@ -18,6 +18,7 @@ public abstract class ProvaBasicEventsAccumulatorImpl implements ProvaEventsAccu
 		this.duration = accumulator.duration;
 	}
  
+        @Override
 	abstract public ProvaEventsAccumulator clone();
 
 	@Override

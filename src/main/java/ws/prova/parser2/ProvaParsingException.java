@@ -12,11 +12,12 @@ public class ProvaParsingException extends RuntimeException {
 
 	private String desc;
 	
-	private Map<String,String> errors = new HashMap<String,String>();
+	private final Map<String,String> errors = new HashMap<String,String>();
 
 	public ProvaParsingException() {
 	}
 
+        @Override
 	public String toString() {
 		return src;
 	}

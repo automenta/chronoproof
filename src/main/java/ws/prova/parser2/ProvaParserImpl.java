@@ -10,19 +10,17 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
 import org.antlr.runtime.ANTLRReaderStream;
 import org.antlr.runtime.CommonTokenStream;
+import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.Token;
 import org.antlr.runtime.TokenStream;
 import org.antlr.runtime.tree.CommonErrorNode;
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.CommonTreeAdaptor;
 import org.antlr.runtime.tree.CommonTreeNodeStream;
-import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.tree.TreeAdaptor;
 import org.apache.log4j.Logger;
-
 import ws.prova.kernel2.ProvaKnowledgeBase;
 import ws.prova.kernel2.ProvaResultSet;
 import ws.prova.kernel2.ProvaRule;
@@ -45,7 +43,7 @@ public class ProvaParserImpl {
 	public static ThreadLocal<String> tlSrc = new ThreadLocal<String>();
 
 	// The source being parsed ("reader" or filename)
-	private String src;
+	private final String src;
 
 	// Java objects passed to the parser
 	private final Object[] objects;
@@ -70,6 +68,7 @@ public class ProvaParserImpl {
 	}
 
 	static final TreeAdaptor adaptor = new CommonTreeAdaptor() {
+                @Override
 		public Object create(Token payload) {
 			return new ProvaAST(payload);
 		}

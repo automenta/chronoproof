@@ -4,7 +4,7 @@ import ws.prova.agent2.ProvaReagent;
 
 public class ProvaGroupCleanupImpl implements ProvaDelayedCommand {
 
-	private String group;
+	private final String group;
 
 	public ProvaGroupCleanupImpl(String group) {
 		this.group = group;

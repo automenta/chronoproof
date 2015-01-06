@@ -2,12 +2,11 @@ package ws.prova.exchange.impl;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-
 import ws.prova.exchange.ProvaSolution;
 
 public class ProvaSolutionImpl implements ProvaSolution {
 
-	private ConcurrentMap<String,Object> nv = new ConcurrentHashMap<String,Object>();
+	private final ConcurrentMap<String,Object> nv = new ConcurrentHashMap<String,Object>();
 	
 	@Override
 	public void add(String name, Object value) {

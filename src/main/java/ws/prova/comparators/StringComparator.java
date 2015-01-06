@@ -1,7 +1,6 @@
 package ws.prova.comparators;
 
 import java.util.Comparator;
-
 import ws.prova.kernel2.ProvaConstant;
 
 public class StringComparator implements Comparator<Object> {
@@ -9,6 +8,7 @@ public class StringComparator implements Comparator<Object> {
 	
 	private StringComparator() {};
 	
+        @Override
     public int compare(Object o1, Object o2) {
     	if( !(o2 instanceof ProvaConstant) )
     		return -1;

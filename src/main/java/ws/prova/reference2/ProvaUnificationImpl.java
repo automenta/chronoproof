@@ -3,7 +3,6 @@ package ws.prova.reference2;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
 import ws.prova.kernel2.ProvaConstant;
 import ws.prova.kernel2.ProvaDerivationNode;
 import ws.prova.kernel2.ProvaKnowledgeBase;

@@ -1,9 +1,8 @@
 package ws.prova.reference2.messaging.where;
 
-import org.antlr.runtime.tree.*;
-
-import static ws.prova.reference2.messaging.where.WhereBinaryOperation.*;
-import static ws.prova.reference2.messaging.where.WhereComparison.*;
+import org.antlr.runtime.tree.Tree;
+import ws.prova.reference2.messaging.where.WhereBinaryOperation.Operator;
+import ws.prova.reference2.messaging.where.WhereComparison.Type;
 
 public class WhereTreeVisitor {
 	private WhereTreeVisitor() {

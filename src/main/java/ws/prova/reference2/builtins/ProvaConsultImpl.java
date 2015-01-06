@@ -3,7 +3,8 @@ package ws.prova.reference2.builtins;
 import java.io.BufferedReader;
 import java.io.StringReader;
 import java.util.List;
-
+import ws.prova.agent2.ProvaReagent;
+import ws.prova.exchange.ProvaSolution;
 import ws.prova.kernel2.ProvaConstant;
 import ws.prova.kernel2.ProvaDerivationNode;
 import ws.prova.kernel2.ProvaGoal;
@@ -12,10 +13,8 @@ import ws.prova.kernel2.ProvaList;
 import ws.prova.kernel2.ProvaLiteral;
 import ws.prova.kernel2.ProvaObject;
 import ws.prova.kernel2.ProvaRule;
-import ws.prova.exchange.ProvaSolution;
 import ws.prova.kernel2.ProvaVariable;
 import ws.prova.kernel2.ProvaVariablePtr;
-import ws.prova.agent2.ProvaReagent;
 
 public class ProvaConsultImpl extends ProvaBuiltinImpl {
 

@@ -3,7 +3,6 @@ package ws.prova.examples.runner;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
-
 import ws.prova.service.EPService;
 import ws.prova.service.ProvaService;
 import ws.prova.service.impl.ProvaServiceImpl;
@@ -29,7 +28,7 @@ public class ProvaSimpleService implements EPService {
 
 	final String receiver_rulebase = "rules/service/message_passing/receiver.prova";
 	
-	private ProvaService service;
+	private final ProvaService service;
 
 	public ProvaSimpleService() {
 		service = new ProvaServiceImpl();

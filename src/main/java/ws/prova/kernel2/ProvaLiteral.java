@@ -2,7 +2,6 @@ package ws.prova.kernel2;
 
 import java.util.List;
 import java.util.Map;
-
 import ws.prova.kernel2.cache.ProvaCacheState;
 import ws.prova.kernel2.cache.ProvaLocalAnswers;
 

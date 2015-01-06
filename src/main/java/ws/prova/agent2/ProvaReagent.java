@@ -4,11 +4,10 @@ import java.io.BufferedReader;
 import java.io.PrintWriter;
 import java.util.List;
 import java.util.concurrent.Future;
-
+import ws.prova.exchange.ProvaSolution;
 import ws.prova.kernel2.ProvaKnowledgeBase;
 import ws.prova.kernel2.ProvaList;
 import ws.prova.kernel2.ProvaRule;
-import ws.prova.exchange.ProvaSolution;
 import ws.prova.kernel2.messaging.ProvaMessenger;
 import ws.prova.kernel2.messaging.ProvaWorkflows;
 import ws.prova.reference2.ProvaSwingAdaptor;

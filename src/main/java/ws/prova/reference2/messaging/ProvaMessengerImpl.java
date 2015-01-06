@@ -16,13 +16,11 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
-
 import org.antlr.runtime.ANTLRInputStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.tree.CommonTree;
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.log4j.Logger;
-
 import ws.prova.agent2.ProvaReagent;
 import ws.prova.agent2.ProvaThreadpoolEnum;
 import ws.prova.esb2.ProvaAgent;
@@ -49,8 +47,8 @@ import ws.prova.reference2.ProvaVariableImpl;
 import ws.prova.reference2.eventing.ProvaAndGroupImpl;
 import ws.prova.reference2.eventing.ProvaBasicGroupImpl;
 import ws.prova.reference2.eventing.ProvaGroup;
-import ws.prova.reference2.eventing.ProvaOrGroupImpl;
 import ws.prova.reference2.eventing.ProvaGroup.EventDetectionStatus;
+import ws.prova.reference2.eventing.ProvaOrGroupImpl;
 import ws.prova.reference2.messaging.where.WhereNode;
 import ws.prova.reference2.messaging.where.WhereTreeVisitor;
 import ws.prova.service.ProvaMiniService;
@@ -104,9 +102,9 @@ public class ProvaMessengerImpl implements ProvaMessenger {
 
 	private ProvaMiniService service;
 
-	private static ThreadLocal<Map<String, String>> tlStatic2Dynamic = new ThreadLocal<Map<String, String>>();
+	private static final ThreadLocal<Map<String, String>> tlStatic2Dynamic = new ThreadLocal<Map<String, String>>();
 
-	private static ThreadLocal<Map<String, ProvaGroup>> tlDynamic = new ThreadLocal<Map<String, ProvaGroup>>();
+	private static final ThreadLocal<Map<String, ProvaGroup>> tlDynamic = new ThreadLocal<Map<String, ProvaGroup>>();
 
 	private class TimerThreadFactory implements ThreadFactory {
 

@@ -1,7 +1,6 @@
 package ws.prova.reference2;
 
 import java.util.List;
-
 import ws.prova.kernel2.ProvaListPtr;
 import ws.prova.kernel2.ProvaObject;
 import ws.prova.kernel2.ProvaUnification;
@@ -41,9 +40,7 @@ public class ProvaVariablePtrImpl implements ProvaVariablePtr {
 		ProvaVariablePtrImpl other = (ProvaVariablePtrImpl) obj;
 		if (index != other.index)
 			return false;
-		if (ruleId != other.ruleId)
-			return false;
-		return true;
+		return ruleId == other.ruleId;
 	}
 
 	public void setIndex(int index) {
@@ -116,6 +113,7 @@ public class ProvaVariablePtrImpl implements ProvaVariablePtr {
 		return sourceObject.unify(targetObject, unification);
 	}
 
+        @Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder("@");
 		sb.append(ruleId);

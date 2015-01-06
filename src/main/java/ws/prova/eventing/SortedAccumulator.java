@@ -2,8 +2,8 @@ package ws.prova.eventing;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.TreeMap;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 
 public class SortedAccumulator extends ProvaBasicEventsAccumulatorImpl {
 
@@ -53,6 +53,7 @@ public class SortedAccumulator extends ProvaBasicEventsAccumulatorImpl {
 		return acc;
 	}
 
+        @Override
 	public long totalCount() {
 		long total = 0;
 		for( List<Object> bucket : map.values() )

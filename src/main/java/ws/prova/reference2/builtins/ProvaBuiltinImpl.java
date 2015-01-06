@@ -1,12 +1,11 @@
 package ws.prova.reference2.builtins;
 
 import java.util.List;
-
 import ws.prova.agent2.ProvaReagent;
 import ws.prova.kernel2.ProvaBuiltin;
 import ws.prova.kernel2.ProvaDerivationNode;
-import ws.prova.kernel2.ProvaKnowledgeBase;
 import ws.prova.kernel2.ProvaGoal;
+import ws.prova.kernel2.ProvaKnowledgeBase;
 import ws.prova.kernel2.ProvaLiteral;
 import ws.prova.kernel2.ProvaPredicate;
 import ws.prova.kernel2.ProvaRule;
@@ -17,9 +16,9 @@ public abstract class ProvaBuiltinImpl implements ProvaBuiltin {
 
 	protected ProvaKnowledgeBase kb;
 	
-	private ProvaRuleSetImpl clauseSet;
+	private final ProvaRuleSetImpl clauseSet;
 
-	private String symbol;
+	private final String symbol;
 	
 	public ProvaBuiltinImpl(ProvaKnowledgeBase kb, String symbol) {
 		this.kb = kb;

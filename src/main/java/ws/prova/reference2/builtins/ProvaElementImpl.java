@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-
+import ws.prova.agent2.ProvaReagent;
 import ws.prova.kernel2.ProvaConstant;
 import ws.prova.kernel2.ProvaDerivationNode;
 import ws.prova.kernel2.ProvaGoal;
@@ -22,7 +22,6 @@ import ws.prova.reference2.ProvaLiteralImpl;
 import ws.prova.reference2.ProvaMapImpl;
 import ws.prova.reference2.ProvaPredicateImpl;
 import ws.prova.reference2.ProvaRuleImpl;
-import ws.prova.agent2.ProvaReagent;
 
 public class ProvaElementImpl extends ProvaBuiltinImpl {
 

@@ -1,12 +1,11 @@
 package ws.prova.reference2.cache;
 
 import java.util.Arrays;
-
 import ws.prova.kernel2.cache.ProvaGroundKey;
 
 public class ProvaGroundKeyImpl implements ProvaGroundKey {
 
-	private Object[] data;
+	private final Object[] data;
 	
 	public ProvaGroundKeyImpl(Object[] data) {
 		this.data = data;
@@ -29,9 +28,7 @@ public class ProvaGroundKeyImpl implements ProvaGroundKey {
 		if (getClass() != obj.getClass())
 			return false;
 		ProvaGroundKeyImpl other = (ProvaGroundKeyImpl) obj;
-		if (!Arrays.equals(data, other.data))
-			return false;
-		return true;
+		return Arrays.equals(data, other.data);
 	}
 
 }

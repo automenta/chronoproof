@@ -1,9 +1,8 @@
 package ws.prova.reference2;
 
 import java.util.Vector;
-
-import ws.prova.kernel2.ProvaResultSet;
 import ws.prova.exchange.ProvaSolution;
+import ws.prova.kernel2.ProvaResultSet;
 import ws.prova.parser2.ProvaParsingException;
 
 public class ProvaResultSetImpl implements ProvaResultSet {

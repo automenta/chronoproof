@@ -1,7 +1,6 @@
 package test.ws.prova.test2;
 
 import org.junit.Test;
-
 import ws.prova.kernel2.ProvaConstant;
 import ws.prova.kernel2.ProvaGoal;
 import ws.prova.kernel2.ProvaKnowledgeBase;

@@ -5,10 +5,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-
 import ws.prova.agent2.ProvaReagent;
 import ws.prova.agent2.ProvaThreadpoolEnum;
 import ws.prova.kernel2.ProvaKnowledgeBase;
@@ -27,12 +25,12 @@ public class ProvaSwingAdaptor implements
 		MouseListener,
 		MouseMotionListener {
 
-	private ProvaReagent prova;
+	private final ProvaReagent prova;
 
-	private ProvaKnowledgeBase kb;
+	private final ProvaKnowledgeBase kb;
 	
 	@SuppressWarnings("unused")
-	private ProvaMessenger messenger;
+	private final ProvaMessenger messenger;
 
 	public ProvaSwingAdaptor(ProvaReagent prova) {
 		this.prova = prova;
@@ -80,6 +78,7 @@ public class ProvaSwingAdaptor implements
 	 *
 	 * @param e ActionEvent
 	 */
+        @Override
 	public void actionPerformed(ActionEvent e) {
 		Object src = e.getSource();
 		Object cmd = e.getActionCommand();
@@ -103,6 +102,7 @@ public class ProvaSwingAdaptor implements
 	 *
 	 * @param e ChangeEvent
 	 */
+        @Override
 	public void stateChanged(ChangeEvent e) {
 		Object src = e.getSource();
 		ProvaList terms = ProvaListImpl.create(new ProvaObject[] {
@@ -124,6 +124,7 @@ public class ProvaSwingAdaptor implements
 	 *
 	 * @param e MouseEvent
 	 */
+        @Override
 	public void mouseClicked(MouseEvent e) {
 		Object src = e.getSource();
 		ProvaList terms = ProvaListImpl.create(new ProvaObject[] {
@@ -146,6 +147,7 @@ public class ProvaSwingAdaptor implements
 	 *
 	 * @param e MouseEvent
 	 */
+        @Override
 	public void mouseEntered(MouseEvent e) {
 		Object src = e.getSource();
 		ProvaList terms = ProvaListImpl.create(new ProvaObject[] {
@@ -168,6 +170,7 @@ public class ProvaSwingAdaptor implements
 	 *
 	 * @param e MouseEvent
 	 */
+        @Override
 	public void mouseExited(MouseEvent e) {
 		Object src = e.getSource();
 		ProvaList terms = ProvaListImpl.create(new ProvaObject[] {
@@ -190,6 +193,7 @@ public class ProvaSwingAdaptor implements
 	 *
 	 * @param e MouseEvent
 	 */
+        @Override
 	public void mousePressed(MouseEvent e) {
 		Object src = e.getSource();
 		ProvaList terms = ProvaListImpl.create(new ProvaObject[] {
@@ -212,6 +216,7 @@ public class ProvaSwingAdaptor implements
 	 *
 	 * @param e MouseEvent
 	 */
+        @Override
 	public void mouseReleased(MouseEvent e) {
 		Object src = e.getSource();
 		ProvaList terms = ProvaListImpl.create(new ProvaObject[] {

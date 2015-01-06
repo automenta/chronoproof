@@ -5,9 +5,9 @@ import ws.prova.reference2.eventing.ProvaGroup;
 
 public class ProvaScheduleGroupCleanupImpl implements ProvaDelayedCommand {
 
-	private ProvaGroup dynamic;
+	private final ProvaGroup dynamic;
 
-	private long delay;
+	private final long delay;
 	
 	public ProvaScheduleGroupCleanupImpl(ProvaGroup dynamic, long delay) {
 		this.dynamic = dynamic;

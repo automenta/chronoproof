@@ -16,6 +16,7 @@ public class Portfolio implements Serializable {
 		name = _name;
 	}
 
+        @Override
 	public String toString() {
 		return new String("I am Portfolio " + name);
 	}

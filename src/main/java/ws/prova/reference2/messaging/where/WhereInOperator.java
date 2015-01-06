@@ -3,7 +3,6 @@ package ws.prova.reference2.messaging.where;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
 import org.antlr.runtime.tree.Tree;
 
 public class WhereInOperator extends WhereBasicNode {

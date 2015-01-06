@@ -4,9 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-
 import org.apache.log4j.Logger;
-
 import ws.prova.kernel2.ProvaConstant;
 import ws.prova.kernel2.ProvaGoal;
 import ws.prova.kernel2.ProvaKnowledgeBase;
@@ -187,7 +185,6 @@ public class ProvaRuleSetImpl implements ProvaRuleSet {
             if (result && unification.targetUnchanged()) {
                 goal.removeTarget();
             }
-            continue;
         }
         return true;
     }

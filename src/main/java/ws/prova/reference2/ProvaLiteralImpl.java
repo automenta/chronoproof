@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
 import ws.prova.kernel2.ProvaGoal;
 import ws.prova.kernel2.ProvaList;
 import ws.prova.kernel2.ProvaLiteral;
@@ -159,6 +158,7 @@ public class ProvaLiteralImpl implements ProvaLiteral {
 		return new ProvaLiteralImpl(predicate, newTerms, metadata);
 	}
 
+        @Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder(predicate.getSymbol());
 		sb.append('(');

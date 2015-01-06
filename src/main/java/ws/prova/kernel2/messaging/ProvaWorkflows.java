@@ -1,7 +1,6 @@
 package ws.prova.kernel2.messaging;
 
 import java.util.List;
-
 import ws.prova.kernel2.ProvaLiteral;
 import ws.prova.kernel2.ProvaRule;
 

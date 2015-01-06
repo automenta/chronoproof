@@ -5,7 +5,7 @@ import ws.prova.kernel2.ProvaRule;
 
 public class ProvaTargetImpl implements ProvaTarget {
 
-	private ProvaGoal target;
+	private final ProvaGoal target;
 	
 	private ProvaRule candidate;
 

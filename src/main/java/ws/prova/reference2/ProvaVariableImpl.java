@@ -3,7 +3,6 @@ package ws.prova.reference2;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import ws.prova.kernel2.ProvaConstant;
-
 import ws.prova.kernel2.ProvaObject;
 import ws.prova.kernel2.ProvaUnification;
 import ws.prova.kernel2.ProvaVariable;
@@ -213,6 +212,7 @@ public class ProvaVariableImpl extends ProvaTermImpl implements ProvaVariable {
 		return ruleId;
 	}
 
+        @Override
 	public String toString() {
 		if( assigned==null ) {
 			StringBuilder sb = new StringBuilder();

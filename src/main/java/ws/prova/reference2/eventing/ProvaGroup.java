@@ -3,7 +3,6 @@ package ws.prova.reference2.eventing;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
-
 import ws.prova.agent2.ProvaReagent;
 import ws.prova.kernel2.ProvaKnowledgeBase;
 import ws.prova.kernel2.ProvaList;

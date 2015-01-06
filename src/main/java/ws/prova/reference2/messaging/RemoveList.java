@@ -6,11 +6,11 @@ import ws.prova.kernel2.ProvaPredicate;
 public class RemoveList {
 
 	// Predicate for reaction rule
-	private ProvaPredicate p1;
+	private final ProvaPredicate p1;
 	
-	private ProvaPredicate p2;
+	private final ProvaPredicate p2;
 	
-	private long ruleid;
+	private final long ruleid;
 	
 	private ProvaList reaction;
 	

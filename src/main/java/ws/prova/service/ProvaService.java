@@ -3,7 +3,6 @@ package ws.prova.service;
 import java.io.BufferedReader;
 import java.io.PrintWriter;
 import java.util.List;
-
 import ws.prova.exchange.ProvaSolution;
 import ws.prova.kernel2.ProvaList;
 

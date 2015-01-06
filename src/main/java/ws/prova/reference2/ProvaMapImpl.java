@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
 import ws.prova.kernel2.ProvaConstant;
 import ws.prova.kernel2.ProvaList;
 import ws.prova.kernel2.ProvaObject;
@@ -101,6 +100,7 @@ public class ProvaMapImpl extends ProvaConstantImpl<Object> {
         return object.equals(targetObject);
     }
 
+    @Override
     public String toString() {
 //		if( object instanceof String ) {
 //			StringBuilder sb = new StringBuilder("\'");
@@ -265,21 +265,18 @@ public class ProvaMapImpl extends ProvaConstantImpl<Object> {
                 if (ov != nv) {
                     changed = true;
                 }
-                continue;
             } else if (ov instanceof ProvaList) {
                 ProvaObject nv = ((ProvaList) ov).rebuild(unification);
                 newMap.put(e.getKey(), nv);
                 if (ov != nv) {
                     changed = true;
                 }
-                continue;
             } else if (ov instanceof ProvaMapImpl) {
                 ProvaObject nv = ((ProvaMapImpl) ov).rebuild(unification);
                 newMap.put(e.getKey(), nv);
                 if (ov != nv) {
                     changed = true;
                 }
-                continue;
             } else {
                 newMap.put(e.getKey(), ov);
             }
@@ -301,21 +298,18 @@ public class ProvaMapImpl extends ProvaConstantImpl<Object> {
                 if (ov != nv) {
                     changed = true;
                 }
-                continue;
             } else if (ov instanceof ProvaList) {
                 ProvaObject nv = ((ProvaList) ov).rebuildSource(unification);
                 newMap.put(e.getKey(), nv);
                 if (ov != nv) {
                     changed = true;
                 }
-                continue;
             } else if (ov instanceof ProvaMapImpl) {
                 ProvaObject nv = ((ProvaMapImpl) ov).rebuildSource(unification);
                 newMap.put(e.getKey(), nv);
                 if (ov != nv) {
                     changed = true;
                 }
-                continue;
             } else {
                 newMap.put(e.getKey(), ov);
             }
@@ -339,10 +333,7 @@ public class ProvaMapImpl extends ProvaConstantImpl<Object> {
 
     @Override
     public boolean matched(ProvaConstant target) {
-        if (target instanceof ProvaMapImpl) {
-            return true;
-        }
-        return false;
+        return target instanceof ProvaMapImpl;
     }
 
 }

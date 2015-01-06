@@ -57,6 +57,7 @@ public class ProvaPredicateImpl implements ProvaPredicate {
 			(predicate.getArity()==arity || predicate.getArity()==-1 || arity==-1 );
 	}
 
+        @Override
 	public void setKnowledgeBase(ProvaKnowledgeBase knowledgeBase) {
 		this.knowledgeBase = knowledgeBase;
 	}

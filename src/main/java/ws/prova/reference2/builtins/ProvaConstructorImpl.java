@@ -4,9 +4,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import org.apache.commons.beanutils.ConstructorUtils;
-
+import ws.prova.agent2.ProvaReagent;
 import ws.prova.kernel2.ProvaConstant;
 import ws.prova.kernel2.ProvaDerivationNode;
 import ws.prova.kernel2.ProvaGoal;
@@ -19,7 +18,6 @@ import ws.prova.kernel2.ProvaVariable;
 import ws.prova.kernel2.ProvaVariablePtr;
 import ws.prova.reference2.ProvaConstantImpl;
 import ws.prova.reference2.ProvaGlobalConstantImpl;
-import ws.prova.agent2.ProvaReagent;
 
 public class ProvaConstructorImpl extends ProvaBuiltinImpl {
 

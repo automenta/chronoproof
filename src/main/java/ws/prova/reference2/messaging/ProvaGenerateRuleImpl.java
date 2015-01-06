@@ -6,11 +6,11 @@ import ws.prova.kernel2.ProvaLiteral;
 
 public class ProvaGenerateRuleImpl implements ProvaDelayedCommand {
 
-	private ProvaKnowledgeBase kb;
+	private final ProvaKnowledgeBase kb;
 	
-	private ProvaLiteral headControl;
+	private final ProvaLiteral headControl;
 
-	private ProvaLiteral[] provaLiterals;
+	private final ProvaLiteral[] provaLiterals;
 	
 	public ProvaGenerateRuleImpl(ProvaKnowledgeBase kb, ProvaLiteral headControl,
 			ProvaLiteral[] provaLiterals) {
