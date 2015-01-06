@@ -2,73 +2,79 @@ package ws.prova.kernel2;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.RejectedExecutionException;
+import ws.prova.agent2.ProvaReagentImpl;
 
-public interface ProvaRule {
+public interface ProvaRule extends Runnable {
 
-	public void collectVariables();
+    public void collectVariables();
 
-	public List<ProvaVariable> getVariables();
+    public List<ProvaVariable> getVariables();
 
-	public List<ProvaVariable> cloneVariables();
+    public List<ProvaVariable> cloneVariables();
 
-	public ProvaLiteral getHead();
+    public ProvaLiteral getHead();
 
-	public ProvaLiteral[] getBody();
+    public ProvaLiteral[] getBody();
 
-	public long getRuleId();
-	
-	public ProvaRule cloneRule();
+    public long getRuleId();
 
-	public boolean advance();
+    public ProvaRule cloneRule();
 
-	public ProvaLiteral getTop();
+    public boolean advance();
 
-	public void setVariables(List<ProvaVariable> variables);
+    public ProvaLiteral getTop();
 
-	public void substituteVariables(ProvaVariablePtr[] varsMap);
+    public void setVariables(List<ProvaVariable> variables);
 
-	public void setRuleId(long ruleId);
+    public void substituteVariables(ProvaVariablePtr[] varsMap);
 
-	public int getOffset();
+    public void setRuleId(long ruleId);
 
-	public void addBodyLiteral(ProvaLiteral literal);
+    public int getOffset();
 
-	public void replaceTopBodyLiteral(List<ProvaLiteral> newLiterals);
+    public void addBodyLiteral(ProvaLiteral literal);
 
-	public ProvaRule cloneRule(boolean cloneVariables);
+    public void replaceTopBodyLiteral(List<ProvaLiteral> newLiterals);
 
-	public void collectVariables(int offset);
+    public ProvaRule cloneRule(boolean cloneVariables);
 
-	public Object getFirstArg();
+    public void collectVariables(int offset);
 
-	public void removeAt(int index);
+    public Object getFirstArg();
 
-	public void setRemoved();
+    public void removeAt(int index);
 
-	public boolean isRemoved();
+    public void setRemoved();
 
-	public boolean isCut();
+    public boolean isRemoved();
 
-	public String getSourceCode();
+    public boolean isCut();
 
-	public void computeSourceCode();
+    public String getSourceCode();
 
-	public void setMetadata(String property, List<Object> value);
+    public void computeSourceCode();
 
-	public List<Object> getMetadata(String property);
+    public void setMetadata(String property, List<Object> value);
 
-	public void addMetadata(Map<String, List<Object>> m);
+    public List<Object> getMetadata(String property);
 
-	public Map<String, List<Object>> getMetadata();
+    public void addMetadata(Map<String, List<Object>> m);
 
-	public void setLine(int line);
+    public Map<String, List<Object>> getMetadata();
 
-	public int getLine();
+    public void setLine(int line);
 
-	public ProvaLiteral[] getGuardedBody(ProvaLiteral sourceLiteral);
+    public int getLine();
 
-	public void setSrc(List<Object> value);
+    public ProvaLiteral[] getGuardedBody(ProvaLiteral sourceLiteral);
 
-	public long getAbsRuleId();
+    public void setSrc(List<Object> value);
+
+    public long getAbsRuleId();
+
+    public void onRejected(RejectedExecutionException r);
+
+    public void setReagent(ProvaReagentImpl aThis);
 
 }

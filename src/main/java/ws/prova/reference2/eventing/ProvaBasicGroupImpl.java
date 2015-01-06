@@ -49,7 +49,7 @@ public class ProvaBasicGroupImpl implements ProvaGroup {
 
 	protected List<ProvaGroup> children;
 	
-	protected long timeout;
+	protected long timeToLive;
 	
 	protected boolean failed = false;
 
@@ -80,7 +80,7 @@ public class ProvaBasicGroupImpl implements ProvaGroup {
 	public ProvaBasicGroupImpl(String dynamicGroup, String staticGroup) {
 		this.dynamicGroup = dynamicGroup;
 		this.staticGroup = staticGroup;
-		this.timeout = 0;
+		this.timeToLive = 0;
 		this.template = false;
 		this.templateDynamicGroup = null;
 		this.permanent = false;
@@ -96,7 +96,7 @@ public class ProvaBasicGroupImpl implements ProvaGroup {
 		this.removeMap = g.removeMap;
 		this.resultRemoveEntry = g.resultRemoveEntry;
 		this.timeoutRemoveEntries = g.timeoutRemoveEntries;
-		this.timeout = g.timeout;
+		this.timeToLive = g.timeToLive;
 		this.children = g.children;
 		this.id2ruleid = g.id2ruleid;
 		this.paused = g.paused;
@@ -377,7 +377,7 @@ public class ProvaBasicGroupImpl implements ProvaGroup {
 
 	@Override
 	public boolean isGroupFailed() {
-		boolean result = results.size()==0 || lastReaction==null;
+		boolean result = results.isEmpty() || lastReaction==null;
 		return result;
 	}
 
@@ -410,7 +410,7 @@ public class ProvaBasicGroupImpl implements ProvaGroup {
 
 	@Override
 	public void setTimeout(long delay) {
-		this.timeout = delay;
+		this.timeToLive = delay;
 	}
 	
 	@Override

@@ -32,7 +32,7 @@ public interface ProvaReagent {
 
 	public void submitAsync(final long partition, final ProvaRule goal, final ProvaThreadpoolEnum targetPool);
 
-	public boolean spawn(final ProvaList terms);
+	public Future<?> spawn(final ProvaList terms);
 
 	public String getAgent();
 

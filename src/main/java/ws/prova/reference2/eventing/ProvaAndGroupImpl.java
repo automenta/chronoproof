@@ -28,24 +28,27 @@ public class ProvaAndGroupImpl extends ProvaBasicGroupImpl {
 
 	private final static Logger log = Logger.getLogger("prova.eventing");
 	
-	private class MetaVars {
-		// Bound metadata variables
-		public Map<Object, Object> vars;
+        /** Bound metadata variables */
+	static class MetaVars extends HashMap<Object,Object> {
+		
+		
 		// Results index
 		public ProvaList result;
+                
 		public MetaVars(ProvaList result, Map<Object, Object> varList) {
-			this.result = result;
-			this.vars = new HashMap<Object, Object>(varList);
+                    super(varList);
+                    this.result = result;
+			
 		}
 	}
 	
-	private class MetaVarsKey {
+	static class MetaVarsKey {
 		public MetaVarsKey(String dynamicGroup, long ruleid) {
 			this.dynamicGroup = dynamicGroup;
 			this.ruleid = ruleid;
 		}
-		public String dynamicGroup;
-		public long ruleid;
+		public final String dynamicGroup;
+		public final long ruleid;
 	}
 	
 	private ConcurrentMap<MetaVarsKey,List<MetaVars>> varResults;
@@ -294,37 +297,42 @@ public class ProvaAndGroupImpl extends ProvaBasicGroupImpl {
 			ProvaList reaction,
 			Map<Long, ProvaGroup> ruleid2Group,
 			Map<String, List<Object>> metadata) {
-		List<List<ProvaList>> matches = new ArrayList<List<ProvaList>>();
+		
+                List<List<ProvaList>> matches = new ArrayList<List<ProvaList>>();
+                List<ProvaList> legMatches = new ArrayList<ProvaList>();    
+                
 		for( Entry<MetaVarsKey,List<MetaVars>> e : varResults.entrySet() ) {
 			if( e.getKey().dynamicGroup!=dynamicGroup || e.getKey().ruleid==ruleid )
 				// Only compare with the same reaction group instance
 				//    and avoid self-comparing
 				continue;
-			List<ProvaList> legMatches = new ArrayList<ProvaList>();
+			
+                        legMatches.clear();
+                        
 			for( MetaVars values : e.getValue() ) {
 				boolean matching = true;
-				for( Entry<Object, Object> e2 : values.vars.entrySet() ) {
+				for( Entry<Object, Object> e2 : values.entrySet() ) {
 					Object other = varsMap.get(e2.getKey());
 					if( other!=null && !e2.getValue().equals(other) ) {
 						matching = false;
 						break;
 					}
 				}
-				if( !matching && !metadata.containsKey("count") && ruleid2Group.get(e.getKey())==null )
+				if( !matching && !metadata.containsKey("count") && ruleid2Group.get(e.getKey().ruleid)==null )
 					return null;
 				if( where!=null ) {
 					// Check the WHERE constraints
 					for( WhereNode w : where ) {
-						boolean r = w.evaluate(varsMap, values.vars);
-						if( !r ) {
+						
+						if( !w.evaluate(varsMap, values) ) {
 							matching = false;
 							break;
 						}
 					}
 				}
 				if( matching ) {
-					if( log.isDebugEnabled() )
-						log.debug("Matching");
+					//if( log.isDebugEnabled() )
+					//	log.debug("Matching");
 					legMatches.add(values.result);
 				}
 			}
@@ -337,13 +345,15 @@ public class ProvaAndGroupImpl extends ProvaBasicGroupImpl {
 	}
 
 	private void addVarResults(long ruleid, Map<Object, Object> varsMap, ProvaList reaction) {
-		List<MetaVars> vars = varResults.get(ruleid);
-		if( vars==null ) {
-			vars = new ArrayList<MetaVars>();
-			varResults.put(new MetaVarsKey(dynamicGroup,ruleid), vars);
-		}
-		MetaVars mv = new MetaVars(reaction, varsMap);
-		vars.add(mv);
+		//List<MetaVars> vars = varResults.get(ruleid);
+		//if( vars==null ) {
+                List<MetaVars> vars = new ArrayList<MetaVars>();
+                vars.add(new MetaVars(reaction, varsMap));
+
+                varResults.put(new MetaVarsKey(dynamicGroup,ruleid), vars);
+		//}
+		
+		
 	}
 
 	private boolean isAndComplete(Map<Long, ProvaGroup> ruleid2Group) {
@@ -353,7 +363,7 @@ public class ProvaAndGroupImpl extends ProvaBasicGroupImpl {
 			return true;
 		if( countMax!=0 )
 			for( Entry<Long,RemoveList> e : removeMap.entrySet() )
-				if( !e.getValue().isOptional() && !(timeout==0 && e.getValue().isNot()) )
+				if( !e.getValue().isOptional() && !(timeToLive==0 && e.getValue().isNot()) )
 					return false;
 		for( Entry<Long,RemoveList> e : removeMap.entrySet() ) {
 			long ruleid = e.getKey();

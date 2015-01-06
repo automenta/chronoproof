@@ -153,7 +153,7 @@ public class ProvaOrGroupImpl extends ProvaBasicGroupImpl {
 		boolean isControlChannel = false;
 		if( metadata!=null && metadata.containsKey("pause") ) {
 			List<Object> toPause = metadata.get("pause");
-			if( toPause.size()!=0 ) {
+			if( !toPause.isEmpty() ) {
 				// This processing assumes that if @pause is present,
 				//     it is a pure "control" channel, not part of the group pattern
 				for( Object ido : toPause ) {
@@ -168,7 +168,7 @@ public class ProvaOrGroupImpl extends ProvaBasicGroupImpl {
 		}
 		if( metadata!=null && metadata.containsKey("resume") ) {
 			List<Object> toResume = metadata.get("resume");
-			if( toResume.size()!=0 ) {
+			if( !toResume.isEmpty() ) {
 				// This processing assumes that if @resume is present,
 				//     it is a pure "control" channel, not part of the group pattern
 				for( Object ido : toResume ) {
@@ -183,7 +183,7 @@ public class ProvaOrGroupImpl extends ProvaBasicGroupImpl {
 		}
 		if( metadata!=null && metadata.containsKey("stop") ) {
 			List<Object> toStop = metadata.get("stop");
-			if( toStop.size()!=0 ) {
+			if( !toStop.isEmpty() ) {
 				for( Object ido : toStop ) {
 					if( !(ido instanceof String) )
 						continue;

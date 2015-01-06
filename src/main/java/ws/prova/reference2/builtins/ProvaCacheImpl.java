@@ -119,7 +119,7 @@ public class ProvaCacheImpl extends ProvaBuiltinImpl {
 					pred.addClause(next);
 				}
 			}
-			if( pred.getClauseSet().getClauses().size()==0 )
+			if( pred.getClauseSet().getClauses().isEmpty() )
 				return false;
 			// Note that if the fixed part is only 1, the new query will be tail-only
 			ProvaObject[] newFixed = new ProvaObject[arity];

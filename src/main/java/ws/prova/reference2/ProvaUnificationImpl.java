@@ -126,7 +126,7 @@ public class ProvaUnificationImpl implements ProvaUnification {
 
 	private boolean matchMetadata(final ProvaLiteral sourceLiteral, final ProvaRule target) {
 		Map<String,List<Object>> sourceMetadata = sourceLiteral.getMetadata();
-		if( sourceMetadata==null || sourceMetadata.size()==0 )
+		if( sourceMetadata==null || sourceMetadata.isEmpty() )
 			// No source metadata or only line number
 			return true;
 		Map<String, List<Object>> targetMetadata = target.getMetadata();

@@ -1,10 +1,10 @@
 package ws.prova.kernel2;
 
-public interface ProvaConstant extends ProvaObject {
+public interface ProvaConstant<O> extends ProvaObject {
 
-	public Object getObject();
+	public O getObject();
 
-	public void setObject(Object object);
+	public void setObject(O object);
 
 	public boolean matched(ProvaConstant target);
 

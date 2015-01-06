@@ -175,33 +175,37 @@ public class ProvaMessengerImpl implements ProvaMessenger {
 			String dest = ((ProvaConstant) data[2]).getObject().toString();
 			ProvaList termsCopy = (ProvaList) terms
 					.cloneWithVariables(variables);
-			if ("esb".equals(protocol)) {
-				if (esb == null)
+			if (null != protocol) switch (protocol) {
+                        case "esb":
+                            if (esb == null)
+                                return false;
+                            message = new ProvaESBMessageImpl(dest, termsCopy, esb);
+                            break;
+                        case "osgi":
+                            if (service == null)
 					return false;
-				message = new ProvaESBMessageImpl(dest, termsCopy, esb);
-			} else if ("osgi".equals(protocol)) {
-				if (service == null)
-					return false;
-				message = new ProvaServiceMessageImpl(dest, termsCopy, agent,
+                            message = new ProvaServiceMessageImpl(dest, termsCopy, agent,
 						service);
-			} else {
-				ProvaLiteral lit = kb.generateHeadLiteral("rcvMsg", termsCopy);
-				ProvaRule goal = kb.generateGoal(new ProvaLiteral[] { lit,
-						kb.generateLiteral("fail") });
-				if ("async".equals(protocol)) {
-					message = new ProvaMessageImpl(partitionKey(cid), goal,
-							ProvaThreadpoolEnum.CONVERSATION);
-				} else if ("task".equals(protocol)) {
-					message = new ProvaMessageImpl(0, goal,
-							ProvaThreadpoolEnum.TASK);
-				} else if ("swing".equals(protocol)) {
-					message = new ProvaMessageImpl(0, goal,
-							ProvaThreadpoolEnum.SWING);
-				} else if ("self".equals(protocol) || "0".equals(dest)) {
-					message = new ProvaMessageImpl(0, goal,
+                            break;
+                        default:
+                            ProvaLiteral lit = kb.generateHeadLiteral("rcvMsg", termsCopy);
+                            ProvaRule goal = kb.generateGoal(new ProvaLiteral[] { lit,
+                                kb.generateLiteral("fail") });
+                            if ("async".equals(protocol)) {
+                                message = new ProvaMessageImpl(partitionKey(cid), goal,
+                                        ProvaThreadpoolEnum.CONVERSATION);
+                            } else if ("task".equals(protocol)) {
+                                message = new ProvaMessageImpl(0, goal,
+                                        ProvaThreadpoolEnum.TASK);
+                            } else if ("swing".equals(protocol)) {
+                                message = new ProvaMessageImpl(0, goal,
+                                        ProvaThreadpoolEnum.SWING);
+                            } else if ("self".equals(protocol) || "0".equals(dest)) {
+                                message = new ProvaMessageImpl(0, goal,
 							ProvaThreadpoolEnum.MAIN);
 				}
-			}
+                            break;
+                    }
 		} catch (Exception e) {
 			// TODO: throw something when Prova exception handling is back
 			return false;
@@ -278,21 +282,26 @@ public class ProvaMessengerImpl implements ProvaMessenger {
 				return false;
 			final ProvaList termsCopy = (ProvaList) terms
 					.copyWithVariables(variables);
-			if ("esb".equals(protocol)) {
-				if (esb == null)
-					return false;
-				ProvaDelayedCommand message = new ProvaESBMessageImpl(dest,
-						termsCopy, esb);
-				message.process(prova);
-				return true;
-			} else if ("osgi".equals(protocol)) {
-				if (service == null)
+			if (null != protocol) switch (protocol) {
+                        case "esb":
+                        {
+                            if (esb == null)
+                                return false;
+                            ProvaDelayedCommand message = new ProvaESBMessageImpl(dest,
+                                    termsCopy, esb);
+                            message.process(prova);
+                            return true;
+                        }
+                        case "osgi":
+                        {
+                            if (service == null)
 					return false;
 				ProvaDelayedCommand message = new ProvaServiceMessageImpl(dest,
 						termsCopy, agent, service);
 				message.process(prova);
 				return true;
 			}
+                    }
 			String verb = ((ProvaConstant) data[3]).toString();
 			ProvaLiteral lit = null;
 			// if( "eof".equals(verb) ) {
@@ -322,7 +331,7 @@ public class ProvaMessengerImpl implements ProvaMessenger {
 			}
 		} catch (Exception e) {
 			// TODO: For now, just log this
-			log.error(e);
+			log.error("sendMessage: " + e);
 		}
 		return false;
 	}
@@ -343,21 +352,26 @@ public class ProvaMessengerImpl implements ProvaMessenger {
 		}
 		String protocol = data[1].toString();
 		String dest = data[2].toString();
-		if ("esb".equals(protocol)) {
-			if (esb == null)
-				return false;
-			ProvaDelayedCommand message = new ProvaESBMessageImpl(dest, terms,
-					esb);
-			message.process(prova);
-			return true;
-		} else if ("osgi".equals(protocol)) {
-			if (service == null)
-				return false;
-			ProvaDelayedCommand message = new ProvaServiceMessageImpl(dest,
+		if (null != protocol) switch (protocol) {
+                case "esb":
+                {
+                    if (esb == null)
+                        return false;
+                    ProvaDelayedCommand message = new ProvaESBMessageImpl(dest, terms,
+                            esb);
+                    message.process(prova);
+                    return true;
+                }
+                case "osgi":
+                {
+                    if (service == null)
+                        return false;
+                    ProvaDelayedCommand message = new ProvaServiceMessageImpl(dest,
 					terms, agent, service);
 			message.process(prova);
 			return true;
 		}
+            }
 		if (!(data[3] instanceof ProvaConstant))
 			return false;
 		String verb = data[3].toString();
@@ -535,7 +549,7 @@ public class ProvaMessengerImpl implements ProvaMessenger {
 			Object size = null;
 			Object sizeReset = null;
 			Object sizeObject = null;
-			if (groupsSize != null && groupsSize.size() != 0) {
+			if (groupsSize != null && !groupsSize.isEmpty()) {
 				size = groupsSize.get(0);
 				size = goal.lookupMetadata(size.toString(), variables);
 				if (groupsSize.size() > 1) {
@@ -553,7 +567,7 @@ public class ProvaMessengerImpl implements ProvaMessenger {
 			Integer countMax = null;
 			// The IGNORE mode is the default
 			Integer countMode = 0;
-			if (groupsCount != null && groupsCount.size() != 0) {
+			if (groupsCount != null && !groupsCount.isEmpty()) {
 				String s = groupsCount.get(0).toString();
 				countMin = Integer.parseInt((String) goal.lookupMetadata(s,
 						variables));
@@ -563,10 +577,15 @@ public class ProvaMessengerImpl implements ProvaMessenger {
 							variables));
 					if (groupsCount.size() > 2) {
 						s = groupsCount.get(2).toString();
-						if ("record".equals(s))
-							countMode = 1;
-						else if ("strict".equals(s))
-							countMode = 2;
+						if (null != s)
+							switch (s) {
+                                                case "record":
+                                                    countMode = 1;
+                                                    break;
+                                                case "strict":
+                                                    countMode = 2;
+                                                    break;
+                                            }
 					} else {
 						if (countMax == -1) {
 							countMax = countMin;
@@ -587,7 +606,7 @@ public class ProvaMessengerImpl implements ProvaMessenger {
 			}
 			List<Object> groupsTimeout = literal.getMetadata("timeout");
 			Object timeout = null;
-			if (groupsTimeout != null && groupsTimeout.size() != 0) {
+			if (groupsTimeout != null && !groupsTimeout.isEmpty()) {
 				timeout = groupsTimeout.get(0);
 				timeout = goal.lookupMetadata(timeout.toString(), variables);
 			}
@@ -595,7 +614,7 @@ public class ProvaMessengerImpl implements ProvaMessenger {
 			Object timer = null;
 			Object timerReset = null;
 			Object timerObject = null;
-			if (groupsTimer != null && groupsTimer.size() != 0) {
+			if (groupsTimer != null && !groupsTimer.isEmpty()) {
 				timer = groupsTimer.get(0);
 				timer = goal.lookupMetadata(timer.toString(), variables);
 				if (groupsTimer.size() > 1) {
@@ -612,7 +631,7 @@ public class ProvaMessengerImpl implements ProvaMessenger {
 			}
 			List<Object> groupsVar = literal.getMetadata("vars");
 			List<Object> vars = null;
-			if (groupsVar != null && groupsVar.size() != 0) {
+			if (groupsVar != null && !groupsVar.isEmpty()) {
 				vars = new ArrayList<Object>();
 				for (int i = 0; i < groupsVar.size(); i++) {
 					Object var = groupsVar.get(i);
@@ -622,7 +641,7 @@ public class ProvaMessengerImpl implements ProvaMessenger {
 			}
 			List<Object> groupsWhere = literal.getMetadata("where");
 			WhereNode where = null;
-			if (groupsWhere != null && groupsWhere.size() != 0) {
+			if (groupsWhere != null && !groupsWhere.isEmpty()) {
 				where = parse(groupsWhere.get(0).toString());
 			}
 			final List<ProvaLiteral> body = new ArrayList<ProvaLiteral>();
@@ -690,7 +709,7 @@ public class ProvaMessengerImpl implements ProvaMessenger {
 					removeLiteral.setMetadata("paused", groupsPaused);
 					dynamic.getParent().pause(ruleid);
 				}
-			} else if (groups != null && groups.size() != 0) {
+			} else if (groups != null && !groups.isEmpty()) {
 				// Reaction is a member of a @group: add an @add_group_result
 				// relation
 				ProvaList addAndResultList = ProvaListImpl
@@ -900,7 +919,7 @@ public class ProvaMessengerImpl implements ProvaMessenger {
 
 		List<Object> groups = literal.getMetadata("and");
 		String dynamicGroup = null;
-		if (groups != null && groups.size() != 0) {
+		if (groups != null && !groups.isEmpty()) {
 			dynamicGroup = generateOrReuseDynamicGroup(
 					groups.get(0).toString(), goal, variables);
 			if (tlDynamic.get() == null)
@@ -927,7 +946,7 @@ public class ProvaMessengerImpl implements ProvaMessenger {
 		}
 
 		groups = literal.getMetadata("or");
-		if (groups != null && groups.size() != 0) {
+		if (groups != null && !groups.isEmpty()) {
 			if (dynamicGroup != null)
 				// Both @and and @or present
 				throw new RuntimeException(
@@ -958,7 +977,7 @@ public class ProvaMessengerImpl implements ProvaMessenger {
 		// member of a new group
 		ProvaGroup gg = null;
 		groups = literal.getMetadata("group");
-		if (groups != null && groups.size() != 0) {
+		if (groups != null && !groups.isEmpty()) {
 			dynamicGroup = generateOrReuseDynamicGroup(
 					groups.get(0).toString(), goal, variables);
 			if (tlDynamic.get() == null)
@@ -973,7 +992,7 @@ public class ProvaMessengerImpl implements ProvaMessenger {
 				gg.setExtended(true);
 			gg.addRemoveEntry(ruleid, rl);
 			List<Object> groupsId = literal.getMetadata("id");
-			if (groupsId != null && groupsId.size() != 0) {
+			if (groupsId != null && !groupsId.isEmpty()) {
 				gg.putId2ruleid(groupsId.get(0).toString(), ruleid);
 			}
 			if (gg.isOperatorConfigured())
@@ -1118,10 +1137,13 @@ public class ProvaMessengerImpl implements ProvaMessenger {
 		}
 		return false;
 	}
+        
 
 	@Override
-	public void scheduleCleanup(final ProvaGroup dynamic, long delay) {
-		dynamic.setTimeout(delay);
+	public void scheduleCleanup(final ProvaGroup dynamic, long delayMS) {
+		
+                dynamic.setTimeout(delayMS);
+                
 		final String dynamicGroup = dynamic.getDynamicGroup();
 		TimerTask cleanup = new TimerTask() {
 
@@ -1133,7 +1155,7 @@ public class ProvaMessengerImpl implements ProvaMessenger {
 			}
 
 		};
-		ScheduledFuture<?> future = timers.schedule(cleanup, delay,
+		ScheduledFuture<?> future = timers.schedule(cleanup, delayMS,
 				TimeUnit.MILLISECONDS);
 	}
 
@@ -1200,10 +1222,15 @@ public class ProvaMessengerImpl implements ProvaMessenger {
 				kb.generateLiteral("fail") });
 		// The CONVERSATION pool is the default (see PROVA-39)
 		ProvaThreadpoolEnum dest = ProvaThreadpoolEnum.CONVERSATION;
-		if ("self".equals(prot))
-			dest = ProvaThreadpoolEnum.MAIN;
-		else if ("task".equals(prot))
-			dest = ProvaThreadpoolEnum.TASK;
+		if (null != prot)
+			switch (prot) {
+                case "self":
+                    dest = ProvaThreadpoolEnum.MAIN;
+                    break;
+                case "task":
+                    dest = ProvaThreadpoolEnum.TASK;
+                    break;
+            }
 		prova.submitAsync(partitionKey(cid), goal, dest);
 	}
 

@@ -610,7 +610,7 @@ public class ProvaKnowledgeBaseImpl implements ProvaKnowledgeBase {
 			ProvaList l = ProvaListImpl.create( new ProvaObject[] {c,var});
 			objs.add(l);
 		}
-		ProvaList ls = ProvaListImpl.create( objs.toArray(new ProvaObject[0]) );
+		ProvaList ls = ProvaListImpl.create(objs.toArray(new ProvaObject[objs.size()]) );
 		ProvaLiteral solveBuiltin = generateLiteral("solve",ls);
 		solveRule.addBodyLiteral(solveBuiltin);
 		return solveRule;

@@ -1,6 +1,7 @@
 package ws.prova.reference2.messaging;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
@@ -67,9 +68,7 @@ public class ProvaWorkflowsImpl implements ProvaWorkflows {
 			expectedList = ((ProvaList) data[2]).getFixed();
 		}
 		List<ProvaObject> waiting = new ArrayList<ProvaObject>();
-		for( ProvaObject expected : expectedList ) {
-			waiting.add(expected);
-		}
+                waiting.addAll(Arrays.asList(expectedList));
 		List<ProvaObject> complete = new ArrayList<ProvaObject>();
 		List<List<ProvaObject>> record = new ArrayList<List<ProvaObject>>();
 		record.add(waiting);

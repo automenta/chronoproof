@@ -321,7 +321,7 @@ public class ProvaLiteralImpl implements ProvaLiteral {
 							new ProvaObject[] {ProvaConstantImpl.create(str), ProvaVariableImpl.create(str)}));
 			}
 		}
-		return metaVariables.size()==0 ? null : metaVariables;
+		return metaVariables.isEmpty() ? null : metaVariables;
 	}
 
 	@Override

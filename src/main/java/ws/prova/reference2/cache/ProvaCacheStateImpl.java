@@ -117,7 +117,7 @@ public class ProvaCacheStateImpl implements ProvaCacheState {
 
 	@Override
 	public ProvaGoal getGoal() {
-		if( goals.size()==0 )
+		if( goals.isEmpty() )
 			return null;
 		return this.goals.get(goals.size()-1);
 	}
@@ -170,7 +170,7 @@ public class ProvaCacheStateImpl implements ProvaCacheState {
 	 */
 	public void markCompletion() {
 		goals.remove(goals.size()-1);
-		if( goals.size()==0 ) {
+		if( goals.isEmpty() ) {
 			// It is now open and complete
 			complete = true;
 		}

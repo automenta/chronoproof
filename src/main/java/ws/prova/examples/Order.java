@@ -46,7 +46,7 @@ public class Order implements Serializable {
 	}
 
 	public void setDiscount(String item, double d) {
-		Double discount0 = (Double) discounts.get(item);
+		Double discount0 = discounts.get(item);
 		if (discount0 == null) {
 			discounts.put(item, new Double(1 - d));
 			return;

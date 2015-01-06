@@ -42,25 +42,37 @@ public class ProvaSwingAdaptor implements
 
 	public void listen(String type, Object target) {
 		prova.setAllowedShutdown(false);
-		if( type.equals("action") )
-			((javax.swing.AbstractButton) target).addActionListener(this);
-		else if( type.equals("change") )
-			((javax.swing.AbstractButton) target).addChangeListener(this);
-		else if( type.equals("mouse") )
-			((java.awt.Component) target).addMouseListener(this);
-		else if( type.equals("motion") )
-			((java.awt.Component) target).addMouseMotionListener(this);
+            switch (type) {
+                case "action":
+                    ((javax.swing.AbstractButton) target).addActionListener(this);
+                    break;
+                case "change":
+                    ((javax.swing.AbstractButton) target).addChangeListener(this);
+                    break;
+                case "mouse":
+                    ((java.awt.Component) target).addMouseListener(this);
+                    break;
+                case "motion":
+                    ((java.awt.Component) target).addMouseMotionListener(this);
+                    break;
+            }
 	}
 	
 	public void unlisten(String type, Object target) {
-		if( type.equals("action") )
-			((javax.swing.AbstractButton) target).removeActionListener(this);
-		else if( type.equals("change") )
-			((javax.swing.AbstractButton) target).removeChangeListener(this);
-		else if( type.equals("mouse") )
-			((java.awt.Component) target).removeMouseListener(this);
-		else if( type.equals("motion") )
-			((java.awt.Component) target).removeMouseMotionListener(this);
+            switch (type) {
+                case "action":
+                    ((javax.swing.AbstractButton) target).removeActionListener(this);
+                    break;
+                case "change":
+                    ((javax.swing.AbstractButton) target).removeChangeListener(this);
+                    break;
+                case "mouse":
+                    ((java.awt.Component) target).removeMouseListener(this);
+                    break;
+                case "motion":
+                    ((java.awt.Component) target).removeMouseMotionListener(this);
+                    break;
+            }
 	}
 	
 	/**

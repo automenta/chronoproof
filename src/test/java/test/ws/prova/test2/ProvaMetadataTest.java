@@ -509,7 +509,8 @@ public class ProvaMetadataTest {
 				});
 				prova.addMsg(terms3);
 				// Wait for 10 microseconds
-				Thread.sleep(0,10000);
+				//Thread.sleep(0,10000);
+                                Thread.sleep(0,10);
 			}
 			long diff0 = System.currentTimeMillis()-startTime;
 			System.out.println("All messages sent in "+diff0+" ms");
