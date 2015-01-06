@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.antlr.runtime.ANTLRInputStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.tree.CommonTree;
-import org.apache.commons.lang.time.DateUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.apache.log4j.Logger;
 
 import ws.prova.agent2.ProvaReagent;
@@ -40,7 +40,6 @@ import ws.prova.kernel2.ProvaVariablePtr;
 import ws.prova.kernel2.messaging.ProvaMessenger;
 import ws.prova.parser.WhereLexer;
 import ws.prova.parser.WhereParser;
-import ws.prova.reference2.ProvaAnyImpl;
 import ws.prova.reference2.ProvaConstantImpl;
 import ws.prova.reference2.ProvaListImpl;
 import ws.prova.reference2.ProvaLiteralImpl;

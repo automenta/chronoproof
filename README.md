@@ -1,6 +1,32 @@
-Prova rule language (http://www.prova.ws)
-=========================================
+CHRONOPROOF
+===========
+Distributed Environment Editing Tool
+-----------------------------
+High Performance P2P Event Logic Processing
+-----------------------------
+Fork of the **Prova rule language** combined with **Chronicle Engine**
+-----------------------
 
+```
+for(From,From,From) :- !.
+for(From,From,To) :-
+        From<=To.
+for(I,From,To) :-
+        From2=From+1,
+        for(I,From2,To).
+
+%%%%%%%%%%%%%%%%% 
+% A NOOP worker % 
+%%%%%%%%%%%%%%%%% 
+
+rcvMsg(XID,Protocol,From,request,[X|Xs]) :-
+println([rcvMsg(XID,Protocol,From,request,[X|Xs])]),
+        sendMsg(XID,Protocol,0,reply,[X|Xs]).
+```
+
+
+original readme:
+----------------
 Prova is an economic and efficient, Java JVM based, open source rule language for reactive agents and event processing. It combines imperative, declarative and functional programming styles. It is designed to work in distributed Enterprise Service Bus and OSGi environments.
 
 The project is led by Alex Kozlenkov (Betfair Ltd., London, England) and Adrian Paschke (Free University, Berlin, Germany)
