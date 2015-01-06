@@ -2,8 +2,8 @@ package ws.prova.reference2;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
-
 import ws.prova.kernel2.ProvaConstant;
+
 import ws.prova.kernel2.ProvaObject;
 import ws.prova.kernel2.ProvaUnification;
 import ws.prova.kernel2.ProvaVariable;
@@ -236,6 +236,13 @@ public class ProvaVariableImpl extends ProvaTermImpl implements ProvaVariable {
 	public void substituteVariables(final ProvaVariablePtr[] varsMap) {
 	}
 
+    @Override
+    public int hashCode() {
+        return name.hashCode();
+                
+    }
+
+        
 	@Override
 	public boolean equals( Object o ) {
 		ProvaVariableImpl var = (ProvaVariableImpl) o;

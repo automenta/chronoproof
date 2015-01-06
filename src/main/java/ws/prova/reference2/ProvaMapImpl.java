@@ -21,7 +21,7 @@ import ws.prova.kernel2.ProvaVariablePtr;
  * {@link #wrapValues(Map)}} methods.
  *
  */
-public class ProvaMapImpl extends ProvaConstantImpl {
+public class ProvaMapImpl extends ProvaConstantImpl<Object> {
 
     private static final long serialVersionUID = -4660675788561894085L;
 
@@ -33,7 +33,6 @@ public class ProvaMapImpl extends ProvaConstantImpl {
         super(object);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public int collectVariables(long ruleId, List<ProvaVariable> variables) {
         int rc = -1;

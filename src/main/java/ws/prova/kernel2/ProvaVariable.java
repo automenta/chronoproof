@@ -8,7 +8,7 @@ public interface ProvaVariable extends ProvaObject, ProvaComputable {
 
 	public void setAssigned(ProvaObject assigned);
 
-	public String uniqueName();
+	//public String uniqueName();
 
 	public int getIndex();
 
