@@ -19,7 +19,7 @@ import ws.prova.kernel2.messaging.ProvaWorkflows;
 import ws.prova.reference2.ProvaConstantImpl;
 import ws.prova.reference2.ProvaListImpl;
 import ws.prova.reference2.ProvaMapImpl;
-import ws.prova.reference2.ProvaRuleImpl;
+import ws.prova.kernel2.Rule;
 import ws.prova.reference2.ProvaUnificationImpl;
 
 public class ProvaWorkflowsImpl implements ProvaWorkflows {
@@ -94,7 +94,7 @@ public class ProvaWorkflowsImpl implements ProvaWorkflows {
 		for (ListIterator<PObj> iter = waitingAndComplete.get(0).listIterator(); iter.hasNext();) {
 			PObj t = iter.next().cloneWithVariables(variables);
 			Literal lit = kb.newLiteral("pred1",ProvaListImpl.create(new PObj[] {t}));
-			Rule rule = ProvaRuleImpl.createVirtualRule(1, lit, null);
+			Rule rule = Rule.createVirtualRule(1, lit, null);
 			ProvaUnificationImpl unification = new ProvaUnificationImpl(goal, rule);
 			boolean result = unification.unify();
 			if( !result )
@@ -194,7 +194,7 @@ public class ProvaWorkflowsImpl implements ProvaWorkflows {
 				for (ListIterator<PList> iter = waiting.listIterator(); iter.hasNext();) {
 					PList t = (PList) iter.next().cloneWithVariables(variables);
 					Literal lit = kb.newLiteral("pred1",t);
-					Rule rule = ProvaRuleImpl.createVirtualRule(1, lit, null);
+					Rule rule = Rule.createVirtualRule(1, lit, null);
 					ProvaUnificationImpl unification = new ProvaUnificationImpl(goal, rule);
 					boolean result = unification.unify();
 					if( !result )

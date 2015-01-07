@@ -4,7 +4,7 @@ import java.util.List;
 import org.junit.After;
 import org.junit.Test;
 import ws.prova.api2.ProvaCommunicator;
-import ws.prova.api2.ProvaCommunicatorImpl;
+import ws.prova.api2.Communicator;
 import ws.prova.exchange.ProvaSolution;
 import ws.prova.kernel2.Constant;
 
@@ -29,8 +29,8 @@ public class ProvaExpressionsTest {
 		final String rulebase = "rules/reloaded/expr001.prova";
 		final int[] numSolutions = new int[] {3};
 		
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC);
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		prova = new Communicator(kAgent,kPort,rulebase);
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(1,solutions.size());
 		org.junit.Assert.assertEquals(numSolutions[0],solutions.get(0).length);
@@ -50,8 +50,8 @@ public class ProvaExpressionsTest {
 		final String rulebase = "rules/reloaded/expr002.prova";
 		final int[] numSolutions = new int[] {2};
 		
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC);
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		prova = new Communicator(kAgent,kPort,rulebase);
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(1,solutions.size());
 		org.junit.Assert.assertEquals(numSolutions[0],solutions.get(0).length);
@@ -71,8 +71,8 @@ public class ProvaExpressionsTest {
 		final String rulebase = "rules/reloaded/expr003.prova";
 		final int[] numSolutions = new int[] {1};
 		
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC);
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		prova = new Communicator(kAgent,kPort,rulebase);
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(1,solutions.size());
 		org.junit.Assert.assertEquals(numSolutions[0],solutions.get(0).length);

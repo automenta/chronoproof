@@ -50,8 +50,7 @@ public interface KB {
 
 	public void setGlobals(Map<String, Object> globals);
 
-	public List<ProvaSolution[]> consultSyncInternal(Reagent prova, String src, String key,
-			Object[] objects);
+	public List<ProvaSolution[]> consultSyncInternal(Reagent prova, String src, String key,Object[] objects);
 
 	public List<ProvaSolution[]> consultSyncInternal(Reagent prova,
 			BufferedReader in, String key, Object[] objects);

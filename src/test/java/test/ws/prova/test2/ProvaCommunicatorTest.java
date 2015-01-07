@@ -9,7 +9,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.After;
 import org.junit.Test;
 import ws.prova.api2.ProvaCommunicator;
-import ws.prova.api2.ProvaCommunicatorImpl;
+import ws.prova.api2.Communicator;
 import ws.prova.exchange.ProvaSolution;
 import ws.prova.kernel2.Constant;
 import ws.prova.kernel2.PList;
@@ -43,7 +43,7 @@ public class ProvaCommunicatorTest {
 		final String rulebase = "rules/reloaded/NOSUCHFILE.prova";
 		
 		try {
-			comm = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC);
+			comm = new Communicator(kAgent,kPort,rulebase);
 		
 		} catch (Exception e) {
 			final String localizedMessage = e.getCause() != null ?  e.getCause().getLocalizedMessage() : "";
@@ -58,7 +58,7 @@ public class ProvaCommunicatorTest {
 		final String rulebase = "rules/reloaded/parsing_errors.prova";
 		
 		try {
-			comm = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC);
+			comm = new Communicator(kAgent,kPort,rulebase);
 		
 		} catch (Exception e) {
 			org.junit.Assert.assertEquals(ProvaParsingException.class, e.getCause().getClass() );
@@ -74,7 +74,7 @@ public class ProvaCommunicatorTest {
 		final String rulebase = "rules/reloaded/processing_errors.prova";
 		
 		try {
-			comm = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC);
+			comm = new Communicator(kAgent,kPort,rulebase);
 		
 		} catch (Exception e) {
 			final String localizedMessage = e.getCause().getMessage();
@@ -88,9 +88,9 @@ public class ProvaCommunicatorTest {
 	public void sync_consult_from_string() {
 		final String rulebase = "rules/reloaded/kk_rules001_simple.prova";
 		
-		comm = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC);
+		comm = new Communicator(kAgent,kPort,rulebase);
 		
-		comm.setPrintWriter(ProvaNullWriter.getPrintWriter());
+		comm.setPrinter(ProvaNullWriter.getPrintWriter());
 
 		String input = ":- solve(happy(Person)).\n :- solve(pappy(Person)).";
 		BufferedReader in = new BufferedReader(new StringReader(input));
@@ -115,9 +115,9 @@ public class ProvaCommunicatorTest {
 	public void sync_consult_with_facts() {
 		final String rulebase = "rules/reloaded/kk_rules001_simple.prova";
 		
-		comm = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC);
+		comm = new Communicator(kAgent,kPort,rulebase);
 		
-		comm.setPrintWriter(ProvaNullWriter.getPrintWriter());
+		comm.setPrinter(ProvaNullWriter.getPrintWriter());
 
 		String input = ":- solve(happy(Person)).\n :- solve(pappy(Person)).\npappy(yoyo).";
 		BufferedReader in = new BufferedReader(new StringReader(input));
@@ -142,9 +142,9 @@ public class ProvaCommunicatorTest {
 	public void sync_consult_with_facts_and_java_parameters() {
 		final String rulebase = "rules/reloaded/kk_rules001_simple.prova";
 		
-		comm = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC);
+		comm = new Communicator(kAgent,kPort,rulebase);
 		
-		comm.setPrintWriter(ProvaNullWriter.getPrintWriter());
+		comm.setPrinter(ProvaNullWriter.getPrintWriter());
 
 		String input = ":- solve(robot(Name)).\nrobot(_0).";
 		BufferedReader in = new BufferedReader(new StringReader(input));
@@ -168,9 +168,9 @@ public class ProvaCommunicatorTest {
 	public void sync_consult_with_separate_rules() {
 		final String rulebase = "rules/reloaded/kk_rules001_simple.prova";
 		
-		comm = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC);
+		comm = new Communicator(kAgent,kPort,rulebase);
 		
-		comm.setPrintWriter(ProvaNullWriter.getPrintWriter());
+		comm.setPrinter(ProvaNullWriter.getPrintWriter());
 
 		String inputRules = "pappy(Person) :- happy(Person).";
 		BufferedReader inRules = new BufferedReader(new StringReader(inputRules));
@@ -204,9 +204,9 @@ public class ProvaCommunicatorTest {
 	public void sync_unconsult() {
 		final String rulebase = "rules/reloaded/kk_rules001_simple.prova";
 		
-		comm = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC);
+		comm = new Communicator(kAgent,kPort,rulebase);
 		
-		comm.setPrintWriter(ProvaNullWriter.getPrintWriter());
+		comm.setPrinter(ProvaNullWriter.getPrintWriter());
 
 		String inputRules = "pappy(Person) :- happy(Person).";
 		BufferedReader inRules = new BufferedReader(new StringReader(inputRules));
@@ -261,9 +261,9 @@ public class ProvaCommunicatorTest {
 	public void sync_consult_from_string_with_parsing_exceptions() {
 		final String rulebase = "rules/reloaded/kk_rules001_simple.prova";
 		
-		comm = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC);
+		comm = new Communicator(kAgent,kPort,rulebase);
 		
-		comm.setPrintWriter(ProvaNullWriter.getPrintWriter());
+		comm.setPrinter(ProvaNullWriter.getPrintWriter());
 
 		// There is clearly a grammar problem below
 		// It is reported by the walker as the parser currently does not white test semantic predicates in goals
@@ -287,9 +287,9 @@ public class ProvaCommunicatorTest {
 	public void sync_consult_from_file() {
 		final String rulebase = "rules/reloaded/kk_rules001_simple.prova";
 		
-		comm = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC);
+		comm = new Communicator(kAgent,kPort,rulebase);
 		
-		comm.setPrintWriter(ProvaNullWriter.getPrintWriter());
+		comm.setPrinter(ProvaNullWriter.getPrintWriter());
 
 		// This path is relative to the rulebase used in the ProvaCommunicatorImpl constructor
 		String src = "kk_rules001_goals.prova";
@@ -317,9 +317,9 @@ public class ProvaCommunicatorTest {
 		AtomicInteger count = new AtomicInteger();
 		Map<String,Object> globals = new HashMap<String,Object>();
 		globals.put("$Count", count);
-		comm = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC,globals);
+		comm = new Communicator(kAgent,kPort,rulebase,globals);
 		
-		comm.setPrintWriter(ProvaNullWriter.getPrintWriter());
+		comm.setPrinter(ProvaNullWriter.getPrintWriter());
 
 		// Send a hundred messages to the consulted Prova rulebase.
 		// Processing is done concurrently on threads belonging to the async pool.
@@ -334,7 +334,7 @@ public class ProvaCommunicatorTest {
 							ProvaConstantImpl.create(i)
 							})
 			});
-			comm.addMsg(terms);
+			comm.add(terms);
 		}
 		try {
 			synchronized(this) {

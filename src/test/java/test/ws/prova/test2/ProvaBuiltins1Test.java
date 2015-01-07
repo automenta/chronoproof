@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 import org.junit.Test;
 import ws.prova.api2.ProvaCommunicator;
-import ws.prova.api2.ProvaCommunicatorImpl;
+import ws.prova.api2.Communicator;
 import ws.prova.exchange.ProvaSolution;
 import ws.prova.kernel2.Constant;
 import ws.prova.kernel2.PList;
@@ -22,8 +22,8 @@ public class ProvaBuiltins1Test {
 		final String rulebase = "rules/reloaded/list_ops.prova";
 		final int[] numSolutions = new int[] {1,0,1,0,1,1,1,1,0,1,1,1};
 		
-		ProvaCommunicator prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC);
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		ProvaCommunicator prova = new Communicator(kAgent,kPort,rulebase);
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(numSolutions.length,solutions.size());
 		org.junit.Assert.assertEquals(numSolutions[0],solutions.get(0).length);
@@ -37,8 +37,8 @@ public class ProvaBuiltins1Test {
 		final String rulebase = "rules/reloaded/map.prova";
 		final int[] numSolutions = new int[] {3};
 		
-		ProvaCommunicator prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC);
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		ProvaCommunicator prova = new Communicator(kAgent,kPort,rulebase);
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(1,solutions.size());
 		org.junit.Assert.assertEquals(numSolutions[0],solutions.get(0).length);
@@ -52,8 +52,8 @@ public class ProvaBuiltins1Test {
 		final String rulebase = "rules/reloaded/map2.prova";
 		final int[] numSolutions = new int[] {1};
 		
-		ProvaCommunicator prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC);
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		ProvaCommunicator prova = new Communicator(kAgent,kPort,rulebase);
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(1,solutions.size());
 		org.junit.Assert.assertEquals(numSolutions[0],solutions.get(0).length);
@@ -68,8 +68,8 @@ public class ProvaBuiltins1Test {
 		final String rulebase = "rules/reloaded/map3.prova";
 		final int[] numSolutions = new int[] {1};
 		
-		ProvaCommunicator prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC);
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		ProvaCommunicator prova = new Communicator(kAgent,kPort,rulebase);
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(1,solutions.size());
 		org.junit.Assert.assertEquals(numSolutions[0],solutions.get(0).length);
@@ -84,8 +84,8 @@ public class ProvaBuiltins1Test {
 		final String rulebase = "rules/reloaded/map4.prova";
 		final int[] numSolutions = new int[] {1};
 		
-		ProvaCommunicator prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC);
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		ProvaCommunicator prova = new Communicator(kAgent,kPort,rulebase);
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(1,solutions.size());
 		org.junit.Assert.assertEquals(numSolutions[0],solutions.get(0).length);
@@ -101,8 +101,8 @@ public class ProvaBuiltins1Test {
 		final String rulebase = "rules/reloaded/map5.prova";
 		final int[] numSolutions = new int[] {1};
 		
-		ProvaCommunicator prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC);
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		ProvaCommunicator prova = new Communicator(kAgent,kPort,rulebase);
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(1,solutions.size());
 		org.junit.Assert.assertEquals(numSolutions[0],solutions.get(0).length);
@@ -121,8 +121,8 @@ public class ProvaBuiltins1Test {
 		final String rulebase = "rules/reloaded/map_merge.prova";
 		final int[] numSolutions = new int[] {1,1,1,0,1,1,1,1};
 		
-		ProvaCommunicator prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC);
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		ProvaCommunicator prova = new Communicator(kAgent,kPort,rulebase);
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(numSolutions.length, solutions.size());
 		for( int i=0; i<numSolutions.length; i++ )
@@ -134,8 +134,8 @@ public class ProvaBuiltins1Test {
 		final String rulebase = "rules/reloaded/map_merge2.prova";
 		final int[] numSolutions = new int[] {1,1,1,0,1,1,1,1};
 		
-		ProvaCommunicator prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC);
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		ProvaCommunicator prova = new Communicator(kAgent,kPort,rulebase);
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(numSolutions.length, solutions.size());
 		for( int i=0; i<numSolutions.length; i++ )
@@ -147,8 +147,8 @@ public class ProvaBuiltins1Test {
 		final String rulebase = "rules/reloaded/map_elements.prova";
 		final int[] numSolutions = new int[] {1,1};
 		
-		ProvaCommunicator prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC);
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		ProvaCommunicator prova = new Communicator(kAgent,kPort,rulebase);
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(numSolutions.length, solutions.size());
 		for( int i=0; i<numSolutions.length; i++ )
@@ -160,8 +160,8 @@ public class ProvaBuiltins1Test {
 		final String rulebase = "rules/reloaded/map_nested.prova";
 		final int[] numSolutions = new int[] {1,1};
 		
-		ProvaCommunicator prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC);
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		ProvaCommunicator prova = new Communicator(kAgent,kPort,rulebase);
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(numSolutions.length, solutions.size());
 		for( int i=0; i<numSolutions.length; i++ )
@@ -173,8 +173,8 @@ public class ProvaBuiltins1Test {
 		final String rulebase = "rules/reloaded/test010.prova";
 		final int[] numSolutions = new int[] {1};
 		
-		ProvaCommunicator prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC);
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		ProvaCommunicator prova = new Communicator(kAgent,kPort,rulebase);
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(1,solutions.size());
 		org.junit.Assert.assertEquals(numSolutions[0],solutions.get(0).length);
@@ -185,8 +185,8 @@ public class ProvaBuiltins1Test {
 		final String rulebase = "rules/reloaded/tokenize_list.prova";
 		final int[] numSolutions = new int[] {2};
 		
-		ProvaCommunicator prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC);
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		ProvaCommunicator prova = new Communicator(kAgent,kPort,rulebase);
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(1,solutions.size());
 		org.junit.Assert.assertEquals(numSolutions[0],solutions.get(0).length);
@@ -197,8 +197,8 @@ public class ProvaBuiltins1Test {
 		final String rulebase = "rules/reloaded/parse_list.prova";
 		final int[] numSolutions = new int[] {2};
 		
-		ProvaCommunicator prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC);
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		ProvaCommunicator prova = new Communicator(kAgent,kPort,rulebase);
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(1,solutions.size());
 		org.junit.Assert.assertEquals(numSolutions[0],solutions.get(0).length);
@@ -209,8 +209,8 @@ public class ProvaBuiltins1Test {
 		final String rulebase = "rules/reloaded/byte_stream.prova";
 		final int[] numSolutions = new int[] {1};
 		
-		ProvaCommunicator prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC);
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		ProvaCommunicator prova = new Communicator(kAgent,kPort,rulebase);
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(1,solutions.size());
 		org.junit.Assert.assertEquals(numSolutions[0],solutions.get(0).length);
@@ -223,8 +223,8 @@ public class ProvaBuiltins1Test {
 		
 		Map<String,Object> globals = new HashMap<String,Object>();
 		globals.put("$File", rulebase);
-		ProvaCommunicator prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC,globals);
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		ProvaCommunicator prova = new Communicator(kAgent,kPort,rulebase,globals);
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(1,solutions.size());
 		org.junit.Assert.assertEquals(numSolutions[0],solutions.get(0).length);
@@ -238,8 +238,8 @@ public class ProvaBuiltins1Test {
 		String text = "j\t12s\ttt";
 		Map<String,Object> globals = new HashMap<String,Object>();
 		globals.put("$Text", text);
-		ProvaCommunicator prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC,globals);
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		ProvaCommunicator prova = new Communicator(kAgent,kPort,rulebase,globals);
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(2,solutions.size());
 
@@ -265,8 +265,8 @@ public class ProvaBuiltins1Test {
 		String text = "j=12,s=tt";
 		Map<String,Object> globals = new HashMap<String,Object>();
 		globals.put("$Text", text);
-		ProvaCommunicator prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC,globals);
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		ProvaCommunicator prova = new Communicator(kAgent,kPort,rulebase,globals);
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(2,solutions.size());
 
@@ -286,8 +286,8 @@ public class ProvaBuiltins1Test {
 		final String rulebase = "rules/reloaded/unescape.prova";
 		final int[] numSolutions = new int[] {1,1};
 		
-		ProvaCommunicator prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC);
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		ProvaCommunicator prova = new Communicator(kAgent,kPort,rulebase);
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(solutions.size(),2);
 		org.junit.Assert.assertEquals(solutions.get(0).length,numSolutions[0]);
@@ -305,8 +305,8 @@ public class ProvaBuiltins1Test {
 		final String rulebase = "rules/reloaded/concat.prova";
 		final int[] numSolutions = new int[] {1,1,0,0};
 		
-		ProvaCommunicator prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC);
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		ProvaCommunicator prova = new Communicator(kAgent,kPort,rulebase);
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(solutions.size(),4);
 		org.junit.Assert.assertEquals(solutions.get(0).length,numSolutions[0]);
@@ -322,8 +322,8 @@ public class ProvaBuiltins1Test {
 		final String rulebase = "rules/reloaded/test017.prova";
 		final int[] numSolutions = new int[] {2};
 		
-		ProvaCommunicator prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC);
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		ProvaCommunicator prova = new Communicator(kAgent,kPort,rulebase);
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(solutions.size(),1);
 		org.junit.Assert.assertEquals(solutions.get(0).length,numSolutions[0]);
@@ -335,8 +335,8 @@ public class ProvaBuiltins1Test {
 		final String rulebase = "rules/reloaded/variables_as_args.prova";
 		final int[] numSolutions = new int[] {1,1};
 		
-		ProvaCommunicator prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC);
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		ProvaCommunicator prova = new Communicator(kAgent,kPort,rulebase);
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(numSolutions.length, solutions.size());
 		org.junit.Assert.assertEquals(numSolutions[0], solutions.get(0).length);

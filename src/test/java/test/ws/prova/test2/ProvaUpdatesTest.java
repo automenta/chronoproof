@@ -7,7 +7,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.After;
 import org.junit.Test;
 import ws.prova.api2.ProvaCommunicator;
-import ws.prova.api2.ProvaCommunicatorImpl;
+import ws.prova.api2.Communicator;
 import ws.prova.exchange.ProvaSolution;
 import ws.prova.kernel2.Constant;
 
@@ -35,8 +35,8 @@ public class ProvaUpdatesTest {
 		final String rulebase = "rules/reloaded/test008.prova";
 		final int[] numSolutions = new int[] {6};
 		
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC);
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		prova = new Communicator(kAgent,kPort,rulebase);
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(1,solutions.size());
 		org.junit.Assert.assertEquals(numSolutions[0],solutions.get(0).length);
@@ -51,7 +51,7 @@ public class ProvaUpdatesTest {
 		AtomicInteger count = new AtomicInteger();
 		Map<String,Object> globals = new HashMap<String,Object>();
 		globals.put("$Count", count);
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC,globals);
+		prova = new Communicator(kAgent,kPort,rulebase,globals);
 
 		try {
 			synchronized(this) {
@@ -69,7 +69,7 @@ public class ProvaUpdatesTest {
 		AtomicInteger count = new AtomicInteger();
 		Map<String,Object> globals = new HashMap<String,Object>();
 		globals.put("$Count", count);
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC,globals);
+		prova = new Communicator(kAgent,kPort,rulebase,globals);
 
 		try {
 			synchronized(this) {

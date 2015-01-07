@@ -26,8 +26,10 @@ public class ProvaExpressionLiteralImpl extends ProvaBuiltinImpl {
 			Goal goal, List<Literal> newLiterals, Rule query) {
 		Literal literal = goal.getGoal();
 		List<Variable> variables = query.getVariables();
-		PList terms = (PList) literal.getTerms(); //.cloneWithVariables(variables);
+		
+                PList terms = literal.getTerms(); //.cloneWithVariables(variables);
 		terms.updateGround(variables);
+                
 		PObj[] data = terms.getFixed();
 		if( data.length!=3 )
 			return false;

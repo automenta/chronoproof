@@ -5,7 +5,7 @@ import java.util.List;
 import org.junit.After;
 import org.junit.Test;
 import ws.prova.api2.ProvaCommunicator;
-import ws.prova.api2.ProvaCommunicatorImpl;
+import ws.prova.api2.Communicator;
 import ws.prova.exchange.ProvaSolution;
 import ws.prova.kernel2.KB;
 import ws.prova.kernel2.Inference;
@@ -37,9 +37,9 @@ public class ProvaJavaCallsTest {
 	public void retract_with_java_types() {
 		final String rulebase = "rules/reloaded/retract_with_java_types.prova";
 		
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC);
+		prova = new Communicator(kAgent,kPort,rulebase);
 		final int numSolutions[] = {3,2,3};
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(numSolutions.length,solutions.size());
 		for( int i=0; i<numSolutions.length; i++ )

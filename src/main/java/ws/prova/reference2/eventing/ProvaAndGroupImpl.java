@@ -55,13 +55,13 @@ public class ProvaAndGroupImpl extends ProvaBasicGroupImpl {
 	
 	public ProvaAndGroupImpl(String dynamicGroup, String staticGroup) {
 		super(dynamicGroup,staticGroup);
-		results = new ArrayList<Object>();
+		results = Collections.synchronizedList( new ArrayList<Object>() ); 
 		varResults = new ConcurrentHashMap<MetaVarsKey,List<MetaVars>>();
 	}
 
 	public ProvaAndGroupImpl(ProvaGroup g) {
 		super((ProvaBasicGroupImpl) g);
-		results = new ArrayList<Object>();
+		results = Collections.synchronizedList(new ArrayList<Object>());
 		varResults = new ConcurrentHashMap<MetaVarsKey,List<MetaVars>>();
 	}
 

@@ -1,10 +1,10 @@
 package ws.prova.reference2;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Deque;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Stack;
 import org.apache.log4j.Logger;
 import ws.prova.agent2.Reagent;
 import ws.prova.kernel2.Operation;
@@ -29,7 +29,7 @@ public class DefaultInference implements Inference {
 
     private KB kb;
 
-    private final Stack<Derivation> tabledNodes;
+    private final Deque<Derivation> tabledNodes;
 
     private Derivation node;
 
@@ -42,7 +42,7 @@ public class DefaultInference implements Inference {
     public DefaultInference(KB kb, Rule query) {
         this.kb = kb;
 
-        tabledNodes = new Stack<Derivation>();
+        tabledNodes = new ArrayDeque<Derivation>();
         counter = new ProvaDerivationStepCounter();
         node = new ProvaDerivationNodeImpl();
         node.setFailed(true);
@@ -50,6 +50,11 @@ public class DefaultInference implements Inference {
         node.setCut(false);
         node.setQuery(query);
         node.setCurrentGoal(new ProvaGoalImpl(query));
+    }
+
+    public DefaultInference(DefaultKB kb, Rule rule, Reagent r) {
+        this(kb, rule);
+        setReagent(r);
     }
 
     @Override
@@ -80,13 +85,17 @@ public class DefaultInference implements Inference {
     public Derivation _run() {
         List<Literal> newLiterals = new ArrayList<Literal>();
         tabledNodes.push(node);
+        
         Rule query;
-        while (!tabledNodes.empty()) {
+        
+        while (!tabledNodes.isEmpty()) {
             node = tabledNodes.pop();
             query = node.getQuery();
-            if (log.isDebugEnabled()) {
+            
+            /*if (log.isDebugEnabled()) {
                 log.debug(query);
-            }
+            }*/
+            
             final Goal goal = node.getCurrentGoal();
 
             if (goal == null) {
@@ -175,14 +184,19 @@ public class DefaultInference implements Inference {
             Derivation newNode = null;
             Unification unification = null;
             goal.updateGround();
+            
             while ((unification = goal.nextUnification(kb)) != null) {
                 boolean result = unification.unify();
                 if (!result) {
                     continue;
                 }
+                
+                /*
                 if (log.isDebugEnabled()) {
                     log.debug(">>> [" + unification.getTarget().getMetadata() + ']' + unification.getTarget().getSourceCode());
                 }
+                */
+                
                 Rule newQuery = unification.generateQuery(symbol, kb, query, node);
                 if (goal.isSingleClause()) {
                     node.setCurrentGoal(new ProvaGoalImpl(newQuery));

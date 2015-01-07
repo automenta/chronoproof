@@ -23,7 +23,7 @@ public class ProvaTemporalRuleRemoveImpl extends ProvaBuiltinImpl {
 	public boolean process(Reagent prova, Derivation node,
 			Goal goal, List<Literal> newLiterals, Rule query) {
 		Literal literal = goal.getGoal();
-		synchronized(kb) {
+		/*synchronized(kb)*/ {
 			PList terms = (PList) literal.getTerms();
 			PObj[] data = terms.getFixed();
 			if( data.length!=4 )

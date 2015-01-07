@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.junit.After;
 import org.junit.Test;
 import ws.prova.api2.ProvaCommunicator;
-import ws.prova.api2.ProvaCommunicatorImpl;
+import ws.prova.api2.Communicator;
 import ws.prova.exchange.ProvaSolution;
 import ws.prova.kernel2.PList;
 import ws.prova.kernel2.PObj;
@@ -41,9 +41,9 @@ public class ProvaMetadataTest {
 		Map<String,Object> globals = new HashMap<String,Object>();
 		AtomicInteger count = new AtomicInteger();
 		globals.put("$Count", count);
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC,globals);
+		prova = new Communicator(kAgent,kPort,rulebase,globals);
 		final int numSolutions[] = {0};
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(solutions.size(),numSolutions.length);
 
@@ -65,9 +65,9 @@ public class ProvaMetadataTest {
 		globals.put("$Count", count);
 		AtomicInteger timeoutCount = new AtomicInteger();
 		globals.put("$TimeoutCount", timeoutCount);
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC,globals);
+		prova = new Communicator(kAgent,kPort,rulebase,globals);
 		final int numSolutions[] = {0,0};
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(solutions.size(),numSolutions.length);
 		for( int i=0; i<numSolutions.length; i++ )
@@ -94,9 +94,9 @@ public class ProvaMetadataTest {
 		globals.put("$SuccessfulCancels", successfulCancels);
 		AtomicInteger failedCancels = new AtomicInteger();
 		globals.put("$FailedCancels", failedCancels);
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC,globals);
+		prova = new Communicator(kAgent,kPort,rulebase,globals);
 		final int numSolutions[] = {0,0,0};
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(solutions.size(),numSolutions.length);
 		for( int i=0; i<numSolutions.length; i++ )
@@ -124,9 +124,9 @@ public class ProvaMetadataTest {
 		globals.put("$SuccessfulCancels", successfulCancels);
 		AtomicInteger failedCancels = new AtomicInteger();
 		globals.put("$FailedCancels", failedCancels);
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC,globals);
+		prova = new Communicator(kAgent,kPort,rulebase,globals);
 		final int numSolutions[] = {0,0,0,0};
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(solutions.size(),numSolutions.length);
 		for( int i=0; i<numSolutions.length; i++ )
@@ -157,9 +157,9 @@ public class ProvaMetadataTest {
 		globals.put("$SuccessfulCancels", successfulCancels);
 		AtomicInteger failedCancels = new AtomicInteger();
 		globals.put("$FailedCancels", failedCancels);
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC,globals);
+		prova = new Communicator(kAgent,kPort,rulebase,globals);
 		final int numSolutions[] = {0,0,0,0};
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(solutions.size(),numSolutions.length);
 		for( int i=0; i<numSolutions.length; i++ )
@@ -187,9 +187,9 @@ public class ProvaMetadataTest {
 		globals.put("$SuccessfulCancels", successfulCancels);
 		AtomicInteger failedCancels = new AtomicInteger();
 		globals.put("$FailedCancels", failedCancels);
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC,globals);
+		prova = new Communicator(kAgent,kPort,rulebase,globals);
 		final int numSolutions[] = {0,0,0};
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(solutions.size(),numSolutions.length);
 		for( int i=0; i<numSolutions.length; i++ )
@@ -213,9 +213,9 @@ public class ProvaMetadataTest {
 		Map<String,Object> globals = new HashMap<String,Object>();
 		AtomicInteger count = new AtomicInteger();
 		globals.put("$Count", count);
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC,globals);
+		prova = new Communicator(kAgent,kPort,rulebase,globals);
 		final int numSolutions[] = {0,0};
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(solutions.size(),numSolutions.length);
 		for( int i=0; i<numSolutions.length; i++ )
@@ -237,9 +237,9 @@ public class ProvaMetadataTest {
 		AtomicInteger count = new AtomicInteger();
 		Map<String,Object> globals = new HashMap<String,Object>();
 		globals.put("$Count", count);
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC,globals);
+		prova = new Communicator(kAgent,kPort,rulebase,globals);
 		final int numSolutions[] = {0,0};
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(solutions.size(),numSolutions.length);
 		for( int i=0; i<numSolutions.length; i++ )
@@ -261,9 +261,9 @@ public class ProvaMetadataTest {
 		AtomicInteger count = new AtomicInteger();
 		Map<String,Object> globals = new HashMap<String,Object>();
 		globals.put("$Count", count);
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC,globals);
+		prova = new Communicator(kAgent,kPort,rulebase,globals);
 		final int numSolutions[] = {0,0};
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(solutions.size(),numSolutions.length);
 		for( int i=0; i<numSolutions.length; i++ )
@@ -285,9 +285,9 @@ public class ProvaMetadataTest {
 		AtomicInteger count = new AtomicInteger();
 		Map<String,Object> globals = new HashMap<String,Object>();
 		globals.put("$Count", count);
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC,globals);
+		prova = new Communicator(kAgent,kPort,rulebase,globals);
 		final int numSolutions[] = {0,0};
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(solutions.size(),numSolutions.length);
 		for( int i=0; i<numSolutions.length; i++ )
@@ -309,9 +309,9 @@ public class ProvaMetadataTest {
 		CountDownLatch latch = new CountDownLatch(75);
 		Map<String,Object> globals = new HashMap<String,Object>();
 		globals.put("$Latch", latch);
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC,globals);
+		prova = new Communicator(kAgent,kPort,rulebase,globals);
 		final int numSolutions[] = {0,0};
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(solutions.size(),numSolutions.length);
 		for( int i=0; i<numSolutions.length; i++ )
@@ -333,9 +333,9 @@ public class ProvaMetadataTest {
 		AtomicInteger count = new AtomicInteger();
 		Map<String,Object> globals = new HashMap<String,Object>();
 		globals.put("$Count", count);
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC,globals);
+		prova = new Communicator(kAgent,kPort,rulebase,globals);
 		final int numSolutions[] = {0,0,0,0};
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(solutions.size(),numSolutions.length);
 		for( int i=0; i<numSolutions.length; i++ )
@@ -357,9 +357,9 @@ public class ProvaMetadataTest {
 		AtomicInteger count = new AtomicInteger();
 		Map<String,Object> globals = new HashMap<String,Object>();
 		globals.put("$Count", count);
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC,globals);
+		prova = new Communicator(kAgent,kPort,rulebase,globals);
 		final int numSolutions[] = {0,0};
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(solutions.size(),numSolutions.length);
 		for( int i=0; i<numSolutions.length; i++ )
@@ -381,9 +381,9 @@ public class ProvaMetadataTest {
 		AtomicInteger count = new AtomicInteger();
 		Map<String,Object> globals = new HashMap<String,Object>();
 		globals.put("$Count", count);
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC,globals);
+		prova = new Communicator(kAgent,kPort,rulebase,globals);
 		final int numSolutions[] = {0,0};
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(solutions.size(),numSolutions.length);
 		for( int i=0; i<numSolutions.length; i++ )
@@ -405,7 +405,7 @@ public class ProvaMetadataTest {
 		AtomicLong count = new AtomicLong();
 		Map<String,Object> globals = new HashMap<String,Object>();
 		globals.put("$Count", count);
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC,globals);
+		prova = new Communicator(kAgent,kPort,rulebase,globals);
 		
 		// Send a hundred messages to the consulted Prova rulebase.
 		try {
@@ -423,7 +423,7 @@ public class ProvaMetadataTest {
 								ProvaConstantImpl.create(payload)
 								})
 				});
-				prova.addMsg(terms);
+				prova.add(terms);
 				Thread.sleep(4);
 			}
 			synchronized(this) {
@@ -462,7 +462,7 @@ public class ProvaMetadataTest {
 		globals.put("$Count", count);
 		CountDownLatch doneSignal = new CountDownLatch(1);
 		globals.put("$Latch", doneSignal);
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC,globals);
+		prova = new Communicator(kAgent,kPort,rulebase,globals);
 		
 		long startTime = System.currentTimeMillis();
 		
@@ -481,7 +481,7 @@ public class ProvaMetadataTest {
 								ProvaConstantImpl.create("10.10.10.10")
 								})
 				});
-				prova.addMsg(terms);
+				prova.add(terms);
 				PList terms2 = ProvaListImpl.create(new PObj[] {
 						ProvaConstantImpl.create(""+shift),
 						ProvaConstantImpl.create("async"),
@@ -493,7 +493,7 @@ public class ProvaMetadataTest {
 								ProvaConstantImpl.create("20.20.20.20")
 								})
 				});
-				prova.addMsg(terms2);
+				prova.add(terms2);
 				PList terms3 = ProvaListImpl.create(new PObj[] {
 						ProvaConstantImpl.create(""+shift),
 						ProvaConstantImpl.create("async"),
@@ -505,7 +505,7 @@ public class ProvaMetadataTest {
 								ProvaConstantImpl.create("10.10.10.10")
 								})
 				});
-				prova.addMsg(terms3);
+				prova.add(terms3);
 				// Wait for 10 microseconds
 				//Thread.sleep(0,10000);
                                 Thread.sleep(0,10);
@@ -530,7 +530,7 @@ public class ProvaMetadataTest {
 		AtomicLong count = new AtomicLong();
 		Map<String,Object> globals = new HashMap<String,Object>();
 		globals.put("$Count", count);
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC,globals);
+		prova = new Communicator(kAgent,kPort,rulebase,globals);
 		
 		// Send a hundred messages to the consulted Prova rulebase.
 		try {
@@ -547,7 +547,7 @@ public class ProvaMetadataTest {
 								ProvaConstantImpl.create(5.0-i*0.2)
 								})
 				});
-				prova.addMsg(terms);
+				prova.add(terms);
 				Thread.sleep(4);
 			}
 			synchronized(this) {
@@ -567,7 +567,7 @@ public class ProvaMetadataTest {
 		AtomicLong count = new AtomicLong();
 		Map<String,Object> globals = new HashMap<String,Object>();
 		globals.put("$Count", count);
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC,globals);
+		prova = new Communicator(kAgent,kPort,rulebase,globals);
 		
 		// Send a hundred messages to the consulted Prova rulebase.
 		try {
@@ -583,7 +583,7 @@ public class ProvaMetadataTest {
 								ProvaConstantImpl.create(i)
 								})
 				});
-				prova.addMsg(terms);
+				prova.add(terms);
 				Thread.sleep(4);
 			}
 			synchronized(this) {
@@ -603,7 +603,7 @@ public class ProvaMetadataTest {
 		AtomicLong count = new AtomicLong();
 		Map<String,Object> globals = new HashMap<String,Object>();
 		globals.put("$Count", count);
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC,globals);
+		prova = new Communicator(kAgent,kPort,rulebase,globals);
 		
 		// Send a hundred messages to the consulted Prova rulebase.
 		// Accumulate groupby counts for each i%5 every 5 messages.
@@ -618,7 +618,7 @@ public class ProvaMetadataTest {
 							ProvaConstantImpl.create(i)
 							})
 			});
-			prova.addMsg(terms);
+			prova.add(terms);
 		}
 		try {
 			synchronized(this) {

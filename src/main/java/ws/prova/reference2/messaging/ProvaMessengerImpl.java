@@ -345,7 +345,7 @@ public class ProvaMessengerImpl implements ProvaMessenger {
         PList terms = literal.getTerms();
         PObj[] data = terms.getFixed();
         if (data.length == 2) {
-			// Assume it is a shortened version with conversation-id and payload
+            // Assume it is a shortened version with conversation-id and payload
             // only sent over async protocol
             final Literal lit = new ProvaLiteralImpl(rcvMsg2, terms);
             final Rule goal = kb.newGoal(new Literal[]{lit,
@@ -1215,7 +1215,7 @@ public class ProvaMessengerImpl implements ProvaMessenger {
                     prova.executeTask(0, new Runnable() {
                         @Override
                         public void run() {
-                            synchronized (kb) {
+                            /* synchronized (kb)*/ {
                                 removeTemporalRule(p1, p2, ruleid, true, null,
                                         metadata);
                             }
@@ -1226,7 +1226,7 @@ public class ProvaMessengerImpl implements ProvaMessenger {
                     prova.executeTask(partitionKey(cid), new Runnable() {
                         @Override
                         public void run() {
-                            synchronized (kb) {
+                            /*synchronized (kb)*/ {
                                 removeTemporalRule(p1, p2, ruleid, true, null,
                                         metadata);
                             }
@@ -1446,7 +1446,7 @@ public class ProvaMessengerImpl implements ProvaMessenger {
         }
         dynamic2Static.remove(dynamicGroup);
         if (group != null) {
-            synchronized (kb) {
+            /*synchronized (kb)*/ {
                 group.cleanup(kb, prova, ruleid2Group, dynamic2Group);
             }
         }

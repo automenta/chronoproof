@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import org.apache.log4j.Logger;
 import ws.prova.api2.ProvaCommunicator;
-import ws.prova.api2.ProvaCommunicatorImpl;
+import ws.prova.api2.Communicator;
 import ws.prova.exchange.ProvaSolution;
 import ws.prova.kernel2.Constant;
 import ws.prova.kernel2.PList;
@@ -57,7 +57,7 @@ public class ProvaServiceImpl implements ProvaService {
 		ProvaCommunicator prova = null;
 		try {
 			Map<String,Object> globals = new HashMap<String,Object>();
-			prova = new ProvaCommunicatorImpl(this,agent,null,rulebase,ProvaCommunicatorImpl.SYNC,globals);
+			prova = new Communicator(this,agent,null,rulebase,globals);
 			engines.put(agent, prova);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
@@ -70,8 +70,8 @@ public class ProvaServiceImpl implements ProvaService {
 		ProvaCommunicator prova = null;
 		try {
 			Map<String,Object> globals = new HashMap<String,Object>();
-			prova = new ProvaCommunicatorImpl(this,agent,null,rulebase,ProvaCommunicatorImpl.SYNC,globals);
-			prova.setPrintWriter(out);
+			prova = new Communicator(this,agent,null,rulebase,globals);
+			prova.setPrinter(out);
 			engines.put(agent, prova);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
@@ -84,7 +84,7 @@ public class ProvaServiceImpl implements ProvaService {
 		ProvaCommunicator engine = engines.remove(agent);
 		if( engine==null )
 			throw new RuntimeException("No engine instance "+agent);
-		engine.stop();
+		engine.shutdown();
 	}
 	
 	@Override
@@ -131,7 +131,7 @@ public class ProvaServiceImpl implements ProvaService {
 				ProvaCommunicator engine = engines.get(target);
 				if( engine==null )
 					log.error("Subscriber "+target+" not present");
-				engine.addMsg(terms);
+				engine.add(terms);
 				if( log.isDebugEnabled() )
 					log.debug("Sent: "+terms+" to "+target);
 			}
@@ -147,7 +147,7 @@ public class ProvaServiceImpl implements ProvaService {
 		ProvaCommunicator engine = engines.get(dest);
 		if( engine==null )
 			throw new RuntimeException("No engine instance "+dest);
-		engine.addMsg(terms);
+		engine.add(terms);
 		if( log.isDebugEnabled() )
 			log.debug("Sent: "+terms+" to "+dest);
 	}
@@ -235,7 +235,7 @@ public class ProvaServiceImpl implements ProvaService {
                         if( engine==null )
                             log.error("Subscriber "+target+" not present");
                         else {
-                            engine.addMsg(xid, agent, verb, content);
+                            engine.add(xid, agent, verb, content);
                             if( log.isDebugEnabled() )
                                 log.debug("Sent: "+content+" to "+target);
                         }
@@ -255,7 +255,7 @@ public class ProvaServiceImpl implements ProvaService {
 		ProvaCommunicator engine = engines.get(dest);
 		if( engine==null )
 			throw new RuntimeException("No engine instance "+dest);
-		engine.addMsg(xid, agent, verb, content);
+		engine.add(xid, agent, verb, content);
 		if( log.isDebugEnabled() )
 			log.debug("Sent: "+content+" to "+dest);
 	}

@@ -2,7 +2,6 @@ package ws.prova.kernel2;
 
 import java.util.Iterator;
 import java.util.List;
-import ws.prova.reference2.ProvaRuleImpl;
 
 public interface RuleSet {
 
@@ -31,7 +30,7 @@ public interface RuleSet {
 	public boolean removeAllClausesByMatch(KB kb,
 			PObj[] data);
 
-	public void addRuleToSrc(ProvaRuleImpl rule, String src);
+	public void addRuleToSrc(Rule rule, String src);
 
 	public void removeClausesBySrc(String src);
 

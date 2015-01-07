@@ -20,7 +20,7 @@ import ws.prova.reference2.ProvaGoalImpl;
 import ws.prova.reference2.ProvaListImpl;
 import ws.prova.reference2.ProvaLiteralImpl;
 import ws.prova.reference2.ProvaPredicateImpl;
-import ws.prova.reference2.ProvaRuleImpl;
+import ws.prova.kernel2.Rule;
 import ws.prova.reference2.builtins.target.ProvaTarget;
 import ws.prova.reference2.builtins.target.ProvaTargetImpl;
 
@@ -86,7 +86,7 @@ public class ProvaMatchImpl extends ProvaBuiltinImpl {
 		} else if( lt instanceof PList ) {
 			Predicate pred = new ProvaPredicateImpl("",1,kb);
 			Literal lit = new ProvaLiteralImpl(pred,ProvaListImpl.create(newArr));
-			Rule clause = ProvaRuleImpl.createVirtualRule(1, lit, null);
+			Rule clause = Rule.createVirtualRule(1, lit, null);
 			pred.addClause(clause);
 			Literal newLiteral = new ProvaLiteralImpl(pred,(PList) lt.cloneWithVariables(variables));
 			newLiterals.add(newLiteral);

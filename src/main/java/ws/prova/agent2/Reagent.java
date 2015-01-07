@@ -31,7 +31,7 @@ public interface Reagent {
 
 	public void submitAsync(final long partition, final Rule goal, final ProvaThreadpoolEnum targetPool);
 
-	public Future<?> spawn(final PList terms);
+	public void spawn(final PList terms);
 
 	public String getAgent();
 

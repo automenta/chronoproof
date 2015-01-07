@@ -6,7 +6,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.After;
 import org.junit.Test;
 import ws.prova.api2.ProvaCommunicator;
-import ws.prova.api2.ProvaCommunicatorImpl;
+import ws.prova.api2.Communicator;
 
 public class ProvaWorkflowsTest {
 
@@ -34,7 +34,7 @@ public class ProvaWorkflowsTest {
 		AtomicInteger count = new AtomicInteger();
 		Map<String,Object> globals = new HashMap<String,Object>();
 		globals.put("$Count", count);
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC,globals);
+		prova = new Communicator(kAgent,kPort,rulebase,globals);
 
 		try {
 			synchronized(this) {
@@ -52,7 +52,7 @@ public class ProvaWorkflowsTest {
 		AtomicInteger count = new AtomicInteger();
 		Map<String,Object> globals = new HashMap<String,Object>();
 		globals.put("$Count", count);
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC,globals);
+		prova = new Communicator(kAgent,kPort,rulebase,globals);
 
 		try {
 			synchronized(this) {

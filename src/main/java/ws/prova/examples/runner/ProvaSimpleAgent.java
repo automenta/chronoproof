@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 import ws.prova.api2.ProvaCommunicator;
-import ws.prova.api2.ProvaCommunicatorImpl;
+import ws.prova.api2.Communicator;
 import ws.prova.kernel2.PList;
 import ws.prova.kernel2.PObj;
 import ws.prova.reference2.ProvaConstantImpl;
@@ -26,7 +26,7 @@ public class ProvaSimpleAgent {
 //		AtomicLong count = new AtomicLong();
 		Map<String,Object> globals = new HashMap<String,Object>();
 		globals.put("callback", this);
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC,globals);
+		prova = new Communicator(kAgent,kPort,rulebase,globals);
 		
 		// Send a hundred messages to the consulted Prova rulebase.
 		try {
@@ -44,7 +44,7 @@ public class ProvaSimpleAgent {
 								ProvaConstantImpl.create(payload)
 								})
 				});
-				prova.addMsg(terms);
+				prova.add(terms);
 			}
 		} catch (Exception e) {
 			System.err.println("Unexpected exception: "+e.getLocalizedMessage());

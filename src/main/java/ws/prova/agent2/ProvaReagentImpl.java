@@ -1,5 +1,11 @@
 package ws.prova.agent2;
 
+import com.lmax.disruptor.EventFactory;
+import com.lmax.disruptor.EventHandler;
+import com.lmax.disruptor.RingBuffer;
+import com.lmax.disruptor.SleepingWaitStrategy;
+import com.lmax.disruptor.dsl.Disruptor;
+import com.lmax.disruptor.dsl.ProducerType;
 import java.io.BufferedReader;
 import java.io.PrintWriter;
 import java.io.StringReader;
@@ -19,6 +25,7 @@ import java.util.concurrent.ThreadFactory;
 import javax.swing.SwingUtilities;
 import org.apache.commons.beanutils.MethodUtils;
 import org.apache.log4j.Logger;
+import static ws.prova.agent2.ProvaThreadpoolEnum.IMMEDIATE;
 import ws.prova.api2.ProvaCommunicator;
 import ws.prova.esb2.ProvaAgent;
 import ws.prova.exchange.ProvaSolution;
@@ -46,6 +53,11 @@ public class ProvaReagentImpl implements Reagent {
 
     private static final ProvaSolution[] noSolutions = new ProvaSolution[0];
 
+    static {
+        MethodUtils.setCacheMethods(true);
+
+    }
+
     private String agent;
 
     private String password;
@@ -57,11 +69,9 @@ public class ProvaReagentImpl implements Reagent {
     private String machine;
 
     // A queue for sequential execution of Prova goals and inbound messages
-    private final ExecutorService executor;
+    private final OpPool sequential;
 
-    private final ExecutorService pool;
-
-    private final ExecutorService[] partitionedPool;
+    private final OpPool[] partitionedPool;
 
     private final Map<Thread, Integer> threadToPartition;
 
@@ -78,12 +88,110 @@ public class ProvaReagentImpl implements Reagent {
     private boolean allowedShutdown = true;
 
     final int threadsPerPool = 4;
-    final int threadsPerPartition = 2;
-    final int partitions = 8;
-    
-    public ProvaReagentImpl(ProvaCommunicator communicator, ProvaMiniService service, String agent,
-            String port, String[] prot, Object rules, boolean async,
-            ProvaAgent esb, Map<String, Object> globals) {
+    final int threadsPerPartition = 1;
+    final int partitions = 4;
+    final int ringBufferSize = 16384;
+    private boolean yieldAfterNewTask = false;
+    private final OpPool pool;
+
+    public static class Op {
+
+        public Runnable call;
+        
+    }
+    public final static EventHandler<Op> opHandler = new EventHandler<Op>() {
+
+        @Override
+        public void onEvent(Op op, long l, boolean bln) throws Exception {
+            try {
+                op.call.run();
+            }
+            catch (Exception e) {
+                log.error(e);
+            }
+        }
+    };
+
+    public static class OpPool {
+
+        private final RingBuffer<Op> poolRing;
+        private final ExecutorService pool;
+        private final Disruptor<Op> poolDisruptor;
+
+        public OpPool(int size, int threads, final String name) {
+            this(size, threads, new ThreadFactory() {
+                @Override public Thread newThread(Runnable r) {
+                    return new Thread(r, name);
+                }                
+            });
+        }
+        
+        public OpPool(int size, int threads, ThreadFactory f) {
+        
+            if (f == null)
+                this.pool = Executors.newFixedThreadPool(threads);
+            else
+                this.pool = Executors.newFixedThreadPool(threads, f);
+
+            poolDisruptor = new Disruptor<Op>(new EventFactory<Op>() {
+                @Override public Op newInstance() {
+                    return new Op();
+                }
+            }, size, pool
+            , ProducerType.MULTI, new SleepingWaitStrategy());
+            /*, new SingleThreadedClaimStrategy(RING_SIZE),new SleepingWaitStrategy()*/
+
+            final EventHandler<Op>[] handlers = new EventHandler[threads];
+            for (int i = 0; i < threads; i++) {
+                //handlers[i] = opHandler;
+                handlers[i] = new EventHandler<Op>() {
+
+                    @Override
+                    public void onEvent(Op op, long l, boolean bln) throws Exception {
+                        try {
+                            op.call.run();
+                        }
+                        catch (Exception e) {
+                            log.error(e);
+                        }
+                    }
+                };
+      
+            }
+            
+            poolDisruptor.handleEventsWith(handlers);
+
+            poolRing = poolDisruptor.start();
+            
+
+        }
+
+        public void execute(Runnable c) {
+            // Publishers claim events in sequence
+            long sequence = poolRing.next();
+            Op event = poolRing.get(sequence);
+
+            event.call = c;
+
+            // make the event available to EventProcessors
+            poolRing.publish(sequence);
+        }
+
+        private boolean isShutdown() {
+            return pool.isShutdown();
+        }
+
+        private void shutdown() {
+            poolDisruptor.halt();
+            poolDisruptor.shutdown();
+            
+            pool.shutdownNow();
+            
+        }
+
+    }
+
+    public ProvaReagentImpl(ProvaCommunicator communicator, ProvaMiniService service, String agent, String port, String[] prot, Object rules, ProvaAgent esb, Map<String, Object> globals) {
         this.agent = agent;
         this.port = port;
         // this.queue = queue;
@@ -95,33 +203,23 @@ public class ProvaReagentImpl implements Reagent {
         kb = new DefaultKB();
         kb.setGlobals(globals);
 
-        this.executor = Executors.newSingleThreadExecutor(new ThreadFactory() {
-
-            @Override
-            public Thread newThread(Runnable r) {
-                final Thread th = new Thread(r, "Sync:" + r.toString());
-                //th.setDaemon(true);
-                return th;
-            }
-
-        });
-        this.pool = Executors.newFixedThreadPool(threadsPerPool);
+        this.sequential = new OpPool(ringBufferSize, 1, "sequence");
+        this.pool = new OpPool(ringBufferSize, threadsPerPool, "pool");
 
         threadToPartition = new WeakHashMap<Thread, Integer>(partitions);
-        partitionedPool = new ExecutorService[partitions];
+        partitionedPool = new OpPool[partitions];
         for (int i = 0; i < partitions; i++) {
             final int index = i;
-            this.partitionedPool[i] = Executors.newFixedThreadPool(threadsPerPartition,new ThreadFactory() {
+            this.partitionedPool[i] = new OpPool(ringBufferSize, threadsPerPartition, new ThreadFactory() {
 
-                        @Override
-                        public Thread newThread(Runnable r) {
-                            final Thread th = new Thread(r, "async-" + (index + 1));
-                            //th.setDaemon(true);
-                            threadToPartition.put(th, index);
-                            return th;
-                        }
-
-                    });
+                @Override
+                public Thread newThread(Runnable r) {
+                    Thread t = new Thread(r, "partition-" + index);
+                    threadToPartition.put(t, index);
+                    return t;
+                }
+                
+            });
         }
 
         this.messenger = new ProvaMessengerImpl(this, kb, agent, password,
@@ -200,9 +298,9 @@ public class ProvaReagentImpl implements Reagent {
                         objects);
             }
         };
-        FutureTask<List<ProvaSolution[]>> ftask = new FutureTask<List<ProvaSolution[]>>(
-                task);
-        Future<?> future = executor.submit(ftask);
+
+        FutureTask<List<ProvaSolution[]>> ftask = new FutureTask(task);
+        sequential.execute(ftask);
         return ftask;
     }
 
@@ -216,23 +314,23 @@ public class ProvaReagentImpl implements Reagent {
                         objects);
             }
         };
-        FutureTask<List<ProvaSolution[]>> ftask = new FutureTask<List<ProvaSolution[]>>(task);
-        executor.submit(ftask);
+        FutureTask<List<ProvaSolution[]>> ftask = new FutureTask(task);        
+        sequential.execute(ftask);
         return ftask;
     }
 
     @Override
     public void consultAsync(final String src, final String key,
             final Object[] objects) {
-        final StringReader sr = new StringReader(src);
-        final BufferedReader in = new BufferedReader(sr);
         Runnable task = new Runnable() {
             @Override
             public void run() {
+                final StringReader sr = new StringReader(src);
+                final BufferedReader in = new BufferedReader(sr);
                 ProvaReagentImpl.this.consultSyncInternal(in, key, objects);
             }
         };
-        executor.submit(task);
+        sequential.execute(task);
     }
 
     @Override
@@ -244,7 +342,7 @@ public class ProvaReagentImpl implements Reagent {
                 ProvaReagentImpl.this.consultSyncInternal(in, key, objects);
             }
         };
-        executor.submit(task);
+        sequential.execute(task);
     }
 
     /*
@@ -258,51 +356,58 @@ public class ProvaReagentImpl implements Reagent {
     @Override
     public void submitAsync(final long partition, final Rule goal,
             final ProvaThreadpoolEnum threadPool) {
-        this.latestTimestamp = System.currentTimeMillis();
 
-        ExecutorService e = null;
+        OpPool e = null;
         switch (threadPool) {
+            case IMMEDIATE:
+                goal.run();
+                return;
             case MAIN:
-                e = executor;
+                e = sequential;
                 break;
             case TASK:
                 e = pool;
                 break;
-            case SWING:
-                throw new RuntimeException("We will handle Swing differently, dont use this");
-//			// All Swing events are queued to the Swing events thread
-//                // (this is to be conforming to the Swing threads rules)
-//                Runnable task = new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        ProvaReagentImpl.this.submitSyncInternal(goal);
-//                    }
-//                };
-//                try {
-//                    if (SwingUtilities.isEventDispatchThread()) {
-//                        task.run();
-//                    } else {
-//                        SwingUtilities.invokeAndWait(task);
-//                    }
-//                } catch (InvocationTargetException ex) {
-//                } catch (InterruptedException ex) {
-//                }
-//                break;
             case CONVERSATION:
                 e = partitionedPool[threadIndex(partition)];
                 break;
+            case SWING:
+                //throw new RuntimeException("We will handle Swing differently, dont use this");
+                // All Swing events are queued to the Swing events thread
+                // (this is to be conforming to the Swing threads rules)
+                Runnable task = new Runnable() {
+                    @Override
+                    public void run() {
+                        ProvaReagentImpl.this.submitSyncInternal(goal);
+                    }
+                };
+                try {
+                    if (SwingUtilities.isEventDispatchThread()) {
+                        task.run();
+                    } else {
+                        SwingUtilities.invokeAndWait(task);
+                    }
+                } catch (Exception ex) {
+                    log.error(ex);
+                }
+
+                return;
         }
+
+        this.latestTimestamp = System.currentTimeMillis();
 
         if (e == null || e.isShutdown()) {
             return;
         }
 
         goal.setReagent(this);
-        try {
+        try {            
             e.execute(goal);
         } catch (RejectedExecutionException r) {
             goal.onRejected(r);
         }
+
+        yield();
 
     }
 
@@ -319,13 +424,14 @@ public class ProvaReagentImpl implements Reagent {
     @Override
     public void executeTask(final long partition, final Runnable task,
             final ProvaThreadpoolEnum threadPool) {
-        
+        if (threadPool == IMMEDIATE) {
+            task.run();
+            return;
+        }
+
         switch (threadPool) {
-            case IMMEDIATE:
-                task.run();
-                break;
             case MAIN:
-                executor.execute(task);
+                sequential.execute(task);
                 break;
             case CONVERSATION:
                 partitionedPool[threadIndex(partition)].execute(task);
@@ -345,25 +451,28 @@ public class ProvaReagentImpl implements Reagent {
                 break;
             case TASK:
                 pool.execute(task);
+                break;
         }
+
+        yield();
     }
 
     @Override
-    public Future<?> spawn(final PList terms) {
+    public void spawn(final PList terms) {
         final PObj[] data = terms.getFixed();
         final int length = data.length;
         if (length < 4) {
-            return null;
+            return;
         }
         if (!(data[0] instanceof Constant)) {
-            return null;
+            return;
         }
         if (!(data[2] instanceof Constant)) {
-            return null;
+            return;
         }
         final String method = (String) ((Constant) data[2]).getObject();
         if (!(data[1] instanceof Constant)) {
-            return null;
+            return;
         }
         final Object target = ((Constant) data[1]).getObject();
         Object[] args0 = null;
@@ -374,7 +483,7 @@ public class ProvaReagentImpl implements Reagent {
             for (int i = 0; i < args0.length; i++) {
                 PObj po = argsList.getFixed()[i];
                 if (!(po instanceof Constant)) {
-                    return null;
+                    return;
                 }
                 args0[i] = ((Constant) po).getObject();
             }
@@ -383,22 +492,35 @@ public class ProvaReagentImpl implements Reagent {
             args0[0] = ((Constant) argsRaw).getObject();
         }
         final Object[] args = args0;
-        Callable<?> task = new Callable<Object>() {
+
+        Runnable task = new Runnable() {
             @Override
-            public Object call() throws Exception {
+            public void run() {
                 Object ret = null;
-                if (target instanceof Class<?>) {
-                    Class<?> targetClass = (Class<?>) target;
-                    ret = MethodUtils.invokeStaticMethod(targetClass, method,
-                            args);
-                } else {
-                    ret = MethodUtils.invokeMethod(target, method, args);
+                try {
+                    if (target instanceof Class<?>) {
+                        Class<?> targetClass = (Class<?>) target;
+                        ret = MethodUtils.invokeStaticMethod(targetClass, method,
+                                args);
+                    } else {
+                        ret = MethodUtils.invokeMethod(target, method, args);
+                    }
+                } catch (Exception ex) {
+                    log.error(ex);
                 }
                 messenger.sendReturnAsMsg((Constant) data[0], ret);
-                return ret;
+                return /*ret*/;
             }
         };
-        return pool.submit(task);
+        pool.execute(task);
+        yield();
+        return;
+    }
+
+    protected void yield() {
+        if (yieldAfterNewTask) {
+            Thread.yield();
+        }
     }
 
     public Derivation submitSyncInternal(Rule goal) {
@@ -431,11 +553,11 @@ public class ProvaReagentImpl implements Reagent {
     public void shutdown() {
         messenger.stop();
         pool.shutdown();
-        for (ExecutorService partitioned : partitionedPool) {
+        for (OpPool partitioned : partitionedPool) {
             partitioned.shutdown();
             partitioned = null;
         }
-        executor.shutdown();
+        sequential.shutdown();
     }
 
     @Override
@@ -470,7 +592,7 @@ public class ProvaReagentImpl implements Reagent {
 
     @Override
     public boolean isInPartitionThread(long partition) {
-        return threadToPartition.get(Thread.currentThread().getId()) == threadIndex(partition);
+        return threadToPartition.get(Thread.currentThread()) == threadIndex(partition);
     }
 
     @Override

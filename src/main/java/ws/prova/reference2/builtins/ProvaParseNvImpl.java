@@ -19,7 +19,7 @@ import ws.prova.reference2.ProvaConstantImpl;
 import ws.prova.reference2.ProvaListImpl;
 import ws.prova.reference2.ProvaLiteralImpl;
 import ws.prova.reference2.ProvaPredicateImpl;
-import ws.prova.reference2.ProvaRuleImpl;
+import ws.prova.kernel2.Rule;
 
 public class ProvaParseNvImpl extends ProvaBuiltinImpl {
 
@@ -88,7 +88,7 @@ public class ProvaParseNvImpl extends ProvaBuiltinImpl {
 							data[0],
 							ProvaListImpl.create(new PObj[]{n,v})} );
 			Literal lit = new ProvaLiteralImpl(pred,ls);
-			Rule clause = ProvaRuleImpl.createVirtualRule(1, lit, null);
+			Rule clause = Rule.createVirtualRule(1, lit, null);
 			pred.addClause(clause);
 			Literal newLiteral = new ProvaLiteralImpl(pred,terms);
 			newLiterals.add(newLiteral);

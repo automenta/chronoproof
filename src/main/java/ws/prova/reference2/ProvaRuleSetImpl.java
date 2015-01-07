@@ -70,13 +70,13 @@ public class ProvaRuleSetImpl implements RuleSet, Iterable<Rule> {
      * source and target arguments
      */
     public synchronized List<Rule> getClauses(Object key, PObj[] source) {
-        List<Rule> bound = getFirstArgMap().get(key);
-        List<Rule> free = getFirstArgMap().get("@");
-        if (bound == null) {
+        List<Rule> bound = getFirstArg(key);
+        List<Rule> free = getFirstArg("@");
+        if (bound == null)
             return free;
-        } else if (free == null) {
+        if (free == null)
             return bound;
-        }
+        
         // Merge the two
         final int boundSize = bound.size();
         final int freeSize = free.size();
@@ -86,9 +86,11 @@ public class ProvaRuleSetImpl implements RuleSet, Iterable<Rule> {
         while (i1 < boundSize && i2 < freeSize) {
             Rule next;
             if (bound.get(i1).getAbsRuleId() > free.get(i2).getAbsRuleId()) {
-                next = free.get(i2++);
+                next = free.get(i2);
+                i2++;
             } else {
-                next = bound.get(i1++);
+                next = bound.get(i1);
+                i1++;
             }
             PObj[] target = next.getHead().getTerms().getFixed();
             if (preFilter(source, target)) {
@@ -130,17 +132,15 @@ public class ProvaRuleSetImpl implements RuleSet, Iterable<Rule> {
     }
 
     @Override
-    public synchronized void removeClauses(Object key) {
+    public /*synchronized*/ void removeClauses(Object key) {
         if (key instanceof Long && ((Long) key) < 0) {
             Rule rule = temporalRuleMap.remove(-((Long) key));
-            rule.setRemoved();
-            getClauses().remove(rule);
+            removeClause(rule);
             return;
         }
         List<Rule> bound = getFirstArgMap().get(key);
         for (Rule rule : bound) {
-            rule.setRemoved();
-            getClauses().remove(rule);
+            removeClause(rule);
         }
     }
 
@@ -150,17 +150,16 @@ public class ProvaRuleSetImpl implements RuleSet, Iterable<Rule> {
      * for multi-key access
      */
     @Override
-    public synchronized void removeTemporalClause(long key) {
+    public /*synchronized*/ void removeTemporalClause(long key) {
         Rule rule = temporalRuleMap.remove(-key);
         if (rule == null) {
             return;
         }
-        rule.setRemoved();
         if (!"@".equals(rule.getFirstArg())) {
             List<Rule> children = getFirstArgMap().get(rule.getFirstArg());
             children.remove(rule);
         }
-        getClauses().remove(rule);
+        removeClause(rule);
     }
 
     /**
@@ -213,7 +212,7 @@ public class ProvaRuleSetImpl implements RuleSet, Iterable<Rule> {
     }
 
     @Override
-    public synchronized void add(Rule clause) {
+    public /*synchronized*/ void add(Rule clause) {
         final Object firstArg = clause.getFirstArg();
         if (firstArg != null) {
             List<Rule> rules = getFirstArgMap().get(firstArg);
@@ -236,7 +235,7 @@ public class ProvaRuleSetImpl implements RuleSet, Iterable<Rule> {
     }
 
     @Override
-    public synchronized void addA(Rule clause) {
+    public /*synchronized*/ void addA(Rule clause) {
         final Object firstArg = clause.getFirstArg();
         if (firstArg != null) {
             List<Rule> rules = getFirstArgMap().get(firstArg);
@@ -258,14 +257,15 @@ public class ProvaRuleSetImpl implements RuleSet, Iterable<Rule> {
     }
 
     @Override
-    public synchronized void addAll(RuleSet ruleSet) {
-        for (Rule clause : ruleSet.getClauses()) {
-            add(clause);
-        }
+    public /*synchronized*/ void addAll(RuleSet ruleSet) {
+        if (ruleSet.numClauses() > 0)
+            for (Rule clause : ruleSet.getClauses()) {
+                add(clause);
+            }
     }
 
     @Override
-    public synchronized void addRuleToSrc(ProvaRuleImpl rule, String src) {
+    public /*synchronized*/ void addRuleToSrc(Rule rule, String src) {
         List<Rule> rules = getSrcMap().get(src);
         if (rules == null) {
             rules = new ArrayList<Rule>();
@@ -275,14 +275,16 @@ public class ProvaRuleSetImpl implements RuleSet, Iterable<Rule> {
     }
 
     @Override
-    public synchronized void removeClausesBySrc(String src) {
+    public /*synchronized*/ void removeClausesBySrc(String src) {
         List<Rule> rules = getSrcMap().remove(src);
         if (rules == null) {
             return;
         }
+        
         for (Rule rule : rules) {
             rule.setRemoved();
-            getClauses().remove(rule);
+            if (numClauses() > 0)
+                getClauses().remove(rule);
         }
     }
 
@@ -329,6 +331,17 @@ public class ProvaRuleSetImpl implements RuleSet, Iterable<Rule> {
         if (numClauses() == 0)  
             return Iterators.empty();
         return getClauses().iterator();
+    }
+
+    private void removeClause(Rule rule) {
+        rule.setRemoved();
+        if (numClauses() > 0)
+            getClauses().remove(rule);
+    }
+
+    private List<Rule> getFirstArg(Object key) {
+        if (firstArgMap==null) return null;
+        return firstArgMap.get(key);
     }
 
     

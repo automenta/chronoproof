@@ -15,7 +15,7 @@ import ws.prova.kernel2.VariableIndex;
 import ws.prova.reference2.ProvaListImpl;
 import ws.prova.reference2.ProvaLiteralImpl;
 import ws.prova.reference2.ProvaPredicateImpl;
-import ws.prova.reference2.ProvaRuleImpl;
+import ws.prova.kernel2.Rule;
 
 public class ProvaMkListImpl extends ProvaBuiltinImpl {
 
@@ -66,7 +66,7 @@ public class ProvaMkListImpl extends ProvaBuiltinImpl {
 		Predicate pred = new ProvaPredicateImpl("",1,kb);
 		PList ls = ProvaListImpl.create(new PObj[] {a1} );
 		Literal lit = new ProvaLiteralImpl(pred,ls);
-		Rule clause = ProvaRuleImpl.createVirtualRule(1, lit, null);
+		Rule clause = Rule.createVirtualRule(1, lit, null);
 		pred.addClause(clause);
 		PList ltls = ProvaListImpl.create(new PObj[] {newTerms} );
 		Literal newLiteral = new ProvaLiteralImpl(pred,ltls);

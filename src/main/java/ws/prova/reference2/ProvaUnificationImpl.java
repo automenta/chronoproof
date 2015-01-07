@@ -340,7 +340,7 @@ public class ProvaUnificationImpl implements Unification {
 		Rule newQuery = null;
 		if( newGoals.length!=0 && newGoals[newGoals.length-1].getPredicate() instanceof ProvaFailImpl ) {
 			// fail() predicate in the target body cuts the goal trail
-			newQuery = new ProvaRuleImpl(0, null, newGoals);
+			newQuery = new Rule(0, null, newGoals);
 		} else {
 			oldGoals = rebuildOldGoals(query.getBody(), query.getOffset());
 			newQuery = kb.newRule(null, newGoals, oldGoals, query.getOffset());

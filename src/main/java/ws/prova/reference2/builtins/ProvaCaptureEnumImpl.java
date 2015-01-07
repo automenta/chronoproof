@@ -19,7 +19,7 @@ import ws.prova.reference2.ProvaConstantImpl;
 import ws.prova.reference2.ProvaListImpl;
 import ws.prova.reference2.ProvaLiteralImpl;
 import ws.prova.reference2.ProvaPredicateImpl;
-import ws.prova.reference2.ProvaRuleImpl;
+import ws.prova.kernel2.Rule;
 
 public class ProvaCaptureEnumImpl extends ProvaBuiltinImpl {
 
@@ -59,7 +59,7 @@ public class ProvaCaptureEnumImpl extends ProvaBuiltinImpl {
 			PList groups = ProvaListImpl.create( newFixed );
 			PList ls = ProvaListImpl.create(new PObj[] {groups} );
 			Literal lit = new ProvaLiteralImpl(pred,ls);
-			Rule clause = ProvaRuleImpl.createVirtualRule(1, lit, null);
+			Rule clause = Rule.createVirtualRule(1, lit, null);
 			pred.addClause(clause);
 		}		
 		PList ltls = ProvaListImpl.create(new PObj[] {data[1]} );

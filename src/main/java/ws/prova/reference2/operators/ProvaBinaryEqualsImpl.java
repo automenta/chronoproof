@@ -15,7 +15,7 @@ import ws.prova.reference2.ProvaGlobalConstantImpl;
 import ws.prova.reference2.ProvaListImpl;
 import ws.prova.reference2.ProvaLiteralImpl;
 import ws.prova.reference2.ProvaPredicateImpl;
-import ws.prova.reference2.ProvaRuleImpl;
+import ws.prova.kernel2.Rule;
 
 public class ProvaBinaryEqualsImpl implements ProvaBinaryOperator {
 
@@ -45,7 +45,7 @@ public class ProvaBinaryEqualsImpl implements ProvaBinaryOperator {
 			final Predicate pred = new ProvaPredicateImpl("", 1, kb);
 			final Literal lit = new ProvaLiteralImpl(pred,
 					ProvaListImpl.create(new PObj[] {(PObj) o1}));
-			final Rule clause = ProvaRuleImpl.createVirtualRule(1, lit,
+			final Rule clause = Rule.createVirtualRule(1, lit,
 					null);
 			pred.addClause(clause);
 			final Literal newLiteral = new ProvaLiteralImpl(pred,

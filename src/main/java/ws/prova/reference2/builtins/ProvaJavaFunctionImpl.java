@@ -21,7 +21,7 @@ import ws.prova.reference2.ProvaListImpl;
 import ws.prova.reference2.ProvaLiteralImpl;
 import ws.prova.reference2.ProvaMapImpl;
 import ws.prova.reference2.ProvaPredicateImpl;
-import ws.prova.reference2.ProvaRuleImpl;
+import ws.prova.kernel2.Rule;
 
 public class ProvaJavaFunctionImpl extends ProvaBuiltinImpl {
 
@@ -116,7 +116,7 @@ public class ProvaJavaFunctionImpl extends ProvaBuiltinImpl {
 				final Predicate pred = new ProvaPredicateImpl("", 1, kb);
 				final Literal lit = new ProvaLiteralImpl(pred,
 						ProvaListImpl.create(new PObj[] {(PObj) ret}));
-				final Rule clause = ProvaRuleImpl.createVirtualRule(1, lit,
+				final Rule clause = Rule.createVirtualRule(1, lit,
 						null);
 				pred.addClause(clause);
 				final Literal newLiteral = new ProvaLiteralImpl(pred,
@@ -132,7 +132,7 @@ public class ProvaJavaFunctionImpl extends ProvaBuiltinImpl {
 			final Predicate pred = new ProvaPredicateImpl("", 1, kb);
 			final Literal lit = new ProvaLiteralImpl(pred,
 					ProvaListImpl.create(new PObj[] {(PObj) ret}));
-			final Rule clause = ProvaRuleImpl.createVirtualRule(1, lit,
+			final Rule clause = Rule.createVirtualRule(1, lit,
 					null);
 			pred.addClause(clause);
 			final Literal newLiteral = new ProvaLiteralImpl(pred,

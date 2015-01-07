@@ -3,6 +3,7 @@ package ws.prova.reference2.builtins;
 import java.io.BufferedReader;
 import java.io.StringReader;
 import java.util.List;
+import org.apache.log4j.Logger;
 import ws.prova.agent2.Reagent;
 import ws.prova.exchange.ProvaSolution;
 import ws.prova.kernel2.Constant;
@@ -42,22 +43,18 @@ public class ProvaConsultImpl extends ProvaBuiltinImpl {
 		Object rules = ((Constant) source).getObject();
 		@SuppressWarnings("unused")
 		List<ProvaSolution[]> resultSets = null;
-		try {
-			if( rules instanceof String ) {
-				resultSets = kb.consultSyncInternal(prova,(String) rules,(String) rules,null);
-			} else if( rules instanceof BufferedReader ) {
-				resultSets = kb.consultSyncInternal(prova, (BufferedReader) rules,"-1",null);
-			} else if( rules instanceof StringBuffer ) {
-				StringReader sr = new StringReader(((StringBuffer) rules).toString());
-				BufferedReader in = new BufferedReader(sr);
-				resultSets = kb.consultSyncInternal(prova, in,"-1",null);
-			}
-			return true;
-		} catch( RuntimeException e ) {
-			throw e;
-		} catch( Exception e ) {
-			throw new RuntimeException(e);
-		}
+                
+                
+                if( rules instanceof String ) {
+                        resultSets = kb.consultSyncInternal(prova,(String) rules,(String) rules,null);
+                } else if( rules instanceof BufferedReader ) {
+                        resultSets = kb.consultSyncInternal(prova, (BufferedReader) rules,"-1",null);
+                } else if( rules instanceof StringBuffer ) {
+                        StringReader sr = new StringReader(((StringBuffer) rules).toString());
+                        BufferedReader in = new BufferedReader(sr);
+                        resultSets = kb.consultSyncInternal(prova, in,"-1",null);
+                }
+                return true;
 	}
 
 }

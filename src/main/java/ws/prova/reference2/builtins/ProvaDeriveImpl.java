@@ -17,7 +17,7 @@ import ws.prova.kernel2.VariableIndex;
 import ws.prova.reference2.ProvaListImpl;
 import ws.prova.reference2.ProvaLiteralImpl;
 import ws.prova.reference2.ProvaPredicateImpl;
-import ws.prova.reference2.ProvaRuleImpl;
+import ws.prova.kernel2.Rule;
 import ws.prova.reference2.ProvaVariableImpl;
 
 public class ProvaDeriveImpl extends ProvaBuiltinImpl {
@@ -135,7 +135,7 @@ public class ProvaDeriveImpl extends ProvaBuiltinImpl {
 			PObj out = ProvaVariableImpl.create();
 			PList ls = ProvaListImpl.create(new PObj[] {in,out} );
 			Literal lit = new ProvaLiteralImpl(pred,ls);
-			Rule clause = ProvaRuleImpl.createVirtualRule(1, lit, body.toArray(new Literal[] {}));
+			Rule clause = Rule.createVirtualRule(1, lit, body.toArray(new Literal[] {}));
 			pred.addClause(clause);
 			// Note that if the fixed part is only 1, the new query will be tail-only
 			PObj[] newFixed = new PObj[fixed0.length-1];

@@ -20,7 +20,7 @@ public class ProvaGenerateRuleImpl implements ProvaDelayedCommand {
 	}
 
 	@Override
-	public synchronized void process(Reagent prova) {
+	public /*synchronized*/ void process(Reagent prova) {
 		kb.newRule(headControl, provaLiterals);
 	}
 

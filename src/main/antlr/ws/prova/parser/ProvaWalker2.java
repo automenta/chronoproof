@@ -22,7 +22,7 @@
 	import ws.prova.reference2.ProvaMapImpl;
 	import ws.prova.reference2.ProvaListImpl;
 	import ws.prova.reference2.ProvaLiteralImpl;
-	import ws.prova.reference2.ProvaRuleImpl;
+	import ws.prova.kernel2.Rule;
 	import ws.prova.reference2.ProvaGlobalConstantImpl;
 	import ws.prova.reference2.operators.ProvaOperatorFactoryImpl;
 	import ws.prova.reference2.operators.ProvaBinaryOperatorFactoryImpl;
@@ -2827,7 +2827,7 @@ public class ProvaWalker2 extends TreeParser {
 
             			Literal q=ProvaParserImpl.tlKB.get().newLiteral((String) r.get(0),(PList) r.get(1));
             			if( qp.equals("eval") ) {
-            				ret = new ProvaRuleImpl( new Literal[] {q});
+            				ret = new Rule( new Literal[] {q});
             				Literal fail = ProvaParserImpl.tlKB.get().newLiteral("fail");
             				ret.addBodyLiteral(fail);
             			} else if( qp.equals("solve") ) {

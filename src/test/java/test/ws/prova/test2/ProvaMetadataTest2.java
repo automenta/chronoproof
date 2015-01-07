@@ -7,7 +7,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.After;
 import org.junit.Test;
 import ws.prova.api2.ProvaCommunicator;
-import ws.prova.api2.ProvaCommunicatorImpl;
+import ws.prova.api2.Communicator;
 import ws.prova.exchange.ProvaSolution;
 
 public class ProvaMetadataTest2 {
@@ -35,9 +35,9 @@ public class ProvaMetadataTest2 {
 		globals.put("$Count", count);
 		AtomicInteger timeoutCount = new AtomicInteger();
 		globals.put("$TimeoutCount", timeoutCount);
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC,globals);
+		prova = new Communicator(kAgent,kPort,rulebase,globals);
 		final int numSolutions[] = {0,0,0};
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(solutions.size(),numSolutions.length);
 		for( int i=0; i<numSolutions.length; i++ )
@@ -60,9 +60,9 @@ public class ProvaMetadataTest2 {
 		AtomicInteger count = new AtomicInteger();
 		Map<String,Object> globals = new HashMap<String,Object>();
 		globals.put("$Count", count);
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC,globals);
+		prova = new Communicator(kAgent,kPort,rulebase,globals);
 		final int numSolutions[] = {0,0};
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(solutions.size(),numSolutions.length);
 		for( int i=0; i<numSolutions.length; i++ )
@@ -84,9 +84,9 @@ public class ProvaMetadataTest2 {
 		AtomicInteger count = new AtomicInteger();
 		Map<String,Object> globals = new HashMap<String,Object>();
 		globals.put("$Count", count);
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC,globals);
+		prova = new Communicator(kAgent,kPort,rulebase,globals);
 		final int numSolutions[] = {0,0};
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(solutions.size(),numSolutions.length);
 		for( int i=0; i<numSolutions.length; i++ )
@@ -108,9 +108,9 @@ public class ProvaMetadataTest2 {
 		AtomicInteger count = new AtomicInteger();
 		Map<String,Object> globals = new HashMap<String,Object>();
 		globals.put("$Count", count);
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC,globals);
+		prova = new Communicator(kAgent,kPort,rulebase,globals);
 		final int numSolutions[] = {0,0};
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(solutions.size(),numSolutions.length);
 		for( int i=0; i<numSolutions.length; i++ )
@@ -132,9 +132,9 @@ public class ProvaMetadataTest2 {
 		AtomicInteger count = new AtomicInteger();
 		Map<String,Object> globals = new HashMap<String,Object>();
 		globals.put("$Count", count);
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC,globals);
+		prova = new Communicator(kAgent,kPort,rulebase,globals);
 		final int numSolutions[] = {0,0};
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(solutions.size(),numSolutions.length);
 		for( int i=0; i<numSolutions.length; i++ )
@@ -156,9 +156,9 @@ public class ProvaMetadataTest2 {
 		AtomicInteger count = new AtomicInteger();
 		Map<String,Object> globals = new HashMap<String,Object>();
 		globals.put("$Count", count);
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC,globals);
+		prova = new Communicator(kAgent,kPort,rulebase,globals);
 		final int numSolutions[] = {0,0};
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(solutions.size(),numSolutions.length);
 		for( int i=0; i<numSolutions.length; i++ )
@@ -180,9 +180,9 @@ public class ProvaMetadataTest2 {
 		AtomicInteger count = new AtomicInteger();
 		Map<String,Object> globals = new HashMap<String,Object>();
 		globals.put("$Count", count);
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC,globals);
+		prova = new Communicator(kAgent,kPort,rulebase,globals);
 		final int numSolutions[] = {0,0};
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(solutions.size(),numSolutions.length);
 		for( int i=0; i<numSolutions.length; i++ )
@@ -204,9 +204,9 @@ public class ProvaMetadataTest2 {
 		AtomicInteger count = new AtomicInteger();
 		Map<String,Object> globals = new HashMap<String,Object>();
 		globals.put("$Count", count);
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC,globals);
+		prova = new Communicator(kAgent,kPort,rulebase,globals);
 		final int numSolutions[] = {0,0};
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(solutions.size(),numSolutions.length);
 		for( int i=0; i<numSolutions.length; i++ )
@@ -231,9 +231,9 @@ public class ProvaMetadataTest2 {
 		globals.put("$Count", count);
 		AtomicInteger countTimeout = new AtomicInteger();
 		globals.put("$CountTimeout", countTimeout);
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC,globals);
+		prova = new Communicator(kAgent,kPort,rulebase,globals);
 		final int numSolutions[] = {0,0};
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(solutions.size(),numSolutions.length);
 		for( int i=0; i<numSolutions.length; i++ )
@@ -256,9 +256,9 @@ public class ProvaMetadataTest2 {
 		AtomicInteger count = new AtomicInteger();
 		Map<String,Object> globals = new HashMap<String,Object>();
 		globals.put("$Count", count);
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC,globals);
+		prova = new Communicator(kAgent,kPort,rulebase,globals);
 		final int numSolutions[] = {0,0};
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(solutions.size(),numSolutions.length);
 		for( int i=0; i<numSolutions.length; i++ )
@@ -280,9 +280,9 @@ public class ProvaMetadataTest2 {
 		AtomicInteger count = new AtomicInteger();
 		Map<String,Object> globals = new HashMap<String,Object>();
 		globals.put("$Count", count);
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC,globals);
+		prova = new Communicator(kAgent,kPort,rulebase,globals);
 		final int numSolutions[] = {0,0};
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(solutions.size(),numSolutions.length);
 		for( int i=0; i<numSolutions.length; i++ )
@@ -304,9 +304,9 @@ public class ProvaMetadataTest2 {
 		AtomicInteger count = new AtomicInteger();
 		Map<String,Object> globals = new HashMap<String,Object>();
 		globals.put("$Count", count);
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC,globals);
+		prova = new Communicator(kAgent,kPort,rulebase,globals);
 		final int numSolutions[] = {0,0};
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(solutions.size(),numSolutions.length);
 		for( int i=0; i<numSolutions.length; i++ )
@@ -328,9 +328,9 @@ public class ProvaMetadataTest2 {
 		AtomicInteger count = new AtomicInteger();
 		Map<String,Object> globals = new HashMap<String,Object>();
 		globals.put("$Count", count);
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC,globals);
+		prova = new Communicator(kAgent,kPort,rulebase,globals);
 		final int numSolutions[] = {0,0};
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(solutions.size(),numSolutions.length);
 		for( int i=0; i<numSolutions.length; i++ )
@@ -352,9 +352,9 @@ public class ProvaMetadataTest2 {
 		AtomicInteger count = new AtomicInteger();
 		Map<String,Object> globals = new HashMap<String,Object>();
 		globals.put("$Count", count);
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC,globals);
+		prova = new Communicator(kAgent,kPort,rulebase,globals);
 		final int numSolutions[] = {0,0};
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(solutions.size(),numSolutions.length);
 		for( int i=0; i<numSolutions.length; i++ )
@@ -376,9 +376,9 @@ public class ProvaMetadataTest2 {
 		AtomicInteger count = new AtomicInteger();
 		Map<String,Object> globals = new HashMap<String,Object>();
 		globals.put("$Count", count);
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC,globals);
+		prova = new Communicator(kAgent,kPort,rulebase,globals);
 		final int numSolutions[] = {0,0};
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(solutions.size(),numSolutions.length);
 		for( int i=0; i<numSolutions.length; i++ )
@@ -400,9 +400,9 @@ public class ProvaMetadataTest2 {
 		AtomicInteger count = new AtomicInteger();
 		Map<String,Object> globals = new HashMap<String,Object>();
 		globals.put("$Count", count);
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC,globals);
+		prova = new Communicator(kAgent,kPort,rulebase,globals);
 		final int numSolutions[] = {0,0};
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(solutions.size(),numSolutions.length);
 		for( int i=0; i<numSolutions.length; i++ )
@@ -424,9 +424,9 @@ public class ProvaMetadataTest2 {
 		AtomicInteger count = new AtomicInteger();
 		Map<String,Object> globals = new HashMap<String,Object>();
 		globals.put("$Count", count);
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC,globals);
+		prova = new Communicator(kAgent,kPort,rulebase,globals);
 		final int numSolutions[] = {0,0};
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(solutions.size(),numSolutions.length);
 		for( int i=0; i<numSolutions.length; i++ )
@@ -448,9 +448,9 @@ public class ProvaMetadataTest2 {
 		AtomicInteger count = new AtomicInteger();
 		Map<String,Object> globals = new HashMap<String,Object>();
 		globals.put("$Count", count);
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC,globals);
+		prova = new Communicator(kAgent,kPort,rulebase,globals);
 		final int numSolutions[] = {0,0};
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(solutions.size(),numSolutions.length);
 		for( int i=0; i<numSolutions.length; i++ )
@@ -472,9 +472,9 @@ public class ProvaMetadataTest2 {
 		AtomicInteger count = new AtomicInteger();
 		Map<String,Object> globals = new HashMap<String,Object>();
 		globals.put("$Count", count);
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC,globals);
+		prova = new Communicator(kAgent,kPort,rulebase,globals);
 		final int numSolutions[] = {0,0};
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(solutions.size(),numSolutions.length);
 		for( int i=0; i<numSolutions.length; i++ )
@@ -496,9 +496,9 @@ public class ProvaMetadataTest2 {
 		AtomicInteger count = new AtomicInteger();
 		Map<String,Object> globals = new HashMap<String,Object>();
 		globals.put("$Count", count);
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC,globals);
+		prova = new Communicator(kAgent,kPort,rulebase,globals);
 		final int numSolutions[] = {0,0};
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(solutions.size(),numSolutions.length);
 		for( int i=0; i<numSolutions.length; i++ )
@@ -520,9 +520,9 @@ public class ProvaMetadataTest2 {
 		AtomicInteger count = new AtomicInteger();
 		Map<String,Object> globals = new HashMap<String,Object>();
 		globals.put("$Count", count);
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC,globals);
+		prova = new Communicator(kAgent,kPort,rulebase,globals);
 		final int numSolutions[] = {0,0};
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(solutions.size(),numSolutions.length);
 		for( int i=0; i<numSolutions.length; i++ )
@@ -544,9 +544,9 @@ public class ProvaMetadataTest2 {
 		AtomicInteger count = new AtomicInteger();
 		Map<String,Object> globals = new HashMap<String,Object>();
 		globals.put("$Count", count);
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC,globals);
+		prova = new Communicator(kAgent,kPort,rulebase,globals);
 		final int numSolutions[] = {0,0};
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(solutions.size(),numSolutions.length);
 		for( int i=0; i<numSolutions.length; i++ )
@@ -565,9 +565,9 @@ public class ProvaMetadataTest2 {
 	public void labels() {
 		final String rulebase = "rules/reloaded/label.prova";
 		
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC);
+		prova = new Communicator(kAgent,kPort,rulebase);
 		final int numSolutions[] = {3,3,0,3,3,6,3,3,3};
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(numSolutions.length,solutions.size());
 		for( int i=0; i<numSolutions.length; i++ )
@@ -581,9 +581,9 @@ public class ProvaMetadataTest2 {
 	public void labels2() {
 		final String rulebase = "rules/reloaded/label2.prova";
 		
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC);
+		prova = new Communicator(kAgent,kPort,rulebase);
 		final int numSolutions[] = {0,3,1};
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(numSolutions.length,solutions.size());
 		for( int i=0; i<numSolutions.length; i++ )
@@ -597,9 +597,9 @@ public class ProvaMetadataTest2 {
 		AtomicInteger count = new AtomicInteger();
 		Map<String,Object> globals = new HashMap<String,Object>();
 		globals.put("$Count", count);
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC,globals);
+		prova = new Communicator(kAgent,kPort,rulebase,globals);
 		final int numSolutions[] = {1,0,0,0};
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(numSolutions.length,solutions.size());
 		for( int i=0; i<numSolutions.length; i++ )

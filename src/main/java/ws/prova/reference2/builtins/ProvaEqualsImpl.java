@@ -16,7 +16,7 @@ import ws.prova.kernel2.VariableIndex;
 import ws.prova.reference2.ProvaGlobalConstantImpl;
 import ws.prova.reference2.ProvaLiteralImpl;
 import ws.prova.reference2.ProvaPredicateImpl;
-import ws.prova.reference2.ProvaRuleImpl;
+import ws.prova.kernel2.Rule;
 
 public class ProvaEqualsImpl extends ProvaBuiltinImpl {
 
@@ -66,7 +66,7 @@ public class ProvaEqualsImpl extends ProvaBuiltinImpl {
 		if( lt instanceof PList && rhs instanceof PList ) {
 			Predicate pred = new ProvaPredicateImpl("",1,kb);
 			Literal lit = new ProvaLiteralImpl(pred, (PList) lt);
-			Rule clause = ProvaRuleImpl.createVirtualRule(1, lit, null);
+			Rule clause = Rule.createVirtualRule(1, lit, null);
 			pred.addClause(clause);
 			Literal newLiteral = new ProvaLiteralImpl(pred, (PList) rhs);
 			newLiterals.add(newLiteral);

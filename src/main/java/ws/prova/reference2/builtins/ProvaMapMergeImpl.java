@@ -22,7 +22,7 @@ import ws.prova.reference2.ProvaListImpl;
 import ws.prova.reference2.ProvaLiteralImpl;
 import ws.prova.reference2.ProvaMapImpl;
 import ws.prova.reference2.ProvaPredicateImpl;
-import ws.prova.reference2.ProvaRuleImpl;
+import ws.prova.kernel2.Rule;
 
 public class ProvaMapMergeImpl extends ProvaBuiltinImpl {
 
@@ -115,7 +115,7 @@ public class ProvaMapMergeImpl extends ProvaBuiltinImpl {
 				final Predicate pred = new ProvaPredicateImpl("", 1, kb);
 				final Literal lit = new ProvaLiteralImpl(pred,
 						ProvaListImpl.create(vals1));
-				final Rule clause = ProvaRuleImpl.createVirtualRule(1, lit,
+				final Rule clause = Rule.createVirtualRule(1, lit,
 						null);
 				pred.addClause(clause);
 				final Literal newLiteral = new ProvaLiteralImpl(pred,
@@ -140,7 +140,7 @@ public class ProvaMapMergeImpl extends ProvaBuiltinImpl {
 			final Predicate pred = new ProvaPredicateImpl("", 1, kb);
 			final Literal lit = new ProvaLiteralImpl(pred,
 					ProvaListImpl.create(vals1));
-			final Rule clause = ProvaRuleImpl.createVirtualRule(1, lit, null);
+			final Rule clause = Rule.createVirtualRule(1, lit, null);
 			pred.addClause(clause);
 			final PList vals2list = ProvaListImpl.create(vals2);
 			Literal newLiteral = new ProvaLiteralImpl(pred, vals2list);
@@ -220,7 +220,7 @@ public class ProvaMapMergeImpl extends ProvaBuiltinImpl {
 			final Predicate pred = new ProvaPredicateImpl("", 1, kb);
 			final Literal lit = new ProvaLiteralImpl(pred,
 					ProvaListImpl.create(vals1));
-			final Rule clause = ProvaRuleImpl.createVirtualRule(1, lit,
+			final Rule clause = Rule.createVirtualRule(1, lit,
 					null);
 			pred.addClause(clause);
 			final Literal newLiteral = new ProvaLiteralImpl(pred,
@@ -245,7 +245,7 @@ public class ProvaMapMergeImpl extends ProvaBuiltinImpl {
 		final Predicate pred = new ProvaPredicateImpl("", 1, kb);
 		final Literal lit = new ProvaLiteralImpl(pred,
 				ProvaListImpl.create(vals1));
-		final Rule clause = ProvaRuleImpl.createVirtualRule(1, lit, null);
+		final Rule clause = Rule.createVirtualRule(1, lit, null);
 		pred.addClause(clause);
 		final PList vals2list = ProvaListImpl.create(vals2);
 		Literal newLiteral = new ProvaLiteralImpl(pred, vals2list);

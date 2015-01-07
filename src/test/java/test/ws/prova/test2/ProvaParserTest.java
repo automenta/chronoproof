@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.List;
 import org.junit.Test;
-import ws.prova.api2.ProvaCommunicatorImpl;
+import ws.prova.api2.Communicator;
 import ws.prova.kernel2.KB;
 import ws.prova.kernel2.Inference;
 import ws.prova.kernel2.Results;
@@ -157,7 +157,7 @@ public class ProvaParserTest {
 		final String rulebase = "rules/reloaded/incorrect_java_class.prova";
 		
 		try {
-			new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC);
+			new Communicator(kAgent,kPort,rulebase);
 	
 		} catch( RuntimeException ex ) {
 			// Note that the parsing exception is shipped out inside a RuntimeException

@@ -19,7 +19,7 @@ import ws.prova.reference2.ProvaConstantImpl;
 import ws.prova.reference2.ProvaListImpl;
 import ws.prova.reference2.ProvaLiteralImpl;
 import ws.prova.reference2.ProvaPredicateImpl;
-import ws.prova.reference2.ProvaRuleImpl;
+import ws.prova.kernel2.Rule;
 
 public class ProvaReadEnumImpl extends ProvaBuiltinImpl {
 
@@ -68,7 +68,7 @@ public class ProvaReadEnumImpl extends ProvaBuiltinImpl {
 				if( pred!=null ) {
 					PList ls = ProvaListImpl.create(new PObj[] {data[0],ProvaConstantImpl.create(line)} );
 					Literal lit = new ProvaLiteralImpl(pred,ls);
-					Rule clause = ProvaRuleImpl.createVirtualRule(1, lit, null);
+					Rule clause = Rule.createVirtualRule(1, lit, null);
 					pred.addClause(clause);
 				} else if( line.equals(s) ) {
 					return true;

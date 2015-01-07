@@ -9,7 +9,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.After;
 import org.junit.Test;
 import ws.prova.api2.ProvaCommunicator;
-import ws.prova.api2.ProvaCommunicatorImpl;
+import ws.prova.api2.Communicator;
 import ws.prova.exchange.ProvaSolution;
 import ws.prova.kernel2.PList;
 import ws.prova.kernel2.PObj;
@@ -60,7 +60,7 @@ public class ProvaFunctionalProgrammingTest {
 		globals.put("$Count", count);
 		CountDownLatch doneSignal = new CountDownLatch(1);
 		globals.put("$Latch", doneSignal);
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC,globals);
+		prova = new Communicator(kAgent,kPort,rulebase,globals);
 		
 		long startTime = System.currentTimeMillis();
 		
@@ -79,7 +79,7 @@ public class ProvaFunctionalProgrammingTest {
 						ProvaConstantImpl.create("data"),
 						ProvaMapImpl.wrapValues(payload1)
 				});
-				prova.addMsg(terms);
+				prova.add(terms);
 			}
 			long diff0 = System.currentTimeMillis()-startTime;
 			System.out.println("All messages sent in "+diff0+" ms");
@@ -91,6 +91,8 @@ public class ProvaFunctionalProgrammingTest {
 		} catch (Exception e) {
 			org.junit.Assert.fail("Unexpected exception: "+e.getLocalizedMessage());
 		}
+                
+                prova.shutdown();
 	}
 
 	/**
@@ -108,7 +110,7 @@ public class ProvaFunctionalProgrammingTest {
 		globals.put("$Count", count);
 		CountDownLatch doneSignal = new CountDownLatch(1);
 		globals.put("$Latch", doneSignal);
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC,globals);
+		prova = new Communicator(kAgent,kPort,rulebase,globals);
 		
 		long startTime = System.currentTimeMillis();
 		
@@ -127,7 +129,7 @@ public class ProvaFunctionalProgrammingTest {
 						ProvaConstantImpl.create("data"),
 						ProvaMapImpl.wrapValues(payload1)
 				});
-				prova.addMsg(terms);
+				prova.add(terms);
 			}
 			long diff0 = System.currentTimeMillis()-startTime;
 			System.out.println("All messages sent in "+diff0+" ms");
@@ -139,6 +141,7 @@ public class ProvaFunctionalProgrammingTest {
 		} catch (Throwable e) {
 			org.junit.Assert.fail("Unexpected exception: "+e.getLocalizedMessage());
 		}
+                prova.shutdown();
 	}
 
 	/*
@@ -152,7 +155,7 @@ public class ProvaFunctionalProgrammingTest {
 		AtomicInteger count = new AtomicInteger();
 		globals.put("$Count", count);
 		
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC,globals);
+		prova = new Communicator(kAgent,kPort,rulebase,globals);
 
 		try {
 			synchronized(this) {
@@ -162,7 +165,7 @@ public class ProvaFunctionalProgrammingTest {
 		} catch (Exception e) {
 			org.junit.Assert.fail("Unexpected exception: "+e.getLocalizedMessage());
 		}
-
+                prova.shutdown();
 	}
 
 	/*
@@ -177,8 +180,8 @@ public class ProvaFunctionalProgrammingTest {
 		AtomicInteger count = new AtomicInteger();
 		globals.put("$Count", count);
 		
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC,globals);
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		prova = new Communicator(kAgent,kPort,rulebase,globals);
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		try {
 			synchronized(this) {
@@ -189,6 +192,7 @@ public class ProvaFunctionalProgrammingTest {
 		}
 
 		org.junit.Assert.assertEquals(numSolutions.length,solutions.size());
+                prova.shutdown();
 	}
 
 	/*
@@ -199,8 +203,8 @@ public class ProvaFunctionalProgrammingTest {
 		final String rulebase = "rules/reloaded/func_tenpin.prova";
 		final int[] numSolutions = new int[] {0,1,1,1,1,1};
 		
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC);
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		prova = new Communicator(kAgent,kPort,rulebase);
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		try {
 			synchronized(this) {
@@ -212,6 +216,8 @@ public class ProvaFunctionalProgrammingTest {
 		org.junit.Assert.assertEquals(numSolutions.length,solutions.size());
 		for( int i=0; i<numSolutions.length; i++ )
 			org.junit.Assert.assertEquals("Solution "+(i+1)+" incorrect",numSolutions[i],solutions.get(i).length);
+                
+                prova.shutdown();
 	}
 
 	/*
@@ -223,8 +229,8 @@ public class ProvaFunctionalProgrammingTest {
 		final String rulebase = "rules/reloaded/func_018.prova";
 		final int[] numSolutions = new int[] {0,0,0};
 		
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC);
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		prova = new Communicator(kAgent,kPort,rulebase);
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		try {
 			synchronized(this) {
@@ -236,6 +242,7 @@ public class ProvaFunctionalProgrammingTest {
 		org.junit.Assert.assertEquals(numSolutions.length,solutions.size());
 		org.junit.Assert.assertEquals(numSolutions[0],solutions.get(0).length);
 		org.junit.Assert.assertEquals(numSolutions[1],solutions.get(1).length);
+                prova.shutdown();
 	}
 
 	/*
@@ -248,8 +255,8 @@ public class ProvaFunctionalProgrammingTest {
 		final String rulebase = "rules/reloaded/func_013.prova";
 		final int[] numSolutions = new int[] {0,0,1};
 		
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC);
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		prova = new Communicator(kAgent,kPort,rulebase);
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		try {
 			synchronized(this) {
@@ -261,6 +268,7 @@ public class ProvaFunctionalProgrammingTest {
 		org.junit.Assert.assertEquals(numSolutions.length,solutions.size());
 		org.junit.Assert.assertEquals(numSolutions[0],solutions.get(0).length);
 		org.junit.Assert.assertEquals(numSolutions[1],solutions.get(1).length);
+                prova.shutdown();
 	}
 
 	@Test
@@ -268,12 +276,13 @@ public class ProvaFunctionalProgrammingTest {
 		final String rulebase = "rules/reloaded/func_012.prova";
 		final int[] numSolutions = new int[] {0,1,1};
 		
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC);
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		prova = new Communicator(kAgent,kPort,rulebase);
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(numSolutions.length,solutions.size());
 		org.junit.Assert.assertEquals(numSolutions[0],solutions.get(0).length);
 		org.junit.Assert.assertEquals(numSolutions[1],solutions.get(1).length);
+                prova.shutdown();
 	}
 
 	@Test
@@ -281,12 +290,13 @@ public class ProvaFunctionalProgrammingTest {
 		final String rulebase = "rules/reloaded/func_014.prova";
 		final int[] numSolutions = new int[] {0,1};
 		
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC);
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		prova = new Communicator(kAgent,kPort,rulebase);
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(numSolutions.length,solutions.size());
 		org.junit.Assert.assertEquals(numSolutions[0],solutions.get(0).length);
 		org.junit.Assert.assertEquals(numSolutions[1],solutions.get(1).length);
+                prova.shutdown();
 	}
 
 	@Test
@@ -294,12 +304,13 @@ public class ProvaFunctionalProgrammingTest {
 		final String rulebase = "rules/reloaded/func_016.prova";
 		final int[] numSolutions = new int[] {0,1};
 		
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC);
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		prova = new Communicator(kAgent,kPort,rulebase);
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(numSolutions.length,solutions.size());
 		org.junit.Assert.assertEquals(numSolutions[0],solutions.get(0).length);
 		org.junit.Assert.assertEquals(numSolutions[1],solutions.get(1).length);
+                prova.shutdown();
 	}
 
 	@Test
@@ -307,12 +318,13 @@ public class ProvaFunctionalProgrammingTest {
 		final String rulebase = "rules/reloaded/func_015.prova";
 		final int[] numSolutions = new int[] {0,1};
 		
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC);
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		prova = new Communicator(kAgent,kPort,rulebase);
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(numSolutions.length,solutions.size());
 		org.junit.Assert.assertEquals(numSolutions[0],solutions.get(0).length);
 		org.junit.Assert.assertEquals(numSolutions[1],solutions.get(1).length);
+                prova.shutdown();
 	}
 
 	@Test
@@ -323,12 +335,13 @@ public class ProvaFunctionalProgrammingTest {
 		final String rulebase = "rules/reloaded/func_020.prova";
 		final int[] numSolutions = new int[] {0,1,1,1,1};
 		
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC);
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		prova = new Communicator(kAgent,kPort,rulebase);
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(numSolutions.length,solutions.size());
 		for( int i=0; i<numSolutions.length; i++)
 			org.junit.Assert.assertEquals(numSolutions[i],solutions.get(i).length);
+                prova.shutdown();
 	}
 
 	@Test
@@ -336,11 +349,12 @@ public class ProvaFunctionalProgrammingTest {
 		final String rulebase = "rules/reloaded/func_011.prova";
 		final int[] numSolutions = new int[] {0,1};
 		
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC);
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		prova = new Communicator(kAgent,kPort,rulebase);
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(numSolutions.length,solutions.size());
 		org.junit.Assert.assertEquals(numSolutions[0],solutions.get(0).length);
+                prova.shutdown();
 	}
 
 	@Test
@@ -348,11 +362,12 @@ public class ProvaFunctionalProgrammingTest {
 		final String rulebase = "rules/reloaded/func_010.prova";
 		final int[] numSolutions = new int[] {0,1};
 		
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC);
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		prova = new Communicator(kAgent,kPort,rulebase);
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(numSolutions.length,solutions.size());
 		org.junit.Assert.assertEquals(numSolutions[0],solutions.get(0).length);
+                prova.shutdown();
 	}
 
 	/**
@@ -363,11 +378,12 @@ public class ProvaFunctionalProgrammingTest {
 		final String rulebase = "rules/reloaded/func_010_fun.prova";
 		final int[] numSolutions = new int[] {0,1};
 		
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC);
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		prova = new Communicator(kAgent,kPort,rulebase);
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(numSolutions.length,solutions.size());
 		org.junit.Assert.assertEquals(numSolutions[0],solutions.get(0).length);
+                prova.shutdown();
 	}
 
 	@Test
@@ -375,34 +391,38 @@ public class ProvaFunctionalProgrammingTest {
 		final String rulebase = "rules/reloaded/func_fact_monad.prova";
 		final int[] numSolutions = new int[] {0,1,1,1,3,1,3,1,3,1,3,1,1,1};
 		
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC);
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		prova = new Communicator(kAgent,kPort,rulebase);
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(numSolutions.length,solutions.size());
 		for( int i=0; i<numSolutions.length; i++ )
 			org.junit.Assert.assertEquals("Solution "+(i+1)+" incorrect",numSolutions[i],solutions.get(i).length);
+                
+                prova.shutdown();
 	}
 
 	@Test
 	public void test_clone() {
 		final String rulebase = "rules/reloaded/clone.prova";
 		
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC);
+		prova = new Communicator(kAgent,kPort,rulebase);
 		final int numSolutions[] = {1};
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(numSolutions.length,solutions.size());
 		for( int i=0; i<numSolutions.length; i++ )
 			org.junit.Assert.assertEquals("Solution "+(i+1)+" incorrect",numSolutions[i],solutions.get(i).length);
+                
+                prova.shutdown();
 	}
 
 	@Test
 	public void list_and_state_reimplemented() {
 		final String rulebase = "rules/reloaded/func_009.prova";
 		
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC);
+		prova = new Communicator(kAgent,kPort,rulebase);
 		final int numSolutions[] = {0,1,1,1,1,3,3,3,1,1,1,1,1,1,3,1,1,1,1,1,6,2,2,1,1,10,1,1};
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(numSolutions.length,solutions.size());
 		for( int i=0; i<numSolutions.length; i++ )
@@ -413,8 +433,8 @@ public class ProvaFunctionalProgrammingTest {
 	public void continuation_monad() {
 		final String rulebase = "rules/reloaded/func_008.prova";
 		
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC);
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		prova = new Communicator(kAgent,kPort,rulebase);
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(solutions.size(),2);
 	}
@@ -423,9 +443,9 @@ public class ProvaFunctionalProgrammingTest {
 	public void tree_monad() {
 		final String rulebase = "rules/reloaded/func_006.prova";
 		
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC);
+		prova = new Communicator(kAgent,kPort,rulebase);
 		final int numSolutions[] = {0,1};
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(numSolutions.length,solutions.size());
 		for( int i=0; i<numSolutions.length; i++ )
@@ -436,9 +456,9 @@ public class ProvaFunctionalProgrammingTest {
 	public void basic() {
 		final String rulebase = "rules/reloaded/func_001.prova";
 		
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC);
+		prova = new Communicator(kAgent,kPort,rulebase);
 		final int numSolutions[] = {0,1,1,1,1,1,1,1,1,1,1,1,1};
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(numSolutions.length,solutions.size());
 		for( int i=0; i<numSolutions.length; i++ )
@@ -449,9 +469,9 @@ public class ProvaFunctionalProgrammingTest {
 	public void mappings_not_functions() {
 		final String rulebase = "rules/reloaded/func_002.prova";
 		
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC);
+		prova = new Communicator(kAgent,kPort,rulebase);
 		final int numSolutions[] = {0,8};
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(numSolutions.length,solutions.size());
 		for( int i=0; i<numSolutions.length; i++ )
@@ -462,9 +482,9 @@ public class ProvaFunctionalProgrammingTest {
 	public void concrete_monadic_list() {
 		final String rulebase = "rules/reloaded/func_003.prova";
 		
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC);
+		prova = new Communicator(kAgent,kPort,rulebase);
 		final int numSolutions[] = {0,1,1,1,1,1,1,1,1,1};
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(numSolutions.length,solutions.size());
 		for( int i=0; i<numSolutions.length; i++ )
@@ -475,9 +495,9 @@ public class ProvaFunctionalProgrammingTest {
 	public void maybe_monad() {
 		final String rulebase = "rules/reloaded/func_005.prova";
 		
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC);
+		prova = new Communicator(kAgent,kPort,rulebase);
 		final int numSolutions[] = {0,1,1,1,1,1};
-		List<ProvaSolution[]> solutions = prova.getInitializationSolutions();
+		List<ProvaSolution[]> solutions = prova.getSolutions(true);
 
 		org.junit.Assert.assertEquals(numSolutions.length,solutions.size());
 		for( int i=0; i<numSolutions.length; i++ )

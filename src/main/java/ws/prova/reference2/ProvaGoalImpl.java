@@ -62,7 +62,7 @@ public class ProvaGoalImpl implements Goal {
 		this.variables = variables;
 		this.goal = goal;
 		this.predicate = goal.getPredicate();
-		this.iterator = predicate.getClauses().getClauses().iterator();
+		this.iterator = predicate.getClauses().iterator();
 		for( int i=0; i<query.getOffset(); i++ )
 			this.iterator.next();
 	}
@@ -91,14 +91,14 @@ public class ProvaGoalImpl implements Goal {
 					if( keyClauses.size()==1 ) {
 						this.singleClause = true;
 					}
-					final List<Rule> tempClauses = new ArrayList<Rule>(keyClauses);
-					this.iterator = tempClauses.iterator();
+					//final List<Rule> tempClauses = new ArrayList<Rule>(keyClauses);
+					this.iterator = keyClauses.iterator();
 				}
 				return;
 			}
 		}
-		final List<Rule> clauses = predicate.getClauses().getClauses();
-                this.iterator = clauses.iterator();
+		
+                this.iterator = predicate.getClauses().iterator();
 		if( predicate.getClauses().numClauses() ==1 ) {
 //			if( !predicate.getKnowledgeBase().isCachePredicate(predicate.getSymbol()) )
 			this.singleClause = true;
@@ -132,7 +132,7 @@ public class ProvaGoalImpl implements Goal {
 			for( PList answer : extraAnswers ) {
 				PList ls = ProvaListImpl.create( answer.getFixed() );
 				Literal lit = new ProvaLiteralImpl(pred,ls);
-				Rule clause = ProvaRuleImpl.createVirtualRule(1, lit, null);
+				Rule clause = Rule.createVirtualRule(1, lit, null);
 				pred.addClause(clause);
 			}
 
@@ -171,13 +171,11 @@ public class ProvaGoalImpl implements Goal {
 					for( PList answer : outerAnswers ) {
 						PList ls = ProvaListImpl.create( answer.getFixed() );
 						Literal lit = new ProvaLiteralImpl(pred,ls);
-						Rule clause = ProvaRuleImpl.createVirtualRule(1, lit, null);
+						Rule clause = Rule.createVirtualRule(1, lit, null);
 						pred.addClause(clause);
 					}
-                                        if (pred.getClauses().numClauses() == 0)
-                                            iterator = Iterators.empty();
-                                        else
-                                            iterator = pred.getClauses().getClauses().iterator();
+                                        
+                                        iterator = pred.getClauses().iterator();
 					outerAnswers.clear();
 					rule = iterator.hasNext() ? iterator.next() : null;
 				}

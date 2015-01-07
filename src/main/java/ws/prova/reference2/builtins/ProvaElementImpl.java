@@ -21,7 +21,7 @@ import ws.prova.reference2.ProvaListImpl;
 import ws.prova.reference2.ProvaLiteralImpl;
 import ws.prova.reference2.ProvaMapImpl;
 import ws.prova.reference2.ProvaPredicateImpl;
-import ws.prova.reference2.ProvaRuleImpl;
+import ws.prova.kernel2.Rule;
 
 public class ProvaElementImpl extends ProvaBuiltinImpl {
 
@@ -85,7 +85,7 @@ public class ProvaElementImpl extends ProvaBuiltinImpl {
 						PObj o = getElement(rhsIterator.next());
 						PList ls = ProvaListImpl.create(new PObj[] {o} );
 						Literal lit = new ProvaLiteralImpl(pred,ls);
-						Rule clause = ProvaRuleImpl.createVirtualRule(1, lit, null);
+						Rule clause = Rule.createVirtualRule(1, lit, null);
 						pred.addClause(clause);
 					}
 					ltls = ProvaListImpl.create(new PObj[] {lt} );
@@ -96,7 +96,7 @@ public class ProvaElementImpl extends ProvaBuiltinImpl {
 						PObj o = getElement(rhsIterator.next());
 						PList ls = ProvaListImpl.create(new PObj[] {ProvaConstantImpl.create(index++), o} );
 						Literal lit = new ProvaLiteralImpl(pred,ls);
-						Rule clause = ProvaRuleImpl.createVirtualRule(1, lit, null);
+						Rule clause = Rule.createVirtualRule(1, lit, null);
 						pred.addClause(clause);
 					}
 					ltls = ProvaListImpl.create(new PObj[] {data[0],lt} );
@@ -114,7 +114,7 @@ public class ProvaElementImpl extends ProvaBuiltinImpl {
 							PObj obj = getElement(rhsIterator.next());
 							PList ls = ProvaListImpl.create(new PObj[] {obj} );
 							Literal lit = new ProvaLiteralImpl(pred,ls);
-							Rule clause = ProvaRuleImpl.createVirtualRule(1, lit, null);
+							Rule clause = Rule.createVirtualRule(1, lit, null);
 							pred.addClause(clause);
 							ltls = ProvaListImpl.create(new PObj[] {lt} );
 							return true;
@@ -136,7 +136,7 @@ public class ProvaElementImpl extends ProvaBuiltinImpl {
 					PObj obj = getElement(o);
 					PList ls = ProvaListImpl.create(new PObj[] {obj} );
 					Literal lit = new ProvaLiteralImpl(pred,ls);
-					Rule clause = ProvaRuleImpl.createVirtualRule(1, lit, null);
+					Rule clause = Rule.createVirtualRule(1, lit, null);
 					pred.addClause(clause);
 				}
 				ltls = ProvaListImpl.create(new PObj[] {lt} );
@@ -147,7 +147,7 @@ public class ProvaElementImpl extends ProvaBuiltinImpl {
 					PObj obj = getElement(o);
 					PList ls = ProvaListImpl.create(new PObj[] {ProvaConstantImpl.create(index++), obj} );
 					Literal lit = new ProvaLiteralImpl(pred,ls);
-					Rule clause = ProvaRuleImpl.createVirtualRule(1, lit, null);
+					Rule clause = Rule.createVirtualRule(1, lit, null);
 					pred.addClause(clause);
 				}
 				ltls = ProvaListImpl.create(new PObj[] {data[0],lt} );
@@ -167,7 +167,7 @@ public class ProvaElementImpl extends ProvaBuiltinImpl {
 //					obj = new ProvaConstantImpl(element);
 				PList ls = ProvaListImpl.create(new PObj[] {obj} );
 				Literal lit = new ProvaLiteralImpl(pred,ls);
-				Rule clause = ProvaRuleImpl.createVirtualRule(1, lit, null);
+				Rule clause = Rule.createVirtualRule(1, lit, null);
 				pred.addClause(clause);
 				ltls = ProvaListImpl.create(new PObj[] {lt} );
 			}

@@ -23,7 +23,7 @@ import ws.prova.reference2.ProvaConstantImpl;
 import ws.prova.reference2.ProvaListImpl;
 import ws.prova.reference2.ProvaLiteralImpl;
 import ws.prova.reference2.ProvaPredicateImpl;
-import ws.prova.reference2.ProvaRuleImpl;
+import ws.prova.kernel2.Rule;
 import ws.prova.reference2.cache.ProvaCacheTabletImpl;
 import ws.prova.reference2.cache.ProvaCachedLiteralImpl;
 import ws.prova.reference2.cache.ProvaLocalAnswersImpl;
@@ -42,7 +42,7 @@ public class ProvaCacheImpl extends ProvaBuiltinImpl {
 			Goal goal, List<Literal> newLiterals, Rule query) {
 		Literal literal = goal.getGoal();
 		List<Variable> variables = query.getVariables();
-		PList terms = (PList) literal.getTerms();
+		PList terms = literal.getTerms();
 		if( terms.getFixed().length==0 )
 			return false;
 		PObj first = terms.getFixed()[0];
@@ -106,7 +106,7 @@ public class ProvaCacheImpl extends ProvaBuiltinImpl {
 				for( PList answer : answers ) {
 					PList ls = ProvaListImpl.create( answer.getFixed() );
 					Literal lit = new ProvaLiteralImpl(pred,ls);
-					Rule clause = ProvaRuleImpl.createVirtualRule(1, lit, null);
+					Rule clause = Rule.createVirtualRule(1, lit, null);
 					pred.addClause(clause);
 				}
 			}

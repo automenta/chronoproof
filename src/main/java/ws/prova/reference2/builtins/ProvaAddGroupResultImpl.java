@@ -20,7 +20,7 @@ public class ProvaAddGroupResultImpl extends ProvaBuiltinImpl {
 			Goal goal, List<Literal> newLiterals, Rule query) {
 		Literal literal = goal.getGoal();
 		PList terms = (PList) literal.getTerms();
-		synchronized(kb) {
+		/*synchronized(kb)*/ {
 			try {
 				prova.getMessenger().addGroupResult(terms);
 			} catch (Exception e) {

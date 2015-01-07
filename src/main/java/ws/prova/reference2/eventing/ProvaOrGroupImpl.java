@@ -1,6 +1,7 @@
 package ws.prova.reference2.eventing;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -19,13 +20,13 @@ public class ProvaOrGroupImpl extends ProvaBasicGroupImpl {
 
 	public ProvaOrGroupImpl(String dynamicGroup, String staticGroup) {
 		super(dynamicGroup,staticGroup);
-		results = new ArrayList<Object>();
+		results = Collections.synchronizedList(new ArrayList<Object>());
 	}
 
 	public ProvaOrGroupImpl(ProvaGroup g) {
 		super((ProvaBasicGroupImpl) g);
 		g.setConcrete(this);
-		results = new ArrayList<Object>();
+		results = Collections.synchronizedList(new ArrayList<Object>());
 	}
 
 	@Override
@@ -85,7 +86,7 @@ public class ProvaOrGroupImpl extends ProvaBasicGroupImpl {
 				this.sendGroupResults(results, kb, prova);
 				if( countMax>0 && numEmitted==countMax )
 					return EventDetectionStatus.complete;
-				this.results = new ArrayList<Object>();
+				this.results = Collections.synchronizedList(new ArrayList<Object>());
 				sizeList.set(0,sizeList.get(1));
 				this.lastReaction = null;
 				return EventDetectionStatus.preserved;
@@ -125,7 +126,7 @@ public class ProvaOrGroupImpl extends ProvaBasicGroupImpl {
 				this.sendGroupResults(results, kb, prova);
 				if( countMax>0 && numEmitted==countMax )
 					return EventDetectionStatus.complete;
-				this.results = new ArrayList<Object>();
+				this.results = Collections.synchronizedList(new ArrayList<Object>());
 				timerList.set(0,timerList.get(1));
 				this.lastReaction = null;
 				if( log.isDebugEnabled() )

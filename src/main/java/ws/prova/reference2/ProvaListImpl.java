@@ -237,13 +237,14 @@ public class ProvaListImpl extends ProvaTermImpl implements PList, Computable {
         }
         ground = true;
         for (int i = 0; i < fixed.length; i++) {
-            if (fixed[i] instanceof VariableIndex) {
-                PObj o = variables.get(((VariableIndex) fixed[i]).getIndex()).getAssigned();
+            PObj fi = fixed[i];
+            if (fi instanceof VariableIndex) {
+                PObj o = variables.get(((VariableIndex)fi).getIndex()).getAssigned();
                 if (o != null) {
-                    fixed[i] = o;
+                    fixed[i] = fi = o;
                 }
             }
-            if (!fixed[i].updateGround(variables)) {
+            if (!fi.updateGround(variables)) {
                 ground = false;
             }
         }
@@ -534,19 +535,24 @@ public class ProvaListImpl extends ProvaTermImpl implements PList, Computable {
         // Rebuild the fixed part
         PObj[] newFixed = new PObj[fixed.length];
         for (int i = 0; i < fixed.length; i++) {
-            if (fixed[i].getClass() == ProvaConstantImpl.class) {
-                newFixed[i] = fixed[i];
-            } else if (fixed[i] instanceof VariableIndex) {
-                newFixed[i] = unification.rebuildSource((VariableIndex) fixed[i]);
-            } else if (fixed[i] instanceof PList) {
-                newFixed[i] = ((PList) fixed[i]).rebuildSource(unification);
-            } else if (fixed[i] instanceof Literal) {
-                newFixed[i] = ((Literal) fixed[i]).rebuildSource(unification);
-            } else if (fixed[i] instanceof ProvaMapImpl) {
-                newFixed[i] = ((ProvaMapImpl) fixed[i]).rebuildSource(unification);
+            PObj f = fixed[i];
+            PObj n;
+            
+            if (f.getClass() == ProvaConstantImpl.class) {
+                n = f;
+            } else if (f instanceof Literal) {
+                n = ((Literal) f).rebuildSource(unification);
+            } else if (f instanceof VariableIndex) {
+                n = unification.rebuildSource((VariableIndex) f);
+            } else if (f instanceof PList) {
+                n = ((PList) f).rebuildSource(unification);
+            } else if (f instanceof ProvaMapImpl) {
+                n = ((ProvaMapImpl) f).rebuildSource(unification);
             } else {
-                newFixed[i] = fixed[i];
-            }
+                n = f;
+            }            
+            
+            newFixed[i] = n;
         }
 
         PObj newTail = null;
@@ -578,7 +584,7 @@ public class ProvaListImpl extends ProvaTermImpl implements PList, Computable {
 
     @Override
     public PObj rebuildSource(Unification unification, int offset) {
-        PObj[] newFixed = new PObj[0];
+        PObj[] newFixed;
         final int fixedLength = fixed.length;
         if (offset < fixedLength) {
             // Rebuild the fixed part

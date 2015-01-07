@@ -9,7 +9,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.junit.After;
 import org.junit.Test;
 import ws.prova.api2.ProvaCommunicator;
-import ws.prova.api2.ProvaCommunicatorImpl;
+import ws.prova.api2.Communicator;
 
 public class ProvaMessagingTest {
 
@@ -37,7 +37,7 @@ public class ProvaMessagingTest {
 		AtomicInteger count = new AtomicInteger();
 		Map<String,Object> globals = new HashMap<String,Object>();
 		globals.put("$Count", count);
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC,globals);
+		prova = new Communicator(kAgent,kPort,rulebase,globals);
 
 		try {
 			synchronized(this) {
@@ -55,7 +55,7 @@ public class ProvaMessagingTest {
 		AtomicInteger count = new AtomicInteger();
 		Map<String,Object> globals = new HashMap<String,Object>();
 		globals.put("$Count", count);
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC,globals);
+		prova = new Communicator(kAgent,kPort,rulebase,globals);
 
 		try {
 			synchronized(this) {
@@ -73,7 +73,7 @@ public class ProvaMessagingTest {
 		AtomicInteger count = new AtomicInteger();
 		Map<String,Object> globals = new HashMap<String,Object>();
 		globals.put("$Count", count);
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC,globals);
+		prova = new Communicator(kAgent,kPort,rulebase,globals);
 
 		try {
 			synchronized(this) {
@@ -91,7 +91,7 @@ public class ProvaMessagingTest {
 		AtomicInteger count = new AtomicInteger();
 		Map<String,Object> globals = new HashMap<String,Object>();
 		globals.put("$Count", count);
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC,globals);
+		prova = new Communicator(kAgent,kPort,rulebase,globals);
 
 		try {
 			synchronized(this) {
@@ -109,7 +109,7 @@ public class ProvaMessagingTest {
 		AtomicInteger count = new AtomicInteger();
 		Map<String,Object> globals = new HashMap<String,Object>();
 		globals.put("$Count", count);
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC,globals);
+		prova = new Communicator(kAgent,kPort,rulebase,globals);
 
 		try {
 			synchronized(this) {
@@ -127,7 +127,7 @@ public class ProvaMessagingTest {
 		AtomicInteger count = new AtomicInteger();
 		Map<String,Object> globals = new HashMap<String,Object>();
 		globals.put("$Count", count);
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC,globals);
+		prova = new Communicator(kAgent,kPort,rulebase,globals);
 
 		try {
 			synchronized(this) {
@@ -145,7 +145,7 @@ public class ProvaMessagingTest {
 		AtomicInteger count = new AtomicInteger();
 		Map<String,Object> globals = new HashMap<String,Object>();
 		globals.put("$Count", count);
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC,globals);
+		prova = new Communicator(kAgent,kPort,rulebase,globals);
 
 		try {
 			synchronized(this) {
@@ -163,7 +163,7 @@ public class ProvaMessagingTest {
 		AtomicInteger count = new AtomicInteger();
 		Map<String,Object> globals = new HashMap<String,Object>();
 		globals.put("$Count", count);
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC,globals);
+		prova = new Communicator(kAgent,kPort,rulebase,globals);
 
 		try {
 			synchronized(this) {
@@ -181,7 +181,7 @@ public class ProvaMessagingTest {
 		AtomicInteger count = new AtomicInteger();
 		Map<String,Object> globals = new HashMap<String,Object>();
 		globals.put("$Count", count);
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC,globals);
+		prova = new Communicator(kAgent,kPort,rulebase,globals);
 
 		try {
 			synchronized(this) {
@@ -190,6 +190,8 @@ public class ProvaMessagingTest {
 			}
 		} catch (Exception e) {
 		}
+                
+                prova.shutdown();
 	}
 
 	/**
@@ -202,7 +204,7 @@ public class ProvaMessagingTest {
 		AtomicInteger count = new AtomicInteger(0);
 		Map<String,Object> globals = new HashMap<String,Object>();
 		globals.put("$Count", count);
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC,globals);
+		prova = new Communicator(kAgent,kPort,rulebase,globals);
 
 		try {
 			synchronized(this) {
@@ -211,6 +213,8 @@ public class ProvaMessagingTest {
 			}
 		} catch (Exception e) {
 		}
+                
+                prova.shutdown();
 	}
 
 	@Test
@@ -220,7 +224,7 @@ public class ProvaMessagingTest {
 		AtomicInteger count = new AtomicInteger(0);
 		Map<String,Object> globals = new HashMap<String,Object>();
 		globals.put("$Count", count);
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC,globals);
+		prova = new Communicator(kAgent,kPort,rulebase,globals);
 
 		try {
 			synchronized(this) {
@@ -229,6 +233,8 @@ public class ProvaMessagingTest {
 			}
 		} catch (Exception e) {
 		}
+                
+                prova.shutdown();
 	}
 
 	@Test
@@ -238,7 +244,7 @@ public class ProvaMessagingTest {
 		AtomicInteger count = new AtomicInteger(0);
 		Map<String,Object> globals = new HashMap<String,Object>();
 		globals.put("$Count", count);
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC,globals);
+		prova = new Communicator(kAgent,kPort,rulebase,globals);
 
 		try {
 			synchronized(this) {
@@ -247,6 +253,8 @@ public class ProvaMessagingTest {
 			}
 		} catch (Exception e) {
 		}
+                
+                prova.shutdown();
 	}
 
 	/**
@@ -264,7 +272,7 @@ public class ProvaMessagingTest {
 		AtomicInteger count = new AtomicInteger(0);
 		Map<String,Object> globals = new HashMap<String,Object>();
 		globals.put("$Count", count);
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC,globals);
+		prova = new Communicator(kAgent,kPort,rulebase,globals);
 
 		try {
 			synchronized(this) {
@@ -273,6 +281,8 @@ public class ProvaMessagingTest {
 			}
 		} catch (Exception e) {
 		}
+                
+                prova.shutdown();
 	}
 
 	@Test
@@ -282,7 +292,7 @@ public class ProvaMessagingTest {
 		AtomicInteger count = new AtomicInteger(0);
 		Map<String,Object> globals = new HashMap<String,Object>();
 		globals.put("$Count", count);
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC,globals);
+		prova = new Communicator(kAgent,kPort,rulebase,globals);
 
 		try {
 			synchronized(this) {
@@ -291,6 +301,8 @@ public class ProvaMessagingTest {
 			}
 		} catch (Exception e) {
 		}
+                
+                prova.shutdown();
 	}
 
 	@Test
@@ -308,7 +320,7 @@ public class ProvaMessagingTest {
 
 		long startTime = System.currentTimeMillis();
 		
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC,globals);
+		prova = new Communicator(kAgent,kPort,rulebase,globals);
 
 		try {
 			doneSignal.await(5000, TimeUnit.SECONDS);
@@ -319,6 +331,8 @@ public class ProvaMessagingTest {
 		System.out.println(count.get()+" rounds complete in "+diff+" sec");
 		// All 1000 rounds around the ring must be complete
 		org.junit.Assert.assertEquals("Not all messages received in 50 seconds",1000L,count.get());
+                
+                prova.shutdown();
 
 	}
 
@@ -338,10 +352,10 @@ public class ProvaMessagingTest {
 
 		long startTime = System.currentTimeMillis();
 		
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC,globals);
+		prova = new Communicator(kAgent,kPort,rulebase,globals);
 
 		try {
-			doneSignal.await(5000, TimeUnit.SECONDS);
+			doneSignal.await(100, TimeUnit.SECONDS);
 		} catch (InterruptedException e) {
 			org.junit.Assert.fail("Unexpected exception: "+e.getMessage());
 		}
@@ -349,6 +363,8 @@ public class ProvaMessagingTest {
 		System.out.println(count.get()+" rounds complete in "+diff+" sec");
 		// All 1000 rounds around the ring must be complete
 		org.junit.Assert.assertEquals("Not all messages received in 50 seconds",1000L,count.get());
+                
+                prova.shutdown();
 
 	}
 
@@ -367,10 +383,10 @@ public class ProvaMessagingTest {
 
 		long startTime = System.currentTimeMillis();
 		
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC,globals);
+		prova = new Communicator(kAgent,kPort,rulebase,globals);
 
 		try {
-			doneSignal.await(5000, TimeUnit.SECONDS);
+			doneSignal.await(10, TimeUnit.SECONDS);
 		} catch (InterruptedException e) {
 			org.junit.Assert.fail("Unexpected exception: "+e.getMessage());
 		}
@@ -378,6 +394,8 @@ public class ProvaMessagingTest {
 		System.out.println(count.get()+" rounds complete in "+diff+" sec");
 		// All 1000 rounds around the ring must be complete
 		org.junit.Assert.assertEquals("Not all messages received in 50 seconds",1000L,count.get());
+                
+                prova.shutdown();
 
 	}
 
@@ -396,7 +414,7 @@ public class ProvaMessagingTest {
 
 		long startTime = System.currentTimeMillis();
 		
-		prova = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC,globals);
+		prova = new Communicator(kAgent,kPort,rulebase,globals);
 
 		try {
 			doneSignal.await(500000, TimeUnit.SECONDS);
@@ -407,6 +425,8 @@ public class ProvaMessagingTest {
 		System.out.println(count.get()+" rounds complete in "+diff+" sec");
 		// All 1000 rounds around the ring must be complete
 		org.junit.Assert.assertEquals("Not all messages received in 5000 seconds",1000L,count.get());
+                
+                prova.shutdown();
 
 	}
 
