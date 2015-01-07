@@ -11,17 +11,17 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import org.apache.log4j.Logger;
-import ws.prova.agent2.ProvaReagent;
+import ws.prova.agent2.Reagent;
 import ws.prova.agent2.ProvaThreadpoolEnum;
-import ws.prova.kernel2.ProvaConstant;
-import ws.prova.kernel2.ProvaKnowledgeBase;
-import ws.prova.kernel2.ProvaList;
-import ws.prova.kernel2.ProvaLiteral;
-import ws.prova.kernel2.ProvaObject;
-import ws.prova.kernel2.ProvaRule;
+import ws.prova.kernel2.Constant;
+import ws.prova.kernel2.KB;
+import ws.prova.kernel2.PList;
+import ws.prova.kernel2.Literal;
+import ws.prova.kernel2.PObj;
+import ws.prova.kernel2.Rule;
 import ws.prova.reference2.ProvaConstantImpl;
 import ws.prova.reference2.ProvaListImpl;
-import ws.prova.reference2.ProvaResolutionInferenceEngineImpl;
+import ws.prova.reference2.DefaultInference;
 import ws.prova.reference2.messaging.ProvaDelayedCommand;
 import ws.prova.reference2.messaging.ProvaMessengerImpl;
 import ws.prova.reference2.messaging.RemoveList;
@@ -41,7 +41,7 @@ public class ProvaBasicGroupImpl implements ProvaGroup {
 	
 	protected Map<Long,RemoveList> removeMap;
 
-	protected ProvaList lastReaction;
+	protected PList lastReaction;
 
 	protected ProvaGroup parent;
 
@@ -166,8 +166,8 @@ public class ProvaBasicGroupImpl implements ProvaGroup {
 			return;
 		for( RemoveList rl : timeoutRemoveEntries ) {
 			long k = rl.getRuleid();
-			rl.getP1().getClauseSet().removeTemporalClause(k);
-			rl.getP2().getClauseSet().removeTemporalClause(k);
+			rl.getP1().getClauses().removeTemporalClause(k);
+			rl.getP2().getClauses().removeTemporalClause(k);
 		}
 	}
 	
@@ -187,13 +187,13 @@ public class ProvaBasicGroupImpl implements ProvaGroup {
 	}
 
 	@Override
-	public void addResult(ProvaList result) {
+	public void addResult(PList result) {
 		this.results.add(result);
 	}
 
 	@Override
-	public EventDetectionStatus eventDetected(ProvaKnowledgeBase kb, ProvaReagent prova,
-			long key, ProvaList reaction, Map<String, List<Object>> metadata, Map<Long, ProvaGroup> ruleid2Group) {
+	public EventDetectionStatus eventDetected(KB kb, Reagent prova,
+			long key, PList reaction, Map<String, List<Object>> metadata, Map<Long, ProvaGroup> ruleid2Group) {
 		throw new UnsupportedOperationException();
 	}
 
@@ -204,8 +204,8 @@ public class ProvaBasicGroupImpl implements ProvaGroup {
 				log.debug(e);
 			RemoveList r = e.getValue();
 			long k = r.getRuleid();
-			r.getP1().getClauseSet().removeTemporalClause(k);
-			r.getP2().getClauseSet().removeTemporalClause(k);
+			r.getP1().getClauses().removeTemporalClause(k);
+			r.getP2().getClauses().removeTemporalClause(k);
 		}
 		if( children!=null )
 			for( ProvaGroup c : children )
@@ -216,13 +216,13 @@ public class ProvaBasicGroupImpl implements ProvaGroup {
 	}
 
 	@Override
-	public boolean cleanup(ProvaKnowledgeBase kb, ProvaReagent prova, Map<Long, ProvaGroup> ruleid2Group, Map<String, ProvaGroup> dynamic2Group) {
+	public boolean cleanup(KB kb, Reagent prova, Map<Long, ProvaGroup> ruleid2Group, Map<String, ProvaGroup> dynamic2Group) {
 		if( failed ) {
 			immediateCleanup(ruleid2Group, dynamic2Group);
 //			System.out.println("Removed failed group: "+dynamicGroup);
 			return true;
 		}
-		List<ProvaDelayedCommand> delayed = ProvaResolutionInferenceEngineImpl.delayedCommands.get();
+		List<ProvaDelayedCommand> delayed = DefaultInference.delayedCommands.get();
 		// delayed is non-null when this is run from the end-of-goal cleanup task
 		if( delayed!=null && !removeMap.isEmpty() )
 			return false;
@@ -233,12 +233,12 @@ public class ProvaBasicGroupImpl implements ProvaGroup {
 				Entry<Long, RemoveList> e = iter.next();
 				RemoveList rl = e.getValue();
 				if( rl.isNot() ) {
-					ProvaList reaction = rl.getReaction();
+					PList reaction = rl.getReaction();
 					reaction.getFixed()[1] = ProvaConstantImpl.create("async");
 					reaction.getFixed()[2] = ProvaConstantImpl.create(0);
 					lastReaction = reaction;
 //					lastReaction = ProvaListImpl.create(new ProvaObject[] {rl.getReaction().getFixed()[0],ProvaConstantImpl.create(0),reaction});
-					ProvaList reactionM = ProvaListImpl.create(new ProvaObject[] {ProvaConstantImpl.create("not"),reaction.shallowCopy()});
+					PList reactionM = ProvaListImpl.create(new PObj[] {ProvaConstantImpl.create("not"),reaction.shallowCopy()});
 					addResult(reactionM);
 					iter.remove();
 				}
@@ -251,8 +251,8 @@ public class ProvaBasicGroupImpl implements ProvaGroup {
 		}
 		if( !resultsSent ) {
 			long k = resultRemoveEntry.getRuleid();
-			resultRemoveEntry.getP1().getClauseSet().removeTemporalClause(k);
-			resultRemoveEntry.getP2().getClauseSet().removeTemporalClause(k);
+			resultRemoveEntry.getP1().getClauses().removeTemporalClause(k);
+			resultRemoveEntry.getP2().getClauses().removeTemporalClause(k);
 			cleanupTimeoutEntries();
 		}
 		if( children!=null ) {
@@ -278,8 +278,8 @@ public class ProvaBasicGroupImpl implements ProvaGroup {
 			ruleid2Group.remove(k);
 		}
 		long k = resultRemoveEntry.getRuleid();
-		resultRemoveEntry.getP1().getClauseSet().removeTemporalClause(k);
-		resultRemoveEntry.getP2().getClauseSet().removeTemporalClause(k);
+		resultRemoveEntry.getP1().getClauses().removeTemporalClause(k);
+		resultRemoveEntry.getP2().getClauses().removeTemporalClause(k);
 		cleanupTimeoutEntries();
 		if( children!=null ) {
 			for( ProvaGroup c : children )
@@ -297,13 +297,13 @@ public class ProvaBasicGroupImpl implements ProvaGroup {
 		return false;
 	}
 
-	protected synchronized boolean sendGroupResults(List<Object> results, ProvaKnowledgeBase kb, ProvaReagent prova) {
-		ProvaList content = null;
+	protected synchronized boolean sendGroupResults(List<Object> results, KB kb, Reagent prova) {
+		PList content = null;
 		if( isGroupFailed() ) {
 			// TODO: Is it always timeout here?
 			if( log.isDebugEnabled() )
 				log.debug("Timeout group results: "+results);
-			content = ProvaListImpl.create(new ProvaObject[] {ProvaConstantImpl.create(results)});
+			content = ProvaListImpl.create(new PObj[] {ProvaConstantImpl.create(results)});
 			if( results.isEmpty() ) {
 				// Timeout and no results
 				if( timeoutRemoveEntries!=null && !timeoutRemoveEntries.isEmpty() ) {
@@ -314,8 +314,8 @@ public class ProvaBasicGroupImpl implements ProvaGroup {
 					return false;
 			} else {
 				final Object last = results.get(results.size()-1);
-				if( last instanceof ProvaList )
-					lastReaction = ((ProvaList) last).shallowCopy();
+				if( last instanceof PList )
+					lastReaction = ((PList) last).shallowCopy();
 				else
 					lastReaction = this.resultRemoveEntry.getReaction();
 				lastReaction.getFixed()[3] = ProvaConstantImpl.create("timeout");
@@ -325,7 +325,7 @@ public class ProvaBasicGroupImpl implements ProvaGroup {
 		} else {
 			if( log.isDebugEnabled() )
 				log.debug("Group results: "+results);
-			content = ProvaListImpl.create(new ProvaObject[] {ProvaConstantImpl.create(results)});
+			content = ProvaListImpl.create(new PObj[] {ProvaConstantImpl.create(results)});
 			if( lastReaction==null ) {
 				if( log.isDebugEnabled() )
 					log.debug("Empty results");
@@ -335,34 +335,34 @@ public class ProvaBasicGroupImpl implements ProvaGroup {
 			} else {
 				if( lastReaction.getFixed().length==0 )
 					// A timeout expired so that strict @count is successful
-					lastReaction = (ProvaList) results.get(results.size()-1);
+					lastReaction = (PList) results.get(results.size()-1);
 				else if( lastReaction.getFixed().length==2 ) {
-					final ProvaObject[] newFixed = new ProvaObject[5];
+					final PObj[] newFixed = new PObj[5];
 					newFixed[0] = lastReaction.getFixed()[0];
 					newFixed[1] = ProvaConstantImpl.create("async");
 					newFixed[2] = ProvaConstantImpl.create(0);
 					newFixed[4] = lastReaction.getFixed()[1];
 					lastReaction = ProvaListImpl.create(newFixed, lastReaction.getTail());
 				}
-				ProvaObject o = lastReaction.getFixed()[2];
-				if( o instanceof ProvaList )
-					lastReaction = (ProvaList) o;
+				PObj o = lastReaction.getFixed()[2];
+				if( o instanceof PList )
+					lastReaction = (PList) o;
 			}
 			lastReaction.getFixed()[3] = ProvaConstantImpl.create(getOperatorName());
 		}
 		lastReaction.getFixed()[4] = content;
-		final ProvaObject cidOriginal = lastReaction.getFixed()[0];
-		final String cid = cidOriginal instanceof ProvaConstant ? ((ProvaConstant) cidOriginal).getObject().toString() : "0";
-		final ProvaObject cidObject = ProvaConstantImpl.create(cid);
+		final PObj cidOriginal = lastReaction.getFixed()[0];
+		final String cid = cidOriginal instanceof Constant ? ((Constant) cidOriginal).getObject().toString() : "0";
+		final PObj cidObject = ProvaConstantImpl.create(cid);
 		lastReaction.getFixed()[0] = cidObject;
-		ProvaLiteral lit = kb.generateHeadLiteral("rcvMsg",lastReaction);
+		Literal lit = kb.newHeadLiteral("rcvMsg",lastReaction);
 		Map<String, List<Object>> meta = new HashMap<String, List<Object>>(1);
 		if( this.templateDynamicGroup!=null )
 			meta.put("group", Arrays.asList(new Object[] {templateDynamicGroup}));
 		else
 			meta.put("group", Arrays.asList(new Object[] {dynamicGroup}));
 		lit.addMetadata(meta);
-		ProvaRule goal = kb.generateGoal(new ProvaLiteral[] {lit,kb.generateLiteral("fail")}).cloneRule();
+		Rule goal = kb.newGoal(new Literal[] {lit,kb.newLiteral("fail")}).cloneRule();
 		if( log.isDebugEnabled() )
 			log.debug("Sent group results: "+goal);
 		if( cid.equals("0") )

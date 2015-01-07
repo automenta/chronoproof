@@ -14,8 +14,8 @@ import org.apache.log4j.Logger;
 import ws.prova.api2.ProvaCommunicator;
 import ws.prova.api2.ProvaCommunicatorImpl;
 import ws.prova.exchange.ProvaSolution;
-import ws.prova.kernel2.ProvaConstant;
-import ws.prova.kernel2.ProvaList;
+import ws.prova.kernel2.Constant;
+import ws.prova.kernel2.PList;
 import ws.prova.service.EPService;
 import ws.prova.service.ProvaService;
 
@@ -114,11 +114,11 @@ public class ProvaServiceImpl implements ProvaService {
 	}
 
 	@Override
-	public void send(String dest, ProvaList terms) {
-		final Object verb = ((ProvaConstant) terms.getFixed()[3]).getObject();
+	public void send(String dest, PList terms) {
+		final Object verb = ((Constant) terms.getFixed()[3]).getObject();
 		if( "present".equals(verb) ) {
 			// Ask the subscriber to start receiving the stream
-			String topic = ((ProvaList) terms.getFixed()[4]).getFixed()[0].toString();
+			String topic = ((PList) terms.getFixed()[4]).getFixed()[0].toString();
 			if( log.isDebugEnabled() )
 				log.debug("Subscriber "+dest+" to receive stream on "+topic);
 			// Register the mapping
@@ -138,7 +138,7 @@ public class ProvaServiceImpl implements ProvaService {
 			return;
 		} else if( "unregister".equals(verb) ) {
 			// Purge the subscription
-			String topic = ((ProvaList) terms.getFixed()[4]).getFixed()[0].toString();
+			String topic = ((PList) terms.getFixed()[4]).getFixed()[0].toString();
 			unregisterMapping(topic, dest);
 			// This message will be forwarded to the subscriber informing them of lease expiration
 		}
@@ -214,8 +214,8 @@ public class ProvaServiceImpl implements ProvaService {
                 case "present":{
                     // Ask the subscriber to start receiving the stream
                     String topic = null;
-                    if( content instanceof ProvaList ) {
-                        topic = ((ProvaConstant) ((ProvaList) content).getFixed()[0]).getObject().toString();
+                    if( content instanceof PList ) {
+                        topic = ((Constant) ((PList) content).getFixed()[0]).getObject().toString();
                     } else {
                         Map<String, Object> payload = (Map<String, Object>) content;
                         topic = payload.get("topic").toString();

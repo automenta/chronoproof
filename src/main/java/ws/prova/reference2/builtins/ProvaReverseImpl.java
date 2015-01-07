@@ -3,17 +3,17 @@ package ws.prova.reference2.builtins;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import ws.prova.agent2.ProvaReagent;
-import ws.prova.kernel2.ProvaDerivationNode;
-import ws.prova.kernel2.ProvaGoal;
-import ws.prova.kernel2.ProvaKnowledgeBase;
-import ws.prova.kernel2.ProvaList;
-import ws.prova.kernel2.ProvaLiteral;
-import ws.prova.kernel2.ProvaObject;
-import ws.prova.kernel2.ProvaPredicate;
-import ws.prova.kernel2.ProvaRule;
-import ws.prova.kernel2.ProvaVariable;
-import ws.prova.kernel2.ProvaVariablePtr;
+import ws.prova.agent2.Reagent;
+import ws.prova.kernel2.Derivation;
+import ws.prova.kernel2.Goal;
+import ws.prova.kernel2.KB;
+import ws.prova.kernel2.PList;
+import ws.prova.kernel2.Literal;
+import ws.prova.kernel2.PObj;
+import ws.prova.kernel2.Predicate;
+import ws.prova.kernel2.Rule;
+import ws.prova.kernel2.Variable;
+import ws.prova.kernel2.VariableIndex;
 import ws.prova.reference2.ProvaListImpl;
 import ws.prova.reference2.ProvaLiteralImpl;
 import ws.prova.reference2.ProvaPredicateImpl;
@@ -21,7 +21,7 @@ import ws.prova.reference2.ProvaRuleImpl;
 
 public class ProvaReverseImpl extends ProvaBuiltinImpl {
 
-	public ProvaReverseImpl(ProvaKnowledgeBase kb) {
+	public ProvaReverseImpl(KB kb) {
 		super(kb,"reverse");
 	}
 
@@ -30,50 +30,50 @@ public class ProvaReverseImpl extends ProvaBuiltinImpl {
 	 * If the output list is not a free variable, unify it against the reversed list in the input list.
 	 */
 	@Override
-	public boolean process(ProvaReagent prova, ProvaDerivationNode node,
-			ProvaGoal goal, List<ProvaLiteral> newLiterals, ProvaRule query) {
-		ProvaLiteral literal = goal.getGoal();
-		List<ProvaVariable> variables = query.getVariables();
-		ProvaList terms = (ProvaList) literal.getTerms();
-		ProvaObject[] data = terms.getFixed();
+	public boolean process(Reagent prova, Derivation node,
+			Goal goal, List<Literal> newLiterals, Rule query) {
+		Literal literal = goal.getGoal();
+		List<Variable> variables = query.getVariables();
+		PList terms = (PList) literal.getTerms();
+		PObj[] data = terms.getFixed();
 		if( data.length!=2 )
 			return false;
-		ProvaObject lt = data[0];
-		if( lt instanceof ProvaVariablePtr ) {
-			ProvaVariablePtr ltPtr = (ProvaVariablePtr) lt;
+		PObj lt = data[0];
+		if( lt instanceof VariableIndex ) {
+			VariableIndex ltPtr = (VariableIndex) lt;
 			lt = variables.get(ltPtr.getIndex()).getRecursivelyAssigned();
 		}
-		if( !(lt instanceof ProvaList) )
+		if( !(lt instanceof PList) )
 			return false;
-		ProvaList list = (ProvaList) lt;
-		if( list.getTail() instanceof ProvaVariable )
+		PList list = (PList) lt;
+		if( list.getTail() instanceof Variable )
 			return false;
 		
-		ProvaObject out = data[1];
-		if( out instanceof ProvaVariablePtr ) {
-			ProvaVariablePtr outPtr = (ProvaVariablePtr) out;
+		PObj out = data[1];
+		if( out instanceof VariableIndex ) {
+			VariableIndex outPtr = (VariableIndex) out;
 			out = variables.get(outPtr.getIndex()).getRecursivelyAssigned();
 		}
-		if( out instanceof ProvaVariable ) {
-			List<ProvaObject> jlist = Arrays.asList(list.getFixed());
+		if( out instanceof Variable ) {
+			List<PObj> jlist = Arrays.asList(list.getFixed());
 			Collections.reverse(jlist);
-			((ProvaVariable) out).setAssigned(ProvaListImpl.create(jlist));
+			((Variable) out).setAssigned(ProvaListImpl.create(jlist));
 			return true;
 		}
-		if( out instanceof ProvaList ) {
-			ProvaList other = (ProvaList) out;
+		if( out instanceof PList ) {
+			PList other = (PList) out;
 			if( other.getTail()!=null )
 				return false;
-			List<ProvaObject> jlist = Arrays.asList(list.getFixed());
+			List<PObj> jlist = Arrays.asList(list.getFixed());
 			Collections.reverse(jlist);
 			// Unify the reversed first argument list with the second argument list
-			ProvaPredicate pred = new ProvaPredicateImpl("",1,kb);
-			ProvaList ls = ProvaListImpl.create( new ProvaObject[] {ProvaListImpl.create(jlist)} );
-			ProvaLiteral lit = new ProvaLiteralImpl(pred,ls);
-			ProvaRule clause = ProvaRuleImpl.createVirtualRule(1, lit, null);
+			Predicate pred = new ProvaPredicateImpl("",1,kb);
+			PList ls = ProvaListImpl.create(new PObj[] {ProvaListImpl.create(jlist)} );
+			Literal lit = new ProvaLiteralImpl(pred,ls);
+			Rule clause = ProvaRuleImpl.createVirtualRule(1, lit, null);
 			pred.addClause(clause);
-			ProvaList outls = ProvaListImpl.create( new ProvaObject[] {other} );
-			ProvaLiteral newLiteral = new ProvaLiteralImpl(pred,outls);
+			PList outls = ProvaListImpl.create(new PObj[] {other} );
+			Literal newLiteral = new ProvaLiteralImpl(pred,outls);
 			newLiterals.add(newLiteral);
 			return true;
 		}

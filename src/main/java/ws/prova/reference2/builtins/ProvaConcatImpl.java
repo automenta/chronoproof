@@ -1,58 +1,58 @@
 package ws.prova.reference2.builtins;
 
 import java.util.List;
-import ws.prova.agent2.ProvaReagent;
-import ws.prova.kernel2.ProvaConstant;
-import ws.prova.kernel2.ProvaDerivationNode;
-import ws.prova.kernel2.ProvaGoal;
-import ws.prova.kernel2.ProvaKnowledgeBase;
-import ws.prova.kernel2.ProvaList;
-import ws.prova.kernel2.ProvaLiteral;
-import ws.prova.kernel2.ProvaObject;
-import ws.prova.kernel2.ProvaRule;
-import ws.prova.kernel2.ProvaVariable;
-import ws.prova.kernel2.ProvaVariablePtr;
+import ws.prova.agent2.Reagent;
+import ws.prova.kernel2.Constant;
+import ws.prova.kernel2.Derivation;
+import ws.prova.kernel2.Goal;
+import ws.prova.kernel2.KB;
+import ws.prova.kernel2.PList;
+import ws.prova.kernel2.Literal;
+import ws.prova.kernel2.PObj;
+import ws.prova.kernel2.Rule;
+import ws.prova.kernel2.Variable;
+import ws.prova.kernel2.VariableIndex;
 import ws.prova.reference2.ProvaConstantImpl;
 
 public class ProvaConcatImpl extends ProvaBuiltinImpl {
 
-	public ProvaConcatImpl(ProvaKnowledgeBase kb) {
+	public ProvaConcatImpl(KB kb) {
 		super(kb,"concat");
 	}
 
 	@Override
-	public boolean process(ProvaReagent prova, ProvaDerivationNode node,
-			ProvaGoal goal, List<ProvaLiteral> newLiterals, ProvaRule query) {
-		ProvaLiteral literal = goal.getGoal();
-		List<ProvaVariable> variables = query.getVariables();
-		ProvaList terms = literal.getTerms();
-		ProvaObject[] data = terms.getFixed();
+	public boolean process(Reagent prova, Derivation node,
+			Goal goal, List<Literal> newLiterals, Rule query) {
+		Literal literal = goal.getGoal();
+		List<Variable> variables = query.getVariables();
+		PList terms = literal.getTerms();
+		PObj[] data = terms.getFixed();
 		if( data.length!=2 )
 				return false;
-		ProvaObject res = data[1];
-		if( res instanceof ProvaVariablePtr ) {
-			ProvaVariablePtr varPtr = (ProvaVariablePtr) res;
+		PObj res = data[1];
+		if( res instanceof VariableIndex ) {
+			VariableIndex varPtr = (VariableIndex) res;
 			res = variables.get(varPtr.getIndex()).getRecursivelyAssigned();
 		}
-		if( !(res instanceof ProvaVariable) && !(res instanceof ProvaConstant) )
+		if( !(res instanceof Variable) && !(res instanceof Constant) )
 			return false;
-		ProvaObject lt = data[0];
-		if( lt instanceof ProvaVariablePtr ) {
-			ProvaVariablePtr varPtr = (ProvaVariablePtr) lt;
+		PObj lt = data[0];
+		if( lt instanceof VariableIndex ) {
+			VariableIndex varPtr = (VariableIndex) lt;
 			lt = variables.get(varPtr.getIndex()).getRecursivelyAssigned();
 		}
-		if( !(lt instanceof ProvaList) )
+		if( !(lt instanceof PList) )
 			return false;
-		ProvaObject[] args = ((ProvaList) ((ProvaList) lt).cloneWithVariables(variables)).getFixed();
+		PObj[] args = ((PList) ((PList) lt).cloneWithVariables(variables)).getFixed();
 		StringBuilder sb = new StringBuilder();
 		for( int i=0; i<args.length; i++ ) {
 			sb.append(args[i].toString());
 		}
 
-		if( res instanceof ProvaVariable )
-			((ProvaVariable) res).setAssigned(ProvaConstantImpl.create(sb.toString()));
-		else if( res instanceof ProvaConstant ) {
-			return ((ProvaConstant) res).getObject().toString().equals(sb.toString());
+		if( res instanceof Variable )
+			((Variable) res).setAssigned(ProvaConstantImpl.create(sb.toString()));
+		else if( res instanceof Constant ) {
+			return ((Constant) res).getObject().toString().equals(sb.toString());
 		}
 		return true;
 	}

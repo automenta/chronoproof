@@ -7,15 +7,15 @@ import org.junit.Test;
 import ws.prova.api2.ProvaCommunicator;
 import ws.prova.api2.ProvaCommunicatorImpl;
 import ws.prova.exchange.ProvaSolution;
-import ws.prova.kernel2.ProvaKnowledgeBase;
-import ws.prova.kernel2.ProvaResolutionInferenceEngine;
-import ws.prova.kernel2.ProvaResultSet;
-import ws.prova.kernel2.ProvaRule;
+import ws.prova.kernel2.KB;
+import ws.prova.kernel2.Inference;
+import ws.prova.kernel2.Results;
+import ws.prova.kernel2.Rule;
 import ws.prova.parser2.ProvaParserImpl;
 import ws.prova.parser2.ProvaParsingException;
-import ws.prova.reference2.ProvaKnowledgeBaseImpl;
-import ws.prova.reference2.ProvaResolutionInferenceEngineImpl;
-import ws.prova.reference2.ProvaResultSetImpl;
+import ws.prova.reference2.DefaultKB;
+import ws.prova.reference2.DefaultInference;
+import ws.prova.reference2.DefaultResults;
 
 public class ProvaJavaCallsTest {
 
@@ -48,55 +48,49 @@ public class ProvaJavaCallsTest {
 
 	@Test
 	public void instanceJavaFunctions() {
-		ProvaKnowledgeBase kb = new ProvaKnowledgeBaseImpl();
-		ProvaResultSet resultSet = new ProvaResultSetImpl();
+		KB kb = new DefaultKB();
+		Results resultSet = new DefaultResults();
 		ProvaParserImpl parser = new ProvaParserImpl("rules/reloaded/typed_constants.prova", new Object[] {});
 		try {
-			List<ProvaRule> rules = parser.parse(kb, resultSet, "rules/reloaded/typed_constants.prova");
+			List<Rule> rules = parser.parse(kb, resultSet, "rules/reloaded/typed_constants.prova");
 			// Run each goal
 			int[] numSolutions = new int[] {1,0,0};
 			int i = 0;
-			for( ProvaRule rule : rules ) {
+			for( Rule rule : rules ) {
 				if( rule.getHead()==null ) {
-					ProvaResolutionInferenceEngine engine = new ProvaResolutionInferenceEngineImpl(kb, rule);
+					Inference engine = new DefaultInference(kb, rule);
 					engine.run();
 
 					org.junit.Assert.assertEquals(numSolutions[i++],resultSet.getSolutions().size());
 					resultSet.getSolutions().clear();
 				}
 			}
-		} catch (ProvaParsingException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		} 
 	}
 
 	@Test
 	public void staticJavaFunctions() {
-		ProvaKnowledgeBase kb = new ProvaKnowledgeBaseImpl();
-		ProvaResultSet resultSet = new ProvaResultSetImpl();
+		KB kb = new DefaultKB();
+		Results resultSet = new DefaultResults();
 		ProvaParserImpl parser = new ProvaParserImpl("rules/reloaded/static_method_call.prova", new Object[] {});
 		try {
-			List<ProvaRule> rules = parser.parse(kb, resultSet, "rules/reloaded/static_method_call.prova");
+			List<Rule> rules = parser.parse(kb, resultSet, "rules/reloaded/static_method_call.prova");
 			// Run each goal
 			int[] numSolutions = new int[] {1,1,0,0};
 			int i = 0;
-			for( ProvaRule rule : rules ) {
+			for( Rule rule : rules ) {
 				if( rule.getHead()==null ) {
-					ProvaResolutionInferenceEngine engine = new ProvaResolutionInferenceEngineImpl(kb, rule);
+					Inference engine = new DefaultInference(kb, rule);
 					engine.run();
 
 					org.junit.Assert.assertEquals(numSolutions[i++],resultSet.getSolutions().size());
 					resultSet.getSolutions().clear();
 				}
 			}
-		} catch (ProvaParsingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -104,17 +98,17 @@ public class ProvaJavaCallsTest {
 
 	@Test
 	public void element_matching() {
-		ProvaKnowledgeBase kb = new ProvaKnowledgeBaseImpl();
-		ProvaResultSet resultSet = new ProvaResultSetImpl();
+		KB kb = new DefaultKB();
+		Results resultSet = new DefaultResults();
 		ProvaParserImpl parser = new ProvaParserImpl("rules/reloaded/element_matching.prova", new Object[] {});
 		try {
-			List<ProvaRule> rules = parser.parse(kb, resultSet, "rules/reloaded/element_matching.prova");
+			List<Rule> rules = parser.parse(kb, resultSet, "rules/reloaded/element_matching.prova");
 			// Run each goal
 			int[] numSolutions = new int[] {3,3,1,3};
 			int i = 0;
-			for( ProvaRule rule : rules ) {
+			for( Rule rule : rules ) {
 				if( rule.getHead()==null ) {
-					ProvaResolutionInferenceEngine engine = new ProvaResolutionInferenceEngineImpl(kb, rule);
+					Inference engine = new DefaultInference(kb, rule);
 					engine.run();
 
 					org.junit.Assert.assertEquals(numSolutions[i++],resultSet.getSolutions().size());
@@ -123,10 +117,7 @@ public class ProvaJavaCallsTest {
 					resultSet.getSolutions().clear();
 				}
 			}
-		} catch (ProvaParsingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

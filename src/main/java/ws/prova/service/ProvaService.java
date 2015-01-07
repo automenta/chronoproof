@@ -4,7 +4,7 @@ import java.io.BufferedReader;
 import java.io.PrintWriter;
 import java.util.List;
 import ws.prova.exchange.ProvaSolution;
-import ws.prova.kernel2.ProvaList;
+import ws.prova.kernel2.PList;
 
 public interface ProvaService extends ProvaMiniService, EPService {
 
@@ -18,7 +18,7 @@ public interface ProvaService extends ProvaMiniService, EPService {
 
 	public List<ProvaSolution[]> consult(String id, String src, String key);
 
-	public void send(String dest, ProvaList terms);
+	public void send(String dest, PList terms);
 
 	public void setGlobalConstant(String agent, String name, Object value);
 

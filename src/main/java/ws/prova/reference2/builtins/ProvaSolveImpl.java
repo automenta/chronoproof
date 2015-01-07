@@ -2,52 +2,52 @@ package ws.prova.reference2.builtins;
 
 import java.io.PrintWriter;
 import java.util.List;
-import ws.prova.agent2.ProvaReagent;
+import ws.prova.agent2.Reagent;
 import ws.prova.exchange.ProvaSolution;
 import ws.prova.exchange.impl.ProvaSolutionImpl;
-import ws.prova.kernel2.ProvaConstant;
-import ws.prova.kernel2.ProvaDerivationNode;
-import ws.prova.kernel2.ProvaGoal;
-import ws.prova.kernel2.ProvaKnowledgeBase;
-import ws.prova.kernel2.ProvaList;
-import ws.prova.kernel2.ProvaLiteral;
-import ws.prova.kernel2.ProvaResultSet;
-import ws.prova.kernel2.ProvaRule;
-import ws.prova.kernel2.ProvaVariable;
-import ws.prova.kernel2.ProvaVariablePtr;
+import ws.prova.kernel2.Constant;
+import ws.prova.kernel2.Derivation;
+import ws.prova.kernel2.Goal;
+import ws.prova.kernel2.KB;
+import ws.prova.kernel2.PList;
+import ws.prova.kernel2.Literal;
+import ws.prova.kernel2.Results;
+import ws.prova.kernel2.Rule;
+import ws.prova.kernel2.Variable;
+import ws.prova.kernel2.VariableIndex;
 
 public class ProvaSolveImpl extends ProvaBuiltinImpl {
 
-	public ProvaSolveImpl(ProvaKnowledgeBase kb) {
+	public ProvaSolveImpl(KB kb) {
 		super(kb,"solve");
 	}
 
 	@Override
-	public boolean process(ProvaReagent prova, ProvaDerivationNode node,
-			ProvaGoal goal, List<ProvaLiteral> newLiterals, ProvaRule query) {
-		ProvaLiteral literal = goal.getGoal();
-		List<ProvaVariable> variables = query.getVariables();
-		ProvaList terms = (ProvaList) literal.getTerms().cloneWithVariables(variables);
-		ProvaResultSet resultSet = null;
+	public boolean process(Reagent prova, Derivation node,
+			Goal goal, List<Literal> newLiterals, Rule query) {
+		Literal literal = goal.getGoal();
+		List<Variable> variables = query.getVariables();
+		PList terms = (PList) literal.getTerms().cloneWithVariables(variables);
+		Results resultSet = null;
 		ProvaSolution solution = null;
 		int offset = 0;
-		if( terms.getFixed().length!=0 && terms.getFixed()[0] instanceof ProvaConstant ) {
+		if( terms.getFixed().length!=0 && terms.getFixed()[0] instanceof Constant ) {
 			offset = 1;
-			resultSet = (ProvaResultSet) ((ProvaConstant) terms.getFixed()[0]).getObject();
+			resultSet = (Results) ((Constant) terms.getFixed()[0]).getObject();
 			solution = new ProvaSolutionImpl();
 		}
 		StringBuilder sb = new StringBuilder();
 		// Iterate over variable (name,value) pairs
 		for( int i=offset; i<terms.getFixed().length; i++ ) {
-			ProvaList nv = (ProvaList) terms.getFixed()[i];
+			PList nv = (PList) terms.getFixed()[i];
 			if( i!=offset )
 				sb.append(", ");
 			final String name = nv.getFixed()[0].toString().replaceAll("\'", "");
 			sb.append(name);
 			sb.append('=');
 			Object value = nv.getFixed()[1];
-			if( value instanceof ProvaVariablePtr ) {
-				ProvaVariablePtr varPtr = (ProvaVariablePtr) value;
+			if( value instanceof VariableIndex ) {
+				VariableIndex varPtr = (VariableIndex) value;
 				value = variables.get(varPtr.getIndex()).getRecursivelyAssigned();
 			}
 			sb.append(value);
@@ -56,7 +56,7 @@ public class ProvaSolveImpl extends ProvaBuiltinImpl {
 			}
 		}
 		// This goes to whatever output is chosen
-		PrintWriter writer = kb.getPrintWriter();
+		PrintWriter writer = kb.getPrinter();
 		if( sb.length()==0 )
 			writer.println("yes");
 		else

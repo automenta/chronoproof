@@ -5,39 +5,39 @@ import java.util.Map;
 import java.util.concurrent.RejectedExecutionException;
 import ws.prova.agent2.ProvaReagentImpl;
 
-public interface ProvaRule extends Runnable {
+public interface Rule extends Runnable {
 
     public void collectVariables();
 
-    public List<ProvaVariable> getVariables();
+    public List<Variable> getVariables();
 
-    public List<ProvaVariable> cloneVariables();
+    public List<Variable> cloneVariables();
 
-    public ProvaLiteral getHead();
+    public Literal getHead();
 
-    public ProvaLiteral[] getBody();
+    public Literal[] getBody();
 
     public long getRuleId();
 
-    public ProvaRule cloneRule();
+    public Rule cloneRule();
 
     public boolean advance();
 
-    public ProvaLiteral getTop();
+    public Literal getTop();
 
-    public void setVariables(List<ProvaVariable> variables);
+    public void setVariables(List<Variable> variables);
 
-    public void substituteVariables(ProvaVariablePtr[] varsMap);
+    public void substituteVariables(VariableIndex[] varsMap);
 
     public void setRuleId(long ruleId);
 
     public int getOffset();
 
-    public void addBodyLiteral(ProvaLiteral literal);
+    public void addBodyLiteral(Literal literal);
 
-    public void replaceTopBodyLiteral(List<ProvaLiteral> newLiterals);
+    public void replaceTopBodyLiteral(List<Literal> newLiterals);
 
-    public ProvaRule cloneRule(boolean cloneVariables);
+    public Rule cloneRule(boolean cloneVariables);
 
     public void collectVariables(int offset);
 
@@ -67,7 +67,7 @@ public interface ProvaRule extends Runnable {
 
     public int getLine();
 
-    public ProvaLiteral[] getGuardedBody(ProvaLiteral sourceLiteral);
+    public Literal[] getGuardedBody(Literal sourceLiteral);
 
     public void setSrc(List<Object> value);
 

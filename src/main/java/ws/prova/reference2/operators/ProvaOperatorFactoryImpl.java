@@ -1,7 +1,7 @@
 package ws.prova.reference2.operators;
 
-import ws.prova.kernel2.ProvaConstant;
-import ws.prova.kernel2.ProvaObject;
+import ws.prova.kernel2.Constant;
+import ws.prova.kernel2.PObj;
 
 public class ProvaOperatorFactoryImpl {
 
@@ -21,9 +21,9 @@ public class ProvaOperatorFactoryImpl {
 		else throw new RuntimeException("Invalid operator "+op);
 	}
 
-	public static ProvaOperator createFunctionCall( ProvaObject otype, ProvaObject omethod ) {
-		String type = ((ProvaConstant) otype).getObject().toString();
-		String method = ((ProvaConstant) omethod).getObject().toString();
+	public static ProvaOperator createFunctionCall( PObj otype, PObj omethod ) {
+		String type = ((Constant) otype).getObject().toString();
+		String method = ((Constant) omethod).getObject().toString();
 		return new ProvaFcalcImpl(type,method);
 	}
 

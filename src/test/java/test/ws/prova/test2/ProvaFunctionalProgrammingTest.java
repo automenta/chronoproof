@@ -11,8 +11,8 @@ import org.junit.Test;
 import ws.prova.api2.ProvaCommunicator;
 import ws.prova.api2.ProvaCommunicatorImpl;
 import ws.prova.exchange.ProvaSolution;
-import ws.prova.kernel2.ProvaList;
-import ws.prova.kernel2.ProvaObject;
+import ws.prova.kernel2.PList;
+import ws.prova.kernel2.PObj;
 import ws.prova.reference2.ProvaConstantImpl;
 import ws.prova.reference2.ProvaListImpl;
 import ws.prova.reference2.ProvaMapImpl;
@@ -72,7 +72,7 @@ public class ProvaFunctionalProgrammingTest {
 				accountId = (accountId+1) % 1000;
 				Map<String,Integer> payload1 = new HashMap<String,Integer>(1);
 				payload1.put("s", shift);
-				ProvaList terms = ProvaListImpl.create( new ProvaObject[] {
+				PList terms = ProvaListImpl.create(new PObj[] {
 						ProvaConstantImpl.create(""+accountId),
 						ProvaConstantImpl.create("async"),
 						ProvaConstantImpl.create(0),
@@ -120,7 +120,7 @@ public class ProvaFunctionalProgrammingTest {
 				accountId = (accountId+1) % 10000;
 				Map<String,Integer> payload1 = new HashMap<String,Integer>(1);
 				payload1.put("s", shift);
-				ProvaList terms = ProvaListImpl.create( new ProvaObject[] {
+				PList terms = ProvaListImpl.create(new PObj[] {
 						ProvaConstantImpl.create(""+accountId),
 						ProvaConstantImpl.create("async"),
 						ProvaConstantImpl.create(0),

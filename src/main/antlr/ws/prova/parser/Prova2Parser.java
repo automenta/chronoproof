@@ -117,8 +117,8 @@ public void setTreeAdaptor(TreeAdaptor adaptor) {
 public TreeAdaptor getTreeAdaptor() {
     return adaptor;
 }
-    public String[] getTokenNames() { return Prova2Parser.tokenNames; }
-    public String getGrammarFileName() { return "C:\\home\\kozlenkova\\git\\prova\\src\\main\\antlr\\ws\\prova\\parser\\Prova2.g"; }
+    //public String[] getTokenNames() { return Prova2Parser.tokenNames; }
+    //public String getGrammarFileName() { return "C:\\home\\kozlenkova\\git\\prova\\src\\main\\antlr\\ws\\prova\\parser\\Prova2.g"; }
 
 
         private ProvaErrorReporter errorReporter = null;

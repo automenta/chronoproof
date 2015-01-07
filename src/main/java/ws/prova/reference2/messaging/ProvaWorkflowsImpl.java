@@ -8,13 +8,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.locks.ReentrantLock;
 import org.apache.log4j.Logger;
-import ws.prova.kernel2.ProvaConstant;
-import ws.prova.kernel2.ProvaKnowledgeBase;
-import ws.prova.kernel2.ProvaList;
-import ws.prova.kernel2.ProvaLiteral;
-import ws.prova.kernel2.ProvaObject;
-import ws.prova.kernel2.ProvaRule;
-import ws.prova.kernel2.ProvaVariable;
+import ws.prova.kernel2.Constant;
+import ws.prova.kernel2.KB;
+import ws.prova.kernel2.PList;
+import ws.prova.kernel2.Literal;
+import ws.prova.kernel2.PObj;
+import ws.prova.kernel2.Rule;
+import ws.prova.kernel2.Variable;
 import ws.prova.kernel2.messaging.ProvaWorkflows;
 import ws.prova.reference2.ProvaConstantImpl;
 import ws.prova.reference2.ProvaListImpl;
@@ -26,48 +26,48 @@ public class ProvaWorkflowsImpl implements ProvaWorkflows {
 
 	private final static Logger log = Logger.getLogger("prova");
 
-	private final ProvaKnowledgeBase kb;
+	private final KB kb;
 
-	private final ConcurrentMap<String,List<List<ProvaObject>>> join_record = new ConcurrentHashMap<String, List<List<ProvaObject>>>();
+	private final ConcurrentMap<String,List<List<PObj>>> join_record = new ConcurrentHashMap<String, List<List<PObj>>>();
 
 	private final ConcurrentMap<String,Object[]> predicate_join_record = new ConcurrentHashMap<String,Object[]>();
 
 	private final ConcurrentMap<String,ReentrantLock> predicate_join_locks = new ConcurrentHashMap<String,ReentrantLock>();
 
-	public ProvaWorkflowsImpl(ProvaKnowledgeBase kb) {
+	public ProvaWorkflowsImpl(KB kb) {
 		this.kb = kb;
 	}
 
 	@Override
-	public boolean init_join(ProvaLiteral literal,
-			List<ProvaLiteral> newLiterals, ProvaRule query) {
-		List<ProvaVariable> variables = query.getVariables();
-		ProvaList terms = literal.getTerms();
-		ProvaList termsCopy = (ProvaList) terms.cloneWithVariables(variables);
-		ProvaObject[] data = termsCopy.getFixed();
-		if( !(data[0] instanceof ProvaConstant) || !(data[1] instanceof ProvaConstant) )
+	public boolean init_join(Literal literal,
+			List<Literal> newLiterals, Rule query) {
+		List<Variable> variables = query.getVariables();
+		PList terms = literal.getTerms();
+		PList termsCopy = (PList) terms.cloneWithVariables(variables);
+		PObj[] data = termsCopy.getFixed();
+		if( !(data[0] instanceof Constant) || !(data[1] instanceof Constant) )
 			return false;
 		// Key is XID+JoinID
-		String key = ((ProvaConstant) data[0]).getObject().toString() + ((ProvaConstant) data[1]).getObject().toString(); 
+		String key = ((Constant) data[0]).getObject().toString() + ((Constant) data[1]).getObject().toString(); 
 		if( join_record.containsKey(key) )
 			return false;
-		ProvaObject[] expectedList = null;
-		if( data[2].getClass()==ProvaConstantImpl.class && ((ProvaConstant) data[2]).getObject() instanceof List ) {
-			final List list = (List) ((ProvaConstant) data[2]).getObject();
-			final List<ProvaObject> wrappedList = new ArrayList<ProvaObject>();
+		PObj[] expectedList = null;
+		if( data[2].getClass()==ProvaConstantImpl.class && ((Constant) data[2]).getObject() instanceof List ) {
+			final List list = (List) ((Constant) data[2]).getObject();
+			final List<PObj> wrappedList = new ArrayList<PObj>();
 			for( Object o : list ) {
 				wrappedList.add( ProvaMapImpl.wrap(o));
 			}
-			expectedList = (ProvaObject[]) wrappedList.toArray(new ProvaObject[wrappedList.size()]);
+			expectedList = (PObj[]) wrappedList.toArray(new PObj[wrappedList.size()]);
 		} else {
-			if( !(data[2] instanceof ProvaList) )
+			if( !(data[2] instanceof PList) )
 				return false;
-			expectedList = ((ProvaList) data[2]).getFixed();
+			expectedList = ((PList) data[2]).getFixed();
 		}
-		List<ProvaObject> waiting = new ArrayList<ProvaObject>();
+		List<PObj> waiting = new ArrayList<PObj>();
                 waiting.addAll(Arrays.asList(expectedList));
-		List<ProvaObject> complete = new ArrayList<ProvaObject>();
-		List<List<ProvaObject>> record = new ArrayList<List<ProvaObject>>();
+		List<PObj> complete = new ArrayList<PObj>();
+		List<List<PObj>> record = new ArrayList<List<PObj>>();
 		record.add(waiting);
 		record.add(complete);
 		join_record.put(key,record);
@@ -75,26 +75,26 @@ public class ProvaWorkflowsImpl implements ProvaWorkflows {
 	}
 
 	@Override
-	public boolean join_test(ProvaLiteral literal,
-			List<ProvaLiteral> newLiterals, ProvaRule query) {
-		List<ProvaVariable> variables = query.getVariables();
-		ProvaList terms = literal.getTerms();
-		ProvaList termsCopy = (ProvaList) terms.cloneWithVariables(variables);
-		ProvaObject[] data = termsCopy.getFixed();
-		if( !(data[1] instanceof ProvaConstant) || !(data[2] instanceof ProvaConstant) 
-				|| !(data[4] instanceof ProvaVariable))
+	public boolean join_test(Literal literal,
+			List<Literal> newLiterals, Rule query) {
+		List<Variable> variables = query.getVariables();
+		PList terms = literal.getTerms();
+		PList termsCopy = (PList) terms.cloneWithVariables(variables);
+		PObj[] data = termsCopy.getFixed();
+		if( !(data[1] instanceof Constant) || !(data[2] instanceof Constant) 
+				|| !(data[4] instanceof Variable))
 			return false;
 		// Key is XID+JoinID
-		String key = ((ProvaConstant) data[1]).getObject().toString() + ((ProvaConstant) data[2]).getObject().toString(); 
-		List<List<ProvaObject>> waitingAndComplete = join_record.get(key);
+		String key = ((Constant) data[1]).getObject().toString() + ((Constant) data[2]).getObject().toString(); 
+		List<List<PObj>> waitingAndComplete = join_record.get(key);
 		if( waitingAndComplete==null )
 			return false;
-		ProvaLiteral goalLit = kb.generateLiteral("pred1",ProvaListImpl.create(new ProvaObject[] {data[3]}));
-		ProvaRule goal = kb.generateGoal(new ProvaLiteral[] {goalLit});
-		for (ListIterator<ProvaObject> iter = waitingAndComplete.get(0).listIterator(); iter.hasNext();) {
-			ProvaObject t = iter.next().cloneWithVariables(variables);
-			ProvaLiteral lit = kb.generateLiteral("pred1",ProvaListImpl.create(new ProvaObject[] {t}));
-			ProvaRule rule = ProvaRuleImpl.createVirtualRule(1, lit, null);
+		Literal goalLit = kb.newLiteral("pred1",ProvaListImpl.create(new PObj[] {data[3]}));
+		Rule goal = kb.newGoal(new Literal[] {goalLit});
+		for (ListIterator<PObj> iter = waitingAndComplete.get(0).listIterator(); iter.hasNext();) {
+			PObj t = iter.next().cloneWithVariables(variables);
+			Literal lit = kb.newLiteral("pred1",ProvaListImpl.create(new PObj[] {t}));
+			Rule rule = ProvaRuleImpl.createVirtualRule(1, lit, null);
 			ProvaUnificationImpl unification = new ProvaUnificationImpl(goal, rule);
 			boolean result = unification.unify();
 			if( !result )
@@ -103,7 +103,7 @@ public class ProvaWorkflowsImpl implements ProvaWorkflows {
 			waitingAndComplete.get(1).add(data[3]);
 			if (waitingAndComplete.get(0).isEmpty()) {
 				join_record.remove(key);
-				((ProvaVariable) data[4]).setAssigned(ProvaConstantImpl.create(waitingAndComplete.get(1)));
+				((Variable) data[4]).setAssigned(ProvaConstantImpl.create(waitingAndComplete.get(1)));
 				return true;
 			}
 		}
@@ -111,43 +111,43 @@ public class ProvaWorkflowsImpl implements ProvaWorkflows {
 	}
 
 	@Override
-	public boolean init_predicate_join(ProvaLiteral literal,
-			List<ProvaLiteral> newLiterals, ProvaRule query) {
-		List<ProvaVariable> variables = query.getVariables();
-		ProvaList terms = literal.getTerms();
-		ProvaList termsCopy = (ProvaList) terms.cloneWithVariables(variables);
-		ProvaObject[] data = termsCopy.getFixed();
-		if( !(data[0] instanceof ProvaConstant) || !(data[1] instanceof ProvaConstant) 
-				|| !(data[3] instanceof ProvaConstant) || !(data[2] instanceof ProvaList) )
+	public boolean init_predicate_join(Literal literal,
+			List<Literal> newLiterals, Rule query) {
+		List<Variable> variables = query.getVariables();
+		PList terms = literal.getTerms();
+		PList termsCopy = (PList) terms.cloneWithVariables(variables);
+		PObj[] data = termsCopy.getFixed();
+		if( !(data[0] instanceof Constant) || !(data[1] instanceof Constant) 
+				|| !(data[3] instanceof Constant) || !(data[2] instanceof PList) )
 			return false;
 		// Key is XID+JoinID
-		String key = ((ProvaConstant) data[0]).getObject().toString() + ((ProvaConstant) data[1]).getObject().toString(); 
+		String key = ((Constant) data[0]).getObject().toString() + ((Constant) data[1]).getObject().toString(); 
 		if( predicate_join_record.containsKey(key) )
 			return false;
-		ProvaObject[] expectedList = ((ProvaList) data[2]).getFixed();
-		List<ProvaObject> waiting = new ArrayList<ProvaObject>();
-		for( ProvaObject expected : expectedList ) {
-			if( !(expected instanceof ProvaList) )
+		PObj[] expectedList = ((PList) data[2]).getFixed();
+		List<PObj> waiting = new ArrayList<PObj>();
+		for( PObj expected : expectedList ) {
+			if( !(expected instanceof PList) )
 				return false;
 			waiting.add(expected);
 		}
-		List<ProvaObject> complete = new ArrayList<ProvaObject>();
-		predicate_join_record.put(key,new Object[] {((ProvaConstant) data[3]).getObject(),waiting,complete});
+		List<PObj> complete = new ArrayList<PObj>();
+		predicate_join_record.put(key,new Object[] {((Constant) data[3]).getObject(),waiting,complete});
 		return true;
 	}
 
 	@Override
-	public boolean stop_predicate_join(ProvaLiteral literal,
-			List<ProvaLiteral> newLiterals, ProvaRule query) {
-		List<ProvaVariable> variables = query.getVariables();
-		ProvaList terms = literal.getTerms();
-		ProvaList termsCopy = (ProvaList) terms.cloneWithVariables(variables);
-		ProvaObject[] data = termsCopy.getFixed();
-		if( !(data[0] instanceof ProvaConstant) || !(data[1] instanceof ProvaConstant) )
+	public boolean stop_predicate_join(Literal literal,
+			List<Literal> newLiterals, Rule query) {
+		List<Variable> variables = query.getVariables();
+		PList terms = literal.getTerms();
+		PList termsCopy = (PList) terms.cloneWithVariables(variables);
+		PObj[] data = termsCopy.getFixed();
+		if( !(data[0] instanceof Constant) || !(data[1] instanceof Constant) )
 			return false;
 
 		// Key is XID+JoinID
-		String key = ((ProvaConstant) data[0]).getObject().toString() + ((ProvaConstant) data[1]).getObject().toString();
+		String key = ((Constant) data[0]).getObject().toString() + ((Constant) data[1]).getObject().toString();
 		predicate_join_record.remove(key);
 		ReentrantLock lock = (ReentrantLock) predicate_join_locks.get(key);
 		try {
@@ -160,18 +160,18 @@ public class ProvaWorkflowsImpl implements ProvaWorkflows {
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public boolean predicate_join_test(ProvaLiteral literal,
-			List<ProvaLiteral> newLiterals, ProvaRule query) {
+	public boolean predicate_join_test(Literal literal,
+			List<Literal> newLiterals, Rule query) {
 		boolean rc = false;
-		List<ProvaVariable> variables = query.getVariables();
-		ProvaList terms = literal.getTerms();
-		ProvaList termsCopy = (ProvaList) terms.cloneWithVariables(variables);
-		ProvaObject[] data = termsCopy.getFixed();
-		if( !(data[0] instanceof ProvaConstant) || !(data[1] instanceof ProvaConstant) 
-				|| !(data[2] instanceof ProvaList) || !(data[3] instanceof ProvaList))
+		List<Variable> variables = query.getVariables();
+		PList terms = literal.getTerms();
+		PList termsCopy = (PList) terms.cloneWithVariables(variables);
+		PObj[] data = termsCopy.getFixed();
+		if( !(data[0] instanceof Constant) || !(data[1] instanceof Constant) 
+				|| !(data[2] instanceof PList) || !(data[3] instanceof PList))
 			return false;
 		// Key is XID+JoinID
-		String key = ((ProvaConstant) data[0]).getObject().toString() + ((ProvaConstant) data[1]).getObject().toString(); 
+		String key = ((Constant) data[0]).getObject().toString() + ((Constant) data[1]).getObject().toString(); 
 		ReentrantLock lock = null;
 		synchronized (predicate_join_locks ) {
 			lock = (ReentrantLock) predicate_join_locks.get(key);
@@ -184,27 +184,27 @@ public class ProvaWorkflowsImpl implements ProvaWorkflows {
 		try {
 			Object[] value = (Object[]) predicate_join_record.get(key);
 			String joinPredicate = (String) value[0];
-			List<ProvaList> complete = (List<ProvaList>) value[2];
+			List<PList> complete = (List<PList>) value[2];
 			if (value[1] instanceof Long) {
 				// TODO: timeout processing
 			} else {
-				ProvaLiteral goalLit = kb.generateLiteral("pred1",(ProvaList) data[2]);
-				ProvaRule goal = kb.generateGoal(new ProvaLiteral[] {goalLit});
-				List<ProvaList> waiting = (List<ProvaList>) value[1];
-				for (ListIterator<ProvaList> iter = waiting.listIterator(); iter.hasNext();) {
-					ProvaList t = (ProvaList) iter.next().cloneWithVariables(variables);
-					ProvaLiteral lit = kb.generateLiteral("pred1",t);
-					ProvaRule rule = ProvaRuleImpl.createVirtualRule(1, lit, null);
+				Literal goalLit = kb.newLiteral("pred1",(PList) data[2]);
+				Rule goal = kb.newGoal(new Literal[] {goalLit});
+				List<PList> waiting = (List<PList>) value[1];
+				for (ListIterator<PList> iter = waiting.listIterator(); iter.hasNext();) {
+					PList t = (PList) iter.next().cloneWithVariables(variables);
+					Literal lit = kb.newLiteral("pred1",t);
+					Rule rule = ProvaRuleImpl.createVirtualRule(1, lit, null);
 					ProvaUnificationImpl unification = new ProvaUnificationImpl(goal, rule);
 					boolean result = unification.unify();
 					if( !result )
 						continue;
 					iter.remove();
-					complete.add((ProvaList) data[2]);
-					((ProvaVariable) data[4]).setAssigned(ProvaConstantImpl.create(joinPredicate));
-					((ProvaVariable) data[5]).setAssigned(ProvaConstantImpl.create(waiting));
-					((ProvaVariable) data[6]).setAssigned(ProvaConstantImpl.create(complete.size()));
-					((ProvaVariable) data[7]).setAssigned(ProvaConstantImpl.create(complete));
+					complete.add((PList) data[2]);
+					((Variable) data[4]).setAssigned(ProvaConstantImpl.create(joinPredicate));
+					((Variable) data[5]).setAssigned(ProvaConstantImpl.create(waiting));
+					((Variable) data[6]).setAssigned(ProvaConstantImpl.create(complete.size()));
+					((Variable) data[7]).setAssigned(ProvaConstantImpl.create(complete));
 					rc = true;
 					break;
 				}
@@ -218,21 +218,21 @@ public class ProvaWorkflowsImpl implements ProvaWorkflows {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public boolean predicate_join_exit(ProvaLiteral literal,
-			List<ProvaLiteral> newLiterals, ProvaRule query) {
-		List<ProvaVariable> variables = query.getVariables();
-		ProvaList terms = literal.getTerms();
-		ProvaList termsCopy = (ProvaList) terms.cloneWithVariables(variables);
-		ProvaObject[] data = termsCopy.getFixed();
-		if( !(data[0] instanceof ProvaConstant) || !(data[1] instanceof ProvaConstant) )
+	public boolean predicate_join_exit(Literal literal,
+			List<Literal> newLiterals, Rule query) {
+		List<Variable> variables = query.getVariables();
+		PList terms = literal.getTerms();
+		PList termsCopy = (PList) terms.cloneWithVariables(variables);
+		PObj[] data = termsCopy.getFixed();
+		if( !(data[0] instanceof Constant) || !(data[1] instanceof Constant) )
 			return false;
 		// Key is XID+JoinID
-		String key = ((ProvaConstant) data[0]).getObject().toString() + ((ProvaConstant) data[1]).getObject().toString(); 
+		String key = ((Constant) data[0]).getObject().toString() + ((Constant) data[1]).getObject().toString(); 
 		try {
-			if( !(data[2] instanceof ProvaConstant) ) {
+			if( !(data[2] instanceof Constant) ) {
 				
 			} else {
-				Object state = ((ProvaConstant) data[2]).getObject();
+				Object state = ((Constant) data[2]).getObject();
 				if (state.equals("reset")) {
 					Object[] value = (Object[]) predicate_join_record.get(key);
 					if( value==null )
@@ -241,8 +241,8 @@ public class ProvaWorkflowsImpl implements ProvaWorkflows {
 					if( value[2] instanceof Integer ) {
 						// TODO: deal with reset for pattern joins
 					}
-					List<ProvaList> waiting = (List<ProvaList>) value[1];
-					List<ProvaList> complete = (List<ProvaList>) value[2];
+					List<PList> waiting = (List<PList>) value[1];
+					List<PList> complete = (List<PList>) value[2];
 					waiting.addAll(complete);
 					complete.clear();
 				} else if(state.equals("stop")) {

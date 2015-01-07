@@ -1,24 +1,24 @@
 package ws.prova.reference2.messaging;
 
-import ws.prova.kernel2.ProvaList;
-import ws.prova.kernel2.ProvaPredicate;
+import ws.prova.kernel2.PList;
+import ws.prova.kernel2.Predicate;
 
 public class RemoveList {
 
 	// Predicate for reaction rule
-	private final ProvaPredicate p1;
+	private final Predicate p1;
 	
-	private final ProvaPredicate p2;
+	private final Predicate p2;
 	
 	private final long ruleid;
 	
-	private ProvaList reaction;
+	private PList reaction;
 	
 	private boolean not;
 
 	private boolean optional;
 
-	public RemoveList(ProvaPredicate p1, ProvaPredicate p2, long ruleid, ProvaList reaction) {
+	public RemoveList(Predicate p1, Predicate p2, long ruleid, PList reaction) {
 		this.p1 = p1;
 		this.p2 = p2;
 		this.ruleid = ruleid;
@@ -26,11 +26,11 @@ public class RemoveList {
 		this.not = false;
 	}
 
-	public ProvaPredicate getP1() {
+	public Predicate getP1() {
 		return p1;
 	}
 
-	public ProvaPredicate getP2() {
+	public Predicate getP2() {
 		return p2;
 	}
 
@@ -38,11 +38,11 @@ public class RemoveList {
 		return ruleid;
 	}
 
-	public ProvaList getReaction() {
+	public PList getReaction() {
 		return reaction;
 	}
 
-	public void setReaction( ProvaList reaction ) {
+	public void setReaction( PList reaction ) {
 		this.reaction = reaction;
 	}
 

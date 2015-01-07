@@ -5,25 +5,25 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import ws.prova.kernel2.ProvaGoal;
-import ws.prova.kernel2.ProvaList;
-import ws.prova.kernel2.ProvaLiteral;
-import ws.prova.kernel2.ProvaObject;
-import ws.prova.kernel2.ProvaPredicate;
-import ws.prova.kernel2.ProvaRule;
-import ws.prova.kernel2.ProvaUnification;
-import ws.prova.kernel2.ProvaVariable;
-import ws.prova.kernel2.ProvaVariablePtr;
+import ws.prova.kernel2.Goal;
+import ws.prova.kernel2.PList;
+import ws.prova.kernel2.Literal;
+import ws.prova.kernel2.PObj;
+import ws.prova.kernel2.Predicate;
+import ws.prova.kernel2.Rule;
+import ws.prova.kernel2.Unification;
+import ws.prova.kernel2.Variable;
+import ws.prova.kernel2.VariableIndex;
 import ws.prova.kernel2.cache.ProvaCacheState;
-import ws.prova.kernel2.cache.ProvaLocalAnswers;
+import ws.prova.kernel2.cache.Answers;
 
-public class ProvaLiteralImpl implements ProvaLiteral {
+public class ProvaLiteralImpl implements Literal {
 
 	private static final long serialVersionUID = 9180554897688659494L;
 
-	protected final ProvaPredicate predicate;
+	protected final Predicate predicate;
 	
-	protected ProvaList terms;
+	protected PList terms;
 
 	protected boolean ground = false;
 
@@ -33,14 +33,14 @@ public class ProvaLiteralImpl implements ProvaLiteral {
 
 	protected int line;
 	
-	public static ThreadLocal<Map<Object, ProvaObject>> tlVars = new ThreadLocal<Map<Object, ProvaObject>>();
+	public static ThreadLocal<Map<Object, PObj>> tlVars = new ThreadLocal<Map<Object, PObj>>();
 
-	public ProvaLiteralImpl(ProvaPredicate predicate, ProvaList terms) {
+	public ProvaLiteralImpl(Predicate predicate, PList terms) {
 		this.predicate = predicate;
 		this.terms = terms;
 	}
 
-	public ProvaLiteralImpl(ProvaPredicate predicate, ProvaList terms,
+	public ProvaLiteralImpl(Predicate predicate, PList terms,
 			Map<String, List<Object>> metadata) {
 		this.predicate = predicate;
 		this.terms = terms;
@@ -48,22 +48,22 @@ public class ProvaLiteralImpl implements ProvaLiteral {
 	}
 
 	@Override
-	public ProvaPredicate getPredicate() {
+	public Predicate getPredicate() {
 		return predicate;
 	}
 
 	@Override
-	public ProvaList getTerms() {
+	public PList getTerms() {
 		return terms;
 	}
 
 	@Override
-	public void setTerms(ProvaList terms) {
+	public void setTerms(PList terms) {
 		this.terms = terms;
 	}
 	
 	@Override
-	public int collectVariables(long ruleId, List<ProvaVariable> variables) {
+	public int collectVariables(long ruleId, List<Variable> variables) {
 		if( ground || terms==null )
 			return -1;
 		int rc = terms.collectVariables(ruleId, variables);
@@ -73,7 +73,7 @@ public class ProvaLiteralImpl implements ProvaLiteral {
 	}
 
 	@Override
-	public ProvaObject getRecursivelyAssigned() {
+	public PObj getRecursivelyAssigned() {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -95,7 +95,7 @@ public class ProvaLiteralImpl implements ProvaLiteral {
 //	}
 
 	@Override
-	public void substituteVariables(ProvaVariablePtr[] varsMap) {
+	public void substituteVariables(VariableIndex[] varsMap) {
 		if( ground )
 			return;
 		if( terms!=null )
@@ -103,16 +103,16 @@ public class ProvaLiteralImpl implements ProvaLiteral {
 	}
 
 	@Override
-	public boolean unify(ProvaObject target, ProvaUnification unification) {
-		ProvaLiteral targetLiteral = (ProvaLiteral) target;
+	public boolean unify(PObj target, Unification unification) {
+		Literal targetLiteral = (Literal) target;
 		return terms.unify(targetLiteral.getTerms(), unification); 
 	}
 
 	@Override
-	public ProvaLiteral rebuild(final ProvaUnification unification) {
+	public Literal rebuild(final Unification unification) {
 		if( ground || terms==null )
 			return this;
-		ProvaList newTerms = terms.rebuild(unification);
+		PList newTerms = terms.rebuild(unification);
 		final ProvaLiteralImpl ret = new ProvaLiteralImpl(predicate, newTerms);
 		ret.sourceCode = this.sourceCode;
 		ret.line = this.line;
@@ -121,28 +121,28 @@ public class ProvaLiteralImpl implements ProvaLiteral {
 		return ret;
 	}
 
-	protected void copyMetadata(ProvaUnification unification,
+	protected void copyMetadata(Unification unification,
 		final ProvaLiteralImpl ret) {
 		// Make variable substitutions in the metadata if it contains variables
 		ret.metadata = new HashMap<String, List<Object>>(this.metadata);
 		for( Entry<String,List<Object>> e : metadata.entrySet() ) {
 			for( int i=0; i<e.getValue().size(); i++ ) {
 				Object o = e.getValue().get(i);
-				if( o instanceof ProvaVariable ) {
-					Object oo = ((ProvaVariable) o).getAssigned();
-					if( oo==null || !(oo instanceof ProvaVariable) )
+				if( o instanceof Variable ) {
+					Object oo = ((Variable) o).getAssigned();
+					if( oo==null || !(oo instanceof Variable) )
 						oo = o;
 					for( int j=0; j<unification.getTarget().getVariables().size(); j++ ) {
-						ProvaVariable var = unification.getTarget().getVariables().get(j);
+						Variable var = unification.getTarget().getVariables().get(j);
 						if( var==oo ) {
-							Map<Object, ProvaObject> vars = tlVars.get();
+							Map<Object, PObj> vars = tlVars.get();
 							if( vars==null ) {
-								vars = new HashMap<Object, ProvaObject>();
+								vars = new HashMap<Object, PObj>();
 								tlVars.set(vars);
 							}
 							// Note that this entry must be cleared immediately after the metadata value is used.
 							// So far only ProvaAndGroupImpl does that.
-							vars.put(((ProvaVariable) o).getName(), ((ProvaVariable) unification.getTargetVariables().get(j)).getAssigned());
+							vars.put(((Variable) o).getName(), ((Variable) unification.getTargetVariables().get(j)).getAssigned());
 						}
 					}
 				}
@@ -151,10 +151,10 @@ public class ProvaLiteralImpl implements ProvaLiteral {
 	}
 
 	@Override
-	public ProvaLiteral rebuildSource(ProvaUnification unification) {
+	public Literal rebuildSource(Unification unification) {
 		if( ground || terms==null )
 			return this;
-		ProvaList newTerms = terms.rebuildSource(unification);
+		PList newTerms = terms.rebuildSource(unification);
 		return new ProvaLiteralImpl(predicate, newTerms, metadata);
 	}
 
@@ -168,7 +168,7 @@ public class ProvaLiteralImpl implements ProvaLiteral {
 	}
 
 	@Override
-	public void addClause(ProvaRule clause) {
+	public void addClause(Rule clause) {
 //		ProvaKnowledgeBase kb = predicate.getKnowledgeBase();
 		predicate.addClause(clause);
 //		kb.getPredicates(predicate.getSymbol(), predicate.getArity()).add(clause);
@@ -176,7 +176,7 @@ public class ProvaLiteralImpl implements ProvaLiteral {
 	}
 
 	@Override
-	public void addClauseA(ProvaRule clause) {
+	public void addClauseA(Rule clause) {
 //		ProvaKnowledgeBase kb = predicate.getKnowledgeBase();
 		predicate.addClauseA(clause);
 //		kb.getPredicates(predicate.getSymbol(), predicate.getArity()).add(clause);
@@ -189,7 +189,7 @@ public class ProvaLiteralImpl implements ProvaLiteral {
 	}
 
 	@Override
-	public void setGoal(ProvaGoal goal) {
+	public void setGoal(Goal goal) {
 	}
 
 	@Override
@@ -199,7 +199,7 @@ public class ProvaLiteralImpl implements ProvaLiteral {
 	}
 
 	@Override
-	public ProvaLocalAnswers getAnswers() {
+	public Answers getAnswers() {
 		// Should not be called
 		return null;
 	}
@@ -209,19 +209,19 @@ public class ProvaLiteralImpl implements ProvaLiteral {
 	}
 
 	@Override
-	public ProvaGoal getGoal() {
+	public Goal getGoal() {
 		// Should not be called
 		return null;
 	}
 
 	@Override
-	public String toString(List<ProvaVariable> variables) {
+	public String toString(List<Variable> variables) {
 		return toString();
 	}
 
 	@Override
-	public ProvaLiteral cloneWithBoundVariables(final ProvaUnification unification,
-			final List<ProvaVariable> variables, final List<Boolean> isConstant) {
+	public Literal cloneWithBoundVariables(final Unification unification,
+			final List<Variable> variables, final List<Boolean> isConstant) {
 		final ProvaLiteralImpl ret = (ProvaLiteralImpl) cloneWithBoundVariables(variables, isConstant);
 		if( ret.getMetadata()!=null )
 			copyMetadata(unification, ret);
@@ -229,10 +229,10 @@ public class ProvaLiteralImpl implements ProvaLiteral {
 	}
 
 	@Override
-	public ProvaObject cloneWithBoundVariables(final List<ProvaVariable> variables, final List<Boolean> isConstant) {
+	public PObj cloneWithBoundVariables(final List<Variable> variables, final List<Boolean> isConstant) {
 		if( terms==null )
 			return this;
-		final ProvaList newTerms = (ProvaList) terms.cloneWithBoundVariables(variables, isConstant);
+		final PList newTerms = (PList) terms.cloneWithBoundVariables(variables, isConstant);
 		final ProvaLiteralImpl newLit = new ProvaLiteralImpl(predicate,newTerms);
 		// TODO: the new literal may actually become ground
 		newLit.ground = ground;
@@ -243,15 +243,15 @@ public class ProvaLiteralImpl implements ProvaLiteral {
 	}
 
 	@Override
-	public ProvaObject cloneWithVariables(final List<ProvaVariable> variables) {
+	public PObj cloneWithVariables(final List<Variable> variables) {
 		if( terms==null )
 			return this;
 		if( predicate.getSymbol().equals("cut") ) {
-			ProvaVariable any1 = ProvaVariableImpl.create();
-			ProvaList lany1 = ProvaListImpl.create( new ProvaObject[] {any1});
+			Variable any1 = ProvaVariableImpl.create();
+			PList lany1 = ProvaListImpl.create(new PObj[] {any1});
 			return new ProvaLiteralImpl(predicate,lany1);
 		}
-		final ProvaList newTerms = (ProvaList) terms.cloneWithVariables(variables);
+		final PList newTerms = (PList) terms.cloneWithVariables(variables);
 		final ProvaLiteralImpl newLit = new ProvaLiteralImpl(predicate,newTerms);
 		// TODO: the new literal may actually become ground
 		newLit.ground = ground;
@@ -262,15 +262,15 @@ public class ProvaLiteralImpl implements ProvaLiteral {
 	}
 
 	@Override
-	public ProvaObject cloneWithVariables(final long ruleId, final List<ProvaVariable> variables) {
+	public PObj cloneWithVariables(final long ruleId, final List<Variable> variables) {
 		if( terms==null )
 			return this;
 		if( predicate.getSymbol().equals("cut") ) {
-			ProvaVariable any1 = ProvaVariableImpl.create();
-			ProvaList lany1 = ProvaListImpl.create( new ProvaObject[] {any1});
+			Variable any1 = ProvaVariableImpl.create();
+			PList lany1 = ProvaListImpl.create(new PObj[] {any1});
 			return new ProvaLiteralImpl(predicate,lany1);
 		}
-		final ProvaList newTerms = (ProvaList) terms.cloneWithVariables(ruleId,variables);
+		final PList newTerms = (PList) terms.cloneWithVariables(ruleId,variables);
 		final ProvaLiteralImpl newLit = new ProvaLiteralImpl(predicate,newTerms);
 		newLit.ground = ground;
 		newLit.line = line;
@@ -304,21 +304,20 @@ public class ProvaLiteralImpl implements ProvaLiteral {
 	}
 
 	@Override
-	public List<ProvaObject> addMetadata( Map<String,List<Object>> m) {
+	public List<PObj> addMetadata( Map<String,List<Object>> m) {
 		if( m==null )
 			return null;
 		if( metadata==null )
 			metadata = new HashMap<String,List<Object>>();
 		metadata.putAll(m);
-		List<ProvaObject> metaVariables = new ArrayList<ProvaObject>();
+		List<PObj> metaVariables = new ArrayList<PObj>();
 		for( Entry<String, List<Object>> e : m.entrySet() ) {
 			for( Object value : e.getValue() ) {
 				if( !(value instanceof String) )
 					continue;
 				String str = (String) value;
 				if( str.length()!=0 && Character.isUpperCase(str.charAt(0)) )
-					metaVariables.add(ProvaListImpl.create(
-							new ProvaObject[] {ProvaConstantImpl.create(str), ProvaVariableImpl.create(str)}));
+					metaVariables.add(ProvaListImpl.create(new PObj[] {ProvaConstantImpl.create(str), ProvaVariableImpl.create(str)}));
 			}
 		}
 		return metaVariables.isEmpty() ? null : metaVariables;
@@ -340,7 +339,7 @@ public class ProvaLiteralImpl implements ProvaLiteral {
 	}
 
 	@Override
-	public List<ProvaLiteral> getGuard() {
+	public List<Literal> getGuard() {
 		return null;
 	}
 
@@ -357,7 +356,7 @@ public class ProvaLiteralImpl implements ProvaLiteral {
 	}
 
 	@Override
-	public boolean updateGround(List<ProvaVariable> variables) {
+	public boolean updateGround(List<Variable> variables) {
 		return ground = terms.updateGround(variables);
 	}
 

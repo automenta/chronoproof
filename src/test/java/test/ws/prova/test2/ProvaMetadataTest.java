@@ -13,8 +13,8 @@ import org.junit.Test;
 import ws.prova.api2.ProvaCommunicator;
 import ws.prova.api2.ProvaCommunicatorImpl;
 import ws.prova.exchange.ProvaSolution;
-import ws.prova.kernel2.ProvaList;
-import ws.prova.kernel2.ProvaObject;
+import ws.prova.kernel2.PList;
+import ws.prova.kernel2.PObj;
 import ws.prova.reference2.ProvaConstantImpl;
 import ws.prova.reference2.ProvaListImpl;
 
@@ -414,12 +414,12 @@ public class ProvaMetadataTest {
 			for( int i=0; i<100; i++ ) {
 				Map<String,Object> payload = new HashMap<String,Object>();
 				payload.put("field", r.nextDouble());
-				ProvaList terms = ProvaListImpl.create( new ProvaObject[] {
+				PList terms = ProvaListImpl.create(new PObj[] {
 						ProvaConstantImpl.create("test"),
 						ProvaConstantImpl.create("self"),
 						ProvaConstantImpl.create(0),
 						ProvaConstantImpl.create("inform"),
-						ProvaListImpl.create(new ProvaObject[] {
+						ProvaListImpl.create(new PObj[] {
 								ProvaConstantImpl.create(payload)
 								})
 				});
@@ -470,36 +470,36 @@ public class ProvaMetadataTest {
 		try {
 			for( int i=0; i<maxCount; i++ ) {
 				int shift = i % 32;
-				ProvaList terms = ProvaListImpl.create( new ProvaObject[] {
+				PList terms = ProvaListImpl.create(new PObj[] {
 						ProvaConstantImpl.create(""+shift),
 						ProvaConstantImpl.create("async"),
 						ProvaConstantImpl.create(0),
 						ProvaConstantImpl.create("request"),
-						ProvaListImpl.create(new ProvaObject[] {
+						ProvaListImpl.create(new PObj[] {
 								ProvaConstantImpl.create("login"),
 								ProvaConstantImpl.create("user"+shift),
 								ProvaConstantImpl.create("10.10.10.10")
 								})
 				});
 				prova.addMsg(terms);
-				ProvaList terms2 = ProvaListImpl.create( new ProvaObject[] {
+				PList terms2 = ProvaListImpl.create(new PObj[] {
 						ProvaConstantImpl.create(""+shift),
 						ProvaConstantImpl.create("async"),
 						ProvaConstantImpl.create(0),
 						ProvaConstantImpl.create("request"),
-						ProvaListImpl.create(new ProvaObject[] {
+						ProvaListImpl.create(new PObj[] {
 								ProvaConstantImpl.create("login"),
 								ProvaConstantImpl.create("user"+shift),
 								ProvaConstantImpl.create("20.20.20.20")
 								})
 				});
 				prova.addMsg(terms2);
-				ProvaList terms3 = ProvaListImpl.create( new ProvaObject[] {
+				PList terms3 = ProvaListImpl.create(new PObj[] {
 						ProvaConstantImpl.create(""+shift),
 						ProvaConstantImpl.create("async"),
 						ProvaConstantImpl.create(0),
 						ProvaConstantImpl.create("request"),
-						ProvaListImpl.create(new ProvaObject[] {
+						ProvaListImpl.create(new PObj[] {
 								ProvaConstantImpl.create("logout"),
 								ProvaConstantImpl.create("user"+shift),
 								ProvaConstantImpl.create("10.10.10.10")
@@ -536,12 +536,12 @@ public class ProvaMetadataTest {
 		try {
 			// Accumulate values sorted by i%5 every 25 milliseconds.
 			for( int i=0; i<100; i++ ) {
-				ProvaList terms = ProvaListImpl.create( new ProvaObject[] {
+				PList terms = ProvaListImpl.create(new PObj[] {
 						ProvaConstantImpl.create("test"),
 						ProvaConstantImpl.create("self"),
 						ProvaConstantImpl.create(0),
 						ProvaConstantImpl.create("inform"),
-						ProvaListImpl.create(new ProvaObject[] {
+						ProvaListImpl.create(new PObj[] {
 								ProvaConstantImpl.create("a"),
 								ProvaConstantImpl.create(i),
 								ProvaConstantImpl.create(5.0-i*0.2)
@@ -573,12 +573,12 @@ public class ProvaMetadataTest {
 		try {
 			// Accumulate groupby counts for each i%5 every 25 milliseconds.
 			for( int i=0; i<100; i++ ) {
-				ProvaList terms = ProvaListImpl.create( new ProvaObject[] {
+				PList terms = ProvaListImpl.create(new PObj[] {
 						ProvaConstantImpl.create("test"),
 						ProvaConstantImpl.create("self"),
 						ProvaConstantImpl.create(0),
 						ProvaConstantImpl.create("inform"),
-						ProvaListImpl.create(new ProvaObject[] {
+						ProvaListImpl.create(new PObj[] {
 								ProvaConstantImpl.create("a"),
 								ProvaConstantImpl.create(i)
 								})
@@ -608,12 +608,12 @@ public class ProvaMetadataTest {
 		// Send a hundred messages to the consulted Prova rulebase.
 		// Accumulate groupby counts for each i%5 every 5 messages.
 		for( int i=0; i<100; i++ ) {
-			ProvaList terms = ProvaListImpl.create( new ProvaObject[] {
+			PList terms = ProvaListImpl.create(new PObj[] {
 					ProvaConstantImpl.create("test"),
 					ProvaConstantImpl.create("async"),
 					ProvaConstantImpl.create(0),
 					ProvaConstantImpl.create("inform"),
-					ProvaListImpl.create(new ProvaObject[] {
+					ProvaListImpl.create(new PObj[] {
 							ProvaConstantImpl.create("a"),
 							ProvaConstantImpl.create(i)
 							})

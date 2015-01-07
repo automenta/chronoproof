@@ -1,23 +1,23 @@
 package ws.prova.reference2.builtins;
 
 import java.util.List;
-import ws.prova.agent2.ProvaReagent;
-import ws.prova.kernel2.ProvaDerivationNode;
-import ws.prova.kernel2.ProvaGoal;
-import ws.prova.kernel2.ProvaKnowledgeBase;
-import ws.prova.kernel2.ProvaLiteral;
-import ws.prova.kernel2.ProvaRule;
+import ws.prova.agent2.Reagent;
+import ws.prova.kernel2.Derivation;
+import ws.prova.kernel2.Goal;
+import ws.prova.kernel2.KB;
+import ws.prova.kernel2.Literal;
+import ws.prova.kernel2.Rule;
 
 public class ProvaStopPredicateJoinImpl extends ProvaBuiltinImpl {
 
-	public ProvaStopPredicateJoinImpl(ProvaKnowledgeBase kb) {
+	public ProvaStopPredicateJoinImpl(KB kb) {
 		super(kb,"stop_predicate_join");
 	}
 
 	@Override
-	public boolean process(ProvaReagent prova, ProvaDerivationNode node,
-			ProvaGoal goal, List<ProvaLiteral> newLiterals, ProvaRule query) {
-		ProvaLiteral literal = goal.getGoal();
+	public boolean process(Reagent prova, Derivation node,
+			Goal goal, List<Literal> newLiterals, Rule query) {
+		Literal literal = goal.getGoal();
 		return prova.getWorkflows().stop_predicate_join(literal, newLiterals, query);
 	}
 

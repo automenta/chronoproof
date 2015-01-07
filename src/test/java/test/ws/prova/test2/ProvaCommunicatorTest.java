@@ -11,9 +11,9 @@ import org.junit.Test;
 import ws.prova.api2.ProvaCommunicator;
 import ws.prova.api2.ProvaCommunicatorImpl;
 import ws.prova.exchange.ProvaSolution;
-import ws.prova.kernel2.ProvaConstant;
-import ws.prova.kernel2.ProvaList;
-import ws.prova.kernel2.ProvaObject;
+import ws.prova.kernel2.Constant;
+import ws.prova.kernel2.PList;
+import ws.prova.kernel2.PObj;
 import ws.prova.parser2.ProvaParsingException;
 import ws.prova.reference2.ProvaConstantImpl;
 import ws.prova.reference2.ProvaListImpl;
@@ -46,7 +46,7 @@ public class ProvaCommunicatorTest {
 			comm = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC);
 		
 		} catch (Exception e) {
-			final String localizedMessage = e.getCause().getLocalizedMessage();
+			final String localizedMessage = e.getCause() != null ?  e.getCause().getLocalizedMessage() : "";
 			org.junit.Assert.assertEquals(
 					"Cannot find rules/reloaded/NOSUCHFILE.prova",
 					localizedMessage);
@@ -61,7 +61,7 @@ public class ProvaCommunicatorTest {
 			comm = new ProvaCommunicatorImpl(kAgent,kPort,rulebase,ProvaCommunicatorImpl.SYNC);
 		
 		} catch (Exception e) {
-			org.junit.Assert.assertTrue( e.getCause() instanceof ProvaParsingException );
+			org.junit.Assert.assertEquals(ProvaParsingException.class, e.getCause().getClass() );
 			org.junit.Assert.assertEquals(
 					"rules/reloaded/parsing_errors.prova",
 					((ProvaParsingException) e.getCause()).getSource() );
@@ -156,7 +156,7 @@ public class ProvaCommunicatorTest {
 			// In this way, it is possible to unconsult such code by calling unconsult(key).
 			List<ProvaSolution[]> resultSets = comm.consultSync(in, Integer.toString(key++), new Object[]{"Dave"});
 			org.junit.Assert.assertEquals(numSolutions,resultSets.get(0).length);
-			final Object ans1 = ((ProvaConstant) resultSets.get(0)[0].getNv("Name")).getObject();
+			final Object ans1 = ((Constant) resultSets.get(0)[0].getNv("Name")).getObject();
 			org.junit.Assert.assertTrue(ans1.equals("Dave"));
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -324,12 +324,12 @@ public class ProvaCommunicatorTest {
 		// Send a hundred messages to the consulted Prova rulebase.
 		// Processing is done concurrently on threads belonging to the async pool.
 		for( int i=0; i<100; i++ ) {
-			ProvaList terms = ProvaListImpl.create( new ProvaObject[] {
+			PList terms = ProvaListImpl.create(new PObj[] {
 					ProvaConstantImpl.create("test"+i),
 					ProvaConstantImpl.create("async"),
 					ProvaConstantImpl.create(0),
 					ProvaConstantImpl.create("inform"),
-					ProvaListImpl.create(new ProvaObject[] {
+					ProvaListImpl.create(new PObj[] {
 							ProvaConstantImpl.create("a"),
 							ProvaConstantImpl.create(i)
 							})

@@ -1,14 +1,14 @@
 package ws.prova.reference2.builtins.target;
 
-import ws.prova.kernel2.ProvaGoal;
-import ws.prova.kernel2.ProvaRule;
+import ws.prova.kernel2.Goal;
+import ws.prova.kernel2.Rule;
 
 public interface ProvaTarget {
 
-	public ProvaGoal getTarget();
+	public Goal getTarget();
 
-	public ProvaRule getCandidate();
+	public Rule getCandidate();
 
-	public void setCandidate(ProvaRule candidate);
+	public void setCandidate(Rule candidate);
 
 }

@@ -1,25 +1,25 @@
 package ws.prova.reference2.operators;
 
 import java.util.List;
-import ws.prova.kernel2.ProvaComputable;
-import ws.prova.kernel2.ProvaConstant;
-import ws.prova.kernel2.ProvaKnowledgeBase;
-import ws.prova.kernel2.ProvaLiteral;
-import ws.prova.kernel2.ProvaObject;
-import ws.prova.kernel2.ProvaVariable;
+import ws.prova.kernel2.Computable;
+import ws.prova.kernel2.Constant;
+import ws.prova.kernel2.KB;
+import ws.prova.kernel2.Literal;
+import ws.prova.kernel2.PObj;
+import ws.prova.kernel2.Variable;
 import ws.prova.reference2.ProvaConstantImpl;
 
 public class ProvaBinaryLessThanImpl implements ProvaBinaryOperator {
 
 	@Override
-	public boolean evaluate( ProvaKnowledgeBase kb, List<ProvaLiteral> newLiterals, ProvaObject o1, ProvaComputable a2 ) {
-		if( o1 instanceof ProvaVariable ) {
+	public boolean evaluate( KB kb, List<Literal> newLiterals, PObj o1, Computable a2 ) {
+		if( o1 instanceof Variable ) {
 			throw new RuntimeException("Variable "+o1+" used in '<'");
 		}
-		Object oa1 = ((ProvaConstant) o1).getObject();
+		Object oa1 = ((Constant) o1).getObject();
 		Object oa2 = a2.compute();
 		if( oa2.getClass()==ProvaConstantImpl.class )
-			oa2 = ((ProvaConstant) oa2).getObject();
+			oa2 = ((Constant) oa2).getObject();
 		if( !(oa1 instanceof Number) || !(oa2 instanceof Number) )
 			return false;
 		Number na1 = (Number) oa1;

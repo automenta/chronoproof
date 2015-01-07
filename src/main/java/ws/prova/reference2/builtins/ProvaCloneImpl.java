@@ -1,16 +1,16 @@
 package ws.prova.reference2.builtins;
 
 import java.util.List;
-import ws.prova.agent2.ProvaReagent;
-import ws.prova.kernel2.ProvaDerivationNode;
-import ws.prova.kernel2.ProvaGoal;
-import ws.prova.kernel2.ProvaKnowledgeBase;
-import ws.prova.kernel2.ProvaList;
-import ws.prova.kernel2.ProvaLiteral;
-import ws.prova.kernel2.ProvaObject;
-import ws.prova.kernel2.ProvaPredicate;
-import ws.prova.kernel2.ProvaRule;
-import ws.prova.kernel2.ProvaVariable;
+import ws.prova.agent2.Reagent;
+import ws.prova.kernel2.Derivation;
+import ws.prova.kernel2.Goal;
+import ws.prova.kernel2.KB;
+import ws.prova.kernel2.PList;
+import ws.prova.kernel2.Literal;
+import ws.prova.kernel2.PObj;
+import ws.prova.kernel2.Predicate;
+import ws.prova.kernel2.Rule;
+import ws.prova.kernel2.Variable;
 import ws.prova.reference2.ProvaListImpl;
 import ws.prova.reference2.ProvaLiteralImpl;
 import ws.prova.reference2.ProvaPredicateImpl;
@@ -18,29 +18,29 @@ import ws.prova.reference2.ProvaRuleImpl;
 
 public class ProvaCloneImpl extends ProvaBuiltinImpl {
 
-	public ProvaCloneImpl(ProvaKnowledgeBase kb) {
+	public ProvaCloneImpl(KB kb) {
 		super(kb,"clone");
 	}
 
 	@Override
-	public boolean process(ProvaReagent prova, ProvaDerivationNode node,
-			ProvaGoal goal, List<ProvaLiteral> newLiterals, ProvaRule query) {
-		ProvaLiteral literal = goal.getGoal();
-		List<ProvaVariable> variables = query.getVariables();
-		ProvaList terms0 = literal.getTerms();
-		ProvaObject[] data = terms0.getFixed();
+	public boolean process(Reagent prova, Derivation node,
+			Goal goal, List<Literal> newLiterals, Rule query) {
+		Literal literal = goal.getGoal();
+		List<Variable> variables = query.getVariables();
+		PList terms0 = literal.getTerms();
+		PObj[] data = terms0.getFixed();
 		if( data.length!=2 )
 			return false;
-		ProvaObject rt = data[1];
+		PObj rt = data[1];
 		data[1] = ProvaListImpl.emptyRList;
-		ProvaList terms = (ProvaList) terms0.cloneWithVariables(variables);
-		ProvaPredicate pred = new ProvaPredicateImpl("",1,kb);
-		ProvaList ls = ProvaListImpl.create( new ProvaObject[] {terms.getFixed()[0]} );
-		ProvaLiteral lit = new ProvaLiteralImpl(pred,ls);
-		ProvaRule clause = ProvaRuleImpl.createVirtualRule(1, lit, null);
+		PList terms = (PList) terms0.cloneWithVariables(variables);
+		Predicate pred = new ProvaPredicateImpl("",1,kb);
+		PList ls = ProvaListImpl.create(new PObj[] {terms.getFixed()[0]} );
+		Literal lit = new ProvaLiteralImpl(pred,ls);
+		Rule clause = ProvaRuleImpl.createVirtualRule(1, lit, null);
 		pred.addClause(clause);
-		ProvaList ltls = ProvaListImpl.create( new ProvaObject[] {rt} );
-		ProvaLiteral newLiteral = new ProvaLiteralImpl(pred,ltls);
+		PList ltls = ProvaListImpl.create(new PObj[] {rt} );
+		Literal newLiteral = new ProvaLiteralImpl(pred,ltls);
 		newLiterals.add(newLiteral);
 		return true;
 	}

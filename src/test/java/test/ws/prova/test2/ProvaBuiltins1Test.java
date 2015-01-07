@@ -7,9 +7,9 @@ import org.junit.Test;
 import ws.prova.api2.ProvaCommunicator;
 import ws.prova.api2.ProvaCommunicatorImpl;
 import ws.prova.exchange.ProvaSolution;
-import ws.prova.kernel2.ProvaConstant;
-import ws.prova.kernel2.ProvaList;
-import ws.prova.kernel2.ProvaObject;
+import ws.prova.kernel2.Constant;
+import ws.prova.kernel2.PList;
+import ws.prova.kernel2.PObj;
 
 public class ProvaBuiltins1Test {
 
@@ -27,8 +27,8 @@ public class ProvaBuiltins1Test {
 
 		org.junit.Assert.assertEquals(numSolutions.length,solutions.size());
 		org.junit.Assert.assertEquals(numSolutions[0],solutions.get(0).length);
-		org.junit.Assert.assertTrue(solutions.get(0)[0].getNv("L1") instanceof ProvaConstant);
-		final Object ans2 = ((ProvaConstant) solutions.get(0)[0].getNv("L1")).getObject();
+		org.junit.Assert.assertTrue(solutions.get(0)[0].getNv("L1") instanceof Constant);
+		final Object ans2 = ((Constant) solutions.get(0)[0].getNv("L1")).getObject();
 		org.junit.Assert.assertTrue(ans2.equals(3));
 	}
 
@@ -42,8 +42,8 @@ public class ProvaBuiltins1Test {
 
 		org.junit.Assert.assertEquals(1,solutions.size());
 		org.junit.Assert.assertEquals(numSolutions[0],solutions.get(0).length);
-		org.junit.Assert.assertTrue(solutions.get(0)[0].getNv("X") instanceof ProvaConstant);
-		final Object ans2 = ((ProvaConstant) solutions.get(0)[2].getNv("X")).getObject();
+		org.junit.Assert.assertTrue(solutions.get(0)[0].getNv("X") instanceof Constant);
+		final Object ans2 = ((Constant) solutions.get(0)[2].getNv("X")).getObject();
 		org.junit.Assert.assertTrue(ans2.equals(1));
 	}
 
@@ -57,8 +57,8 @@ public class ProvaBuiltins1Test {
 
 		org.junit.Assert.assertEquals(1,solutions.size());
 		org.junit.Assert.assertEquals(numSolutions[0],solutions.get(0).length);
-		org.junit.Assert.assertTrue(solutions.get(0)[0].getNv("X") instanceof ProvaConstant);
-		final Object ans2 = ((ProvaConstant) solutions.get(0)[0].getNv("X")).getObject();
+		org.junit.Assert.assertTrue(solutions.get(0)[0].getNv("X") instanceof Constant);
+		final Object ans2 = ((Constant) solutions.get(0)[0].getNv("X")).getObject();
 		org.junit.Assert.assertTrue(ans2 instanceof Map<?,?>);
 	}
 
@@ -73,8 +73,8 @@ public class ProvaBuiltins1Test {
 
 		org.junit.Assert.assertEquals(1,solutions.size());
 		org.junit.Assert.assertEquals(numSolutions[0],solutions.get(0).length);
-		org.junit.Assert.assertTrue(solutions.get(0)[0].getNv("P") instanceof ProvaConstant);
-		final Object ans2 = ((ProvaConstant) solutions.get(0)[0].getNv("P")).getObject();
+		org.junit.Assert.assertTrue(solutions.get(0)[0].getNv("P") instanceof Constant);
+		final Object ans2 = ((Constant) solutions.get(0)[0].getNv("P")).getObject();
 		org.junit.Assert.assertTrue(ans2 instanceof Map);
 		org.junit.Assert.assertEquals(1, ((Map) ans2).size());
 	}
@@ -89,8 +89,8 @@ public class ProvaBuiltins1Test {
 
 		org.junit.Assert.assertEquals(1,solutions.size());
 		org.junit.Assert.assertEquals(numSolutions[0],solutions.get(0).length);
-		org.junit.Assert.assertTrue(solutions.get(0)[0].getNv("A") instanceof ProvaConstant);
-		final Object ans2 = ((ProvaConstant) solutions.get(0)[0].getNv("A")).getObject();
+		org.junit.Assert.assertTrue(solutions.get(0)[0].getNv("A") instanceof Constant);
+		final Object ans2 = ((Constant) solutions.get(0)[0].getNv("A")).getObject();
 		org.junit.Assert.assertTrue(ans2 instanceof Integer);
 		long l = (Integer) ans2;
 		org.junit.Assert.assertEquals(3L, l);
@@ -106,13 +106,13 @@ public class ProvaBuiltins1Test {
 
 		org.junit.Assert.assertEquals(1,solutions.size());
 		org.junit.Assert.assertEquals(numSolutions[0],solutions.get(0).length);
-		org.junit.Assert.assertTrue(solutions.get(0)[0].getNv("A") instanceof ProvaConstant);
-		final Object ans2 = ((ProvaConstant) solutions.get(0)[0].getNv("A")).getObject();
+		org.junit.Assert.assertTrue(solutions.get(0)[0].getNv("A") instanceof Constant);
+		final Object ans2 = ((Constant) solutions.get(0)[0].getNv("A")).getObject();
 		org.junit.Assert.assertTrue(ans2 instanceof Integer);
 		long l = (Integer) ans2;
 		org.junit.Assert.assertEquals(1L, l);
-		org.junit.Assert.assertTrue(solutions.get(0)[0].getNv("B") instanceof ProvaList);
-		final ProvaObject[] fixed = ((ProvaList) solutions.get(0)[0].getNv("B")).getFixed();
+		org.junit.Assert.assertTrue(solutions.get(0)[0].getNv("B") instanceof PList);
+		final PObj[] fixed = ((PList) solutions.get(0)[0].getNv("B")).getFixed();
 		org.junit.Assert.assertEquals(2, fixed.length);
 	}
 
@@ -244,16 +244,16 @@ public class ProvaBuiltins1Test {
 		org.junit.Assert.assertEquals(2,solutions.size());
 
 		org.junit.Assert.assertEquals(numSolutions[0],solutions.get(0).length);
-		org.junit.Assert.assertTrue(solutions.get(0)[0].getNv("Value1") instanceof ProvaConstant);
-		final Object ans1 = ((ProvaConstant) solutions.get(0)[0].getNv("Value1")).getObject();
+		org.junit.Assert.assertTrue(solutions.get(0)[0].getNv("Value1") instanceof Constant);
+		final Object ans1 = ((Constant) solutions.get(0)[0].getNv("Value1")).getObject();
 		org.junit.Assert.assertTrue(ans1.equals("j"));
-		org.junit.Assert.assertTrue(solutions.get(0)[2].getNv("Value1") instanceof ProvaConstant);
-		final Object ans2 = ((ProvaConstant) solutions.get(0)[2].getNv("Value1")).getObject();
+		org.junit.Assert.assertTrue(solutions.get(0)[2].getNv("Value1") instanceof Constant);
+		final Object ans2 = ((Constant) solutions.get(0)[2].getNv("Value1")).getObject();
 		org.junit.Assert.assertTrue(ans2.equals("tt"));
 
 		org.junit.Assert.assertEquals(numSolutions[1],solutions.get(1).length);
-		org.junit.Assert.assertTrue(solutions.get(1)[0].getNv("Value2") instanceof ProvaConstant);
-		final Object ans3 = ((ProvaConstant) solutions.get(1)[0].getNv("Value2")).getObject();
+		org.junit.Assert.assertTrue(solutions.get(1)[0].getNv("Value2") instanceof Constant);
+		final Object ans3 = ((Constant) solutions.get(1)[0].getNv("Value2")).getObject();
 		org.junit.Assert.assertTrue(ans3.equals("tt"));
 	}
 
@@ -272,11 +272,11 @@ public class ProvaBuiltins1Test {
 
 		for( int i=0; i<2; i++ ) {
 			org.junit.Assert.assertEquals(numSolutions[i],solutions.get(i).length);
-			org.junit.Assert.assertTrue(solutions.get(i)[0].getNv("Value"+(i+1)) instanceof ProvaConstant);
-			final Object ans1 = ((ProvaConstant) solutions.get(i)[0].getNv("Value"+(i+1))).getObject();
+			org.junit.Assert.assertTrue(solutions.get(i)[0].getNv("Value"+(i+1)) instanceof Constant);
+			final Object ans1 = ((Constant) solutions.get(i)[0].getNv("Value"+(i+1))).getObject();
 			org.junit.Assert.assertTrue(ans1.equals("12"));
-			org.junit.Assert.assertTrue(solutions.get(i)[1].getNv("Value"+(i+1)) instanceof ProvaConstant);
-			final Object ans2 = ((ProvaConstant) solutions.get(i)[1].getNv("Value"+(i+1))).getObject();
+			org.junit.Assert.assertTrue(solutions.get(i)[1].getNv("Value"+(i+1)) instanceof Constant);
+			final Object ans2 = ((Constant) solutions.get(i)[1].getNv("Value"+(i+1))).getObject();
 			org.junit.Assert.assertTrue(ans2.equals("tt"));
 		}
 	}
@@ -291,12 +291,12 @@ public class ProvaBuiltins1Test {
 
 		org.junit.Assert.assertEquals(solutions.size(),2);
 		org.junit.Assert.assertEquals(solutions.get(0).length,numSolutions[0]);
-		org.junit.Assert.assertTrue(solutions.get(0)[0].getNv("Esc1") instanceof ProvaConstant);
-		final Object ans1 = ((ProvaConstant) solutions.get(0)[0].getNv("Esc1")).getObject();
+		org.junit.Assert.assertTrue(solutions.get(0)[0].getNv("Esc1") instanceof Constant);
+		final Object ans1 = ((Constant) solutions.get(0)[0].getNv("Esc1")).getObject();
 		org.junit.Assert.assertTrue(ans1.equals("line1\nline2\nline3"));
 		org.junit.Assert.assertEquals(solutions.get(1).length,numSolutions[1]);
-		org.junit.Assert.assertTrue(solutions.get(1)[0].getNv("Esc1") instanceof ProvaConstant);
-		final Object ans2 = ((ProvaConstant) solutions.get(1)[0].getNv("Esc1")).getObject();
+		org.junit.Assert.assertTrue(solutions.get(1)[0].getNv("Esc1") instanceof Constant);
+		final Object ans2 = ((Constant) solutions.get(1)[0].getNv("Esc1")).getObject();
 		org.junit.Assert.assertTrue(ans2.equals("line1\tline2\tline3"));
 	}
 
@@ -310,8 +310,8 @@ public class ProvaBuiltins1Test {
 
 		org.junit.Assert.assertEquals(solutions.size(),4);
 		org.junit.Assert.assertEquals(solutions.get(0).length,numSolutions[0]);
-		org.junit.Assert.assertTrue(solutions.get(0)[0].getNv("AB") instanceof ProvaConstant);
-		org.junit.Assert.assertTrue(((ProvaConstant) solutions.get(0)[0].getNv("AB")).getObject().equals("ab"));
+		org.junit.Assert.assertTrue(solutions.get(0)[0].getNv("AB") instanceof Constant);
+		org.junit.Assert.assertTrue(((Constant) solutions.get(0)[0].getNv("AB")).getObject().equals("ab"));
 		org.junit.Assert.assertEquals(solutions.get(1).length,numSolutions[1]);
 		org.junit.Assert.assertEquals(solutions.get(2).length,numSolutions[2]);
 		org.junit.Assert.assertEquals(solutions.get(3).length,numSolutions[3]);
@@ -327,7 +327,7 @@ public class ProvaBuiltins1Test {
 
 		org.junit.Assert.assertEquals(solutions.size(),1);
 		org.junit.Assert.assertEquals(solutions.get(0).length,numSolutions[0]);
-		org.junit.Assert.assertTrue(solutions.get(0)[0].getNv("Groups") instanceof ProvaList);
+		org.junit.Assert.assertTrue(solutions.get(0)[0].getNv("Groups") instanceof PList);
 	}
 
 	@Test

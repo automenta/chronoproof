@@ -1,6 +1,6 @@
 package ws.prova.kernel2;
 
-public interface ProvaDerivationNode {
+public interface Derivation {
 
     public final static byte UNKNOWN    = 0;
     public final static byte FAILED     = 1;
@@ -9,28 +9,28 @@ public interface ProvaDerivationNode {
 
     public void setFailed(boolean b);
 
-	public void setQuery(ProvaRule goalRule);
+	public void setQuery(Rule goalRule);
 
 	public void setId(int next);
 
 	public void setCut(boolean b);
 
-	public ProvaRule getQuery();
+	public Rule getQuery();
 
 	public boolean isCut();
 
 	public void setCutPredicate(int intValue);
 
-	public void setCurrentGoal(ProvaGoal goal);
+	public void setCurrentGoal(Goal goal);
 
 	public int getCutPredicate();
 
 	public int getId();
 
-	public void setParent(ProvaDerivationNode n);
+	public void setParent(Derivation n);
 
-	public ProvaDerivationNode getParent();
+	public Derivation getParent();
 
-	public ProvaGoal getCurrentGoal();
+	public Goal getCurrentGoal();
 
 }

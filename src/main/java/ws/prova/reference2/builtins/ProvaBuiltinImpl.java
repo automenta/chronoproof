@@ -1,55 +1,45 @@
 package ws.prova.reference2.builtins;
 
 import java.util.List;
-import ws.prova.agent2.ProvaReagent;
-import ws.prova.kernel2.ProvaBuiltin;
-import ws.prova.kernel2.ProvaDerivationNode;
-import ws.prova.kernel2.ProvaGoal;
-import ws.prova.kernel2.ProvaKnowledgeBase;
-import ws.prova.kernel2.ProvaLiteral;
-import ws.prova.kernel2.ProvaPredicate;
-import ws.prova.kernel2.ProvaRule;
-import ws.prova.kernel2.ProvaRuleSet;
+import ws.prova.agent2.Reagent;
+import ws.prova.kernel2.Operation;
+import ws.prova.kernel2.Derivation;
+import ws.prova.kernel2.Goal;
+import ws.prova.kernel2.KB;
+import ws.prova.kernel2.Literal;
+import ws.prova.kernel2.Predicate;
+import ws.prova.kernel2.Rule;
+import ws.prova.kernel2.RuleSet;
 import ws.prova.reference2.ProvaRuleSetImpl;
 
-public abstract class ProvaBuiltinImpl implements ProvaBuiltin {
+public abstract class ProvaBuiltinImpl implements Operation {
 
-	protected ProvaKnowledgeBase kb;
+	protected KB kb;
 	
 	private final ProvaRuleSetImpl clauseSet;
 
 	private final String symbol;
 	
-	public ProvaBuiltinImpl(ProvaKnowledgeBase kb, String symbol) {
+	public ProvaBuiltinImpl(KB kb, String symbol) {
 		this.kb = kb;
 		this.symbol = symbol;
 		this.clauseSet = new ProvaRuleSetImpl(symbol);
 	}
 	
 	@Override
-	abstract public boolean process(ProvaReagent prova, ProvaDerivationNode node, ProvaGoal goal, List<ProvaLiteral> newLiterals, ProvaRule query);
+	abstract public boolean process(Reagent prova, Derivation node, Goal goal, List<Literal> newLiterals, Rule query);
+
 
 	@Override
-	public boolean process_(ProvaReagent prova, ProvaDerivationNode node, ProvaGoal goal, List<ProvaLiteral> newLiterals, ProvaRule query) {
-		try {
-			return process(prova,node,goal,newLiterals, query);
-		} catch( Throwable t ) {
-			if( t instanceof RuntimeException )
-				throw (RuntimeException) t;
-			return false;
-		}
+	public void addClause(Rule clause) {
 	}
 
 	@Override
-	public void addClause(ProvaRule clause) {
+	public void addClauseA(Rule clause) {
 	}
 
 	@Override
-	public void addClauseA(ProvaRule clause) {
-	}
-
-	@Override
-	public boolean equals(ProvaPredicate predicate) {
+	public boolean equals(Predicate predicate) {
 		return predicate==this;
 	}
 
@@ -59,12 +49,12 @@ public abstract class ProvaBuiltinImpl implements ProvaBuiltin {
 	}
 
 	@Override
-	public ProvaRuleSet getClauseSet() {
+	public RuleSet getClauses() {
 		return clauseSet;
 	}
 
 	@Override
-	public ProvaKnowledgeBase getKnowledgeBase() {
+	public KB kb() {
 		return kb;
 	}
 
@@ -74,7 +64,7 @@ public abstract class ProvaBuiltinImpl implements ProvaBuiltin {
 	}
 
 	@Override
-	public void setKnowledgeBase(ProvaKnowledgeBase kb) {
+	public void setKB(KB kb) {
 		this.kb = kb;
 	}
 

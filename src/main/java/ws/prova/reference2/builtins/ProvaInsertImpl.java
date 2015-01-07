@@ -1,42 +1,42 @@
 package ws.prova.reference2.builtins;
 
 import java.util.List;
-import ws.prova.agent2.ProvaReagent;
-import ws.prova.kernel2.ProvaConstant;
-import ws.prova.kernel2.ProvaDerivationNode;
-import ws.prova.kernel2.ProvaGoal;
-import ws.prova.kernel2.ProvaKnowledgeBase;
-import ws.prova.kernel2.ProvaList;
-import ws.prova.kernel2.ProvaLiteral;
-import ws.prova.kernel2.ProvaObject;
-import ws.prova.kernel2.ProvaRule;
-import ws.prova.kernel2.ProvaRuleSet;
-import ws.prova.kernel2.ProvaVariable;
+import ws.prova.agent2.Reagent;
+import ws.prova.kernel2.Constant;
+import ws.prova.kernel2.Derivation;
+import ws.prova.kernel2.Goal;
+import ws.prova.kernel2.KB;
+import ws.prova.kernel2.PList;
+import ws.prova.kernel2.Literal;
+import ws.prova.kernel2.PObj;
+import ws.prova.kernel2.Rule;
+import ws.prova.kernel2.RuleSet;
+import ws.prova.kernel2.Variable;
 
 public class ProvaInsertImpl extends ProvaBuiltinImpl {
 
-	public ProvaInsertImpl(ProvaKnowledgeBase kb) {
+	public ProvaInsertImpl(KB kb) {
 		super(kb, "insert");
 	}
 
 	@Override
-	public boolean process(ProvaReagent prova, ProvaDerivationNode node,
-			ProvaGoal goal, List<ProvaLiteral> newLiterals, ProvaRule query) {
-		ProvaLiteral literal = goal.getGoal();
+	public boolean process(Reagent prova, Derivation node,
+			Goal goal, List<Literal> newLiterals, Rule query) {
+		Literal literal = goal.getGoal();
 		// Clone variables since unification is used in this method
-		List<ProvaVariable> variables = query.cloneVariables();
-		ProvaList terms = (ProvaList) literal.getTerms().cloneWithVariables(variables);
-		ProvaObject[] data = terms.getFixed();
-		if( data.length!=1 || !(data[0] instanceof ProvaList) )
+		List<Variable> variables = query.cloneVariables();
+		PList terms = (PList) literal.getTerms().cloneWithVariables(variables);
+		PObj[] data = terms.getFixed();
+		if( data.length!=1 || !(data[0] instanceof PList) )
 			return false;
-		data = ((ProvaList) data[0]).getFixed();
-		String symbol = ((ProvaConstant) data[0]).getObject().toString();
-		ProvaLiteral lit = kb.generateLiteral(symbol, data, 1);
+		data = ((PList) data[0]).getFixed();
+		String symbol = ((Constant) data[0]).getObject().toString();
+		Literal lit = kb.newLiteral(symbol, data, 1);
 		// Remove a matching fact if it exists
-		ProvaRuleSet clauses = kb.getPredicates(symbol,data.length-1);
+		RuleSet clauses = kb.getPredicates(symbol,data.length-1);
 		clauses.removeClausesByMatch(kb,data);
 		// This automatically adds the rule to the respective predicate in the knowledge base
-		kb.generateRule(lit, new ProvaLiteral[] {});
+		kb.newRule(lit, new Literal[] {});
 		return true;
 	}
 

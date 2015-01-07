@@ -13,25 +13,25 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicLong;
 import org.apache.log4j.Logger;
-import ws.prova.agent2.ProvaReagent;
+import ws.prova.agent2.Reagent;
 import ws.prova.exchange.ProvaSolution;
-import ws.prova.kernel2.ProvaBuiltin;
-import ws.prova.kernel2.ProvaConstant;
-import ws.prova.kernel2.ProvaDerivationNode;
-import ws.prova.kernel2.ProvaKnowledgeBase;
-import ws.prova.kernel2.ProvaList;
-import ws.prova.kernel2.ProvaLiteral;
-import ws.prova.kernel2.ProvaObject;
-import ws.prova.kernel2.ProvaPredicate;
-import ws.prova.kernel2.ProvaResolutionInferenceEngine;
-import ws.prova.kernel2.ProvaResultSet;
-import ws.prova.kernel2.ProvaRule;
-import ws.prova.kernel2.ProvaRuleSet;
-import ws.prova.kernel2.ProvaUnification;
-import ws.prova.kernel2.ProvaVariable;
-import ws.prova.kernel2.ProvaVariablePtr;
+import ws.prova.kernel2.Operation;
+import ws.prova.kernel2.Constant;
+import ws.prova.kernel2.Derivation;
+import ws.prova.kernel2.KB;
+import ws.prova.kernel2.PList;
+import ws.prova.kernel2.Literal;
+import ws.prova.kernel2.PObj;
+import ws.prova.kernel2.Predicate;
+import ws.prova.kernel2.Inference;
+import ws.prova.kernel2.Results;
+import ws.prova.kernel2.Rule;
+import ws.prova.kernel2.RuleSet;
+import ws.prova.kernel2.Unification;
+import ws.prova.kernel2.Variable;
+import ws.prova.kernel2.VariableIndex;
 import ws.prova.kernel2.cache.ProvaCacheState;
-import ws.prova.kernel2.cache.ProvaLocalAnswers;
+import ws.prova.kernel2.cache.Answers;
 import ws.prova.parser2.ProvaParserImpl;
 import ws.prova.parser2.ProvaParsingException;
 import ws.prova.reference2.builtins.ProvaAddGroupResultImpl;
@@ -108,7 +108,7 @@ import ws.prova.reference2.builtins.ProvaUpdateCacheImpl;
 import ws.prova.reference2.builtins.ProvaUpdateImpl;
 import ws.prova.reference2.cache.ProvaCachedLiteralImpl;
 
-public class ProvaKnowledgeBaseImpl implements ProvaKnowledgeBase {
+public class DefaultKB implements KB {
 
 	private final static Logger log = Logger.getLogger("prova");
 
@@ -116,25 +116,25 @@ public class ProvaKnowledgeBaseImpl implements ProvaKnowledgeBase {
 	
 	private final AtomicLong seqRuleId = new AtomicLong();
 	
-	private final ConcurrentMap<String,ProvaPredicate> predicates;
+	private final ConcurrentMap<String,Predicate> predicates;
 
-	private final Map<String,ProvaBuiltin> builtins;
+	private final Map<String,Operation> builtins;
 
 	private PrintWriter printWriter = new PrintWriter(System.out,true);
 
-	private final ConcurrentMap<String,ProvaConstant> globals;
+	private final ConcurrentMap<String,Constant> globals;
 	
 	private final NavigableSet<String> cachePredicateSymbols;
 	
-	private final Map<String,List<ProvaRuleSet>> srcMap = new HashMap<String,List<ProvaRuleSet>>();
+	private final Map<String,List<RuleSet>> srcMap = new HashMap<String,List<RuleSet>>();
 
 	private Object context;
 
-	public ProvaKnowledgeBaseImpl() {
-		predicates = new ConcurrentHashMap<String,ProvaPredicate>();
-		globals = new ConcurrentHashMap<String,ProvaConstant>();
+	public DefaultKB() {
+		predicates = new ConcurrentHashMap<String,Predicate>();
+		globals = new ConcurrentHashMap<String,Constant>();
 		cachePredicateSymbols = new java.util.concurrent.ConcurrentSkipListSet<String>();
-		builtins = new HashMap<String,ProvaBuiltin>();
+		builtins = new HashMap<String,Operation>();
 		builtins.put("solve", new ProvaSolveImpl(this));
 		builtins.put("fail", new ProvaFailImpl(this));
 		builtins.put("println", new ProvaPrintlnImpl(this));
@@ -250,22 +250,22 @@ public class ProvaKnowledgeBaseImpl implements ProvaKnowledgeBase {
 	}
 	
 	@Override
-	public List<ProvaSolution[]> consultSyncInternal(ProvaReagent prova, BufferedReader in, String key, Object[] objects) {
+	public List<ProvaSolution[]> consultSyncInternal(Reagent prova, BufferedReader in, String key, Object[] objects) {
 		List<ProvaSolution[]> results = new ArrayList<ProvaSolution[]>(); 
-		ProvaResultSet resultSet = new ProvaResultSetImpl();
+		Results resultSet = new DefaultResults();
 		ProvaParserImpl parser = new ProvaParserImpl(key, objects);
 		try {
-			List<ProvaRule> rules = parser.parse(this, resultSet, in);
+			List<Rule> rules = parser.parse(this, resultSet, in);
 			// Run each goal
-			for( ProvaRule rule : rules ) {
+			for( Rule rule : rules ) {
 				if( rule.getHead()==null ) {
-					ProvaResolutionInferenceEngine engine = new ProvaResolutionInferenceEngineImpl(this, rule);
+					Inference engine = new DefaultInference(this, rule);
 					engine.setReagent(prova);
-					ProvaDerivationNode node = engine.run();
+					Derivation node = engine.run();
 					ProvaSolution[] goalResults = resultSet.getSolutions().toArray(noSolutions);
 					// The second literal in the body is not fail() when it is a solve (not eval)
 					if( node!=null && goalResults.length==0 && rule.getBody().length==2 && rule.getBody()[1].getPredicate().getArity()!=0 )
-						this.getPrintWriter().println("no");
+						this.getPrinter().println("no");
 					results.add(goalResults);
 					resultSet.getSolutions().clear();
 				}
@@ -287,41 +287,45 @@ public class ProvaKnowledgeBaseImpl implements ProvaKnowledgeBase {
 	}
 	
 	@Override
-	public List<ProvaSolution[]> consultSyncInternal(ProvaReagent prova, String src, String key, Object[] objects) {
+	public List<ProvaSolution[]> consultSyncInternal(Reagent prova, String src, String key, Object[] objects)  {
 		if( context==null ) {
 			context = src.substring(0,src.lastIndexOf('/')+1);
 		} else {
 			src = context + src;
 		}
 		List<ProvaSolution[]> results = new ArrayList<ProvaSolution[]>(); 
-		ProvaResultSet resultSet = new ProvaResultSetImpl();
+		Results resultSet = new DefaultResults();
 		ProvaParserImpl parser = new ProvaParserImpl(key, objects);
-		try {
-			List<ProvaRule> rules = parser.parse(this, resultSet, src);
+			List<Rule> rules;
+                        
+                        try {
+                            rules = parser.parse(this, resultSet, src);
+                        } catch (Exception ex) {
+                            throw new RuntimeException("Error Parsing: " + src, ex);
+                        } 
+                        
 			// Run each goal
-			for( ProvaRule rule : rules ) {
+			for( Rule rule : rules ) {
 				if( rule.getHead()==null ) {
-					ProvaResolutionInferenceEngine engine = new ProvaResolutionInferenceEngineImpl(this, rule);
+					Inference engine = new DefaultInference(this, rule);
 					engine.setReagent(prova);
-					ProvaDerivationNode node = engine.run();
+					Derivation node = engine.run();
 					ProvaSolution[] goalResults = resultSet.getSolutions().toArray(noSolutions);
 					// The second literal in the body is not fail() when it is a solve (not eval)
 					if( node!=null && goalResults.length==0 && rule.getBody().length==2 && rule.getBody()[1].getPredicate().getArity()!=0 )
-						this.getPrintWriter().println("no");
+						this.getPrinter().println("no");
 					results.add(goalResults);
 					resultSet.getSolutions().clear();
 				}
 			}
 			return results;
-		} catch( Exception e ) {
-			throw new RuntimeException(e);
-		}
+
 	}
 
 	@Override
-	public ProvaPredicate generatePredicate( String symbol, int arity ) {
+	public Predicate newPredicate( String symbol, int arity ) {
 		final String key = symbol+"/"+arity;
-		ProvaPredicate predicate = predicates.get(key);
+		Predicate predicate = predicates.get(key);
 		if( predicate!=null )
 			return predicate;
 		predicate = new ProvaPredicateImpl(symbol,arity,this);
@@ -330,106 +334,106 @@ public class ProvaKnowledgeBaseImpl implements ProvaKnowledgeBase {
 	}
 	
 	@Override
-	public ProvaConstant getGlobalByName(String name) {
+	public Constant getGlobal(String name) {
 		return globals.get(name);
 	}
 	
 	@Override
-	public ProvaRuleSet getPredicates(String symbol) {
+	public RuleSet getPredicates(String symbol) {
 		return getPredicates(symbol,-1);
 	}
 	
 	@Override
 	// TODO: What happens if both variable and fixed arity predicates for the predicate symbol?
-	public ProvaRuleSet getPredicates(String symbol, int arity) {
+	public RuleSet getPredicates(String symbol, int arity) {
 		if( arity==-1 ) {
 			final String keyStar = symbol+"/-1";
-			ProvaPredicate predicate = predicates.get(keyStar);
+			Predicate predicate = predicates.get(keyStar);
 			if( predicate!=null )
-				return predicate.getClauseSet();
+				return predicate.getClauses();
 			return new ProvaRuleSetImpl(symbol,arity);
 		}
 		final String key = symbol+"/"+arity;
-		ProvaPredicate predicate = predicates.get(key);
+		Predicate predicate = predicates.get(key);
 		final String keyM2 = symbol+"/-2";
-		ProvaPredicate predicateM2 = predicates.get(keyM2);
+		Predicate predicateM2 = predicates.get(keyM2);
 		if( predicate!=null ) {
-			ProvaRuleSet ruleSet = predicate.getClauseSet();
+			RuleSet ruleSet = predicate.getClauses();
 			if( predicateM2!=null ) {
-				ProvaRuleSet ruleSetM2 = predicateM2.getClauseSet();
+				RuleSet ruleSetM2 = predicateM2.getClauses();
 				ruleSet.addAll(ruleSetM2);
 			}
 			return ruleSet;
 		}
 		if( predicateM2!=null ) {
-			ProvaRuleSet ruleSetM2 = predicateM2.getClauseSet();
+			RuleSet ruleSetM2 = predicateM2.getClauses();
 			return ruleSetM2;
 		}
 		return new ProvaRuleSetImpl(symbol,arity);
 	}
 	
 	@Override
-	public ConcurrentMap<String,ProvaPredicate> getPredicates() {
+	public ConcurrentMap<String,Predicate> getPredicates() {
 		return predicates;
 	}
 
 	@Override
-	public ProvaLiteral generateLiteral(String symbol, ProvaList terms) {
-		ProvaBuiltin builtin = builtins.get(symbol);
+	public Literal newLiteral(String symbol, PList terms) {
+		Operation builtin = builtins.get(symbol);
 		if( builtin!=null )
 			return new ProvaLiteralImpl(builtin,terms);
-		return generateHeadLiteral(symbol,terms);
+		return newHeadLiteral(symbol,terms);
 	}
 
 	@Override
-	public ProvaLiteral generateLiteral(String symbol,
-			ProvaList terms, List<ProvaLiteral> guard) {
+	public Literal newLiteral(String symbol,
+			PList terms, List<Literal> guard) {
 		if( guard==null ) {
-			ProvaBuiltin builtin = builtins.get(symbol);
+			Operation builtin = builtins.get(symbol);
 			if( builtin!=null )
 				return new ProvaLiteralImpl(builtin,terms);
-			return generateHeadLiteral(symbol,terms);
+			return newHeadLiteral(symbol,terms);
 		}
-		ProvaBuiltin builtin = builtins.get(symbol);
+		Operation builtin = builtins.get(symbol);
 		if( builtin!=null )
 			return new ProvaGuardedLiteralImpl(builtin,terms,guard);
 		return generateHeadLiteral(symbol,terms,guard);
 	}
 
 	@Override
-	public ProvaLiteral generateLiteral(String symbol, ProvaObject[] data,
+	public Literal newLiteral(String symbol, PObj[] data,
 			int offset) {
-		ProvaObject[] fixed = new ProvaObject[data.length-offset];
+		PObj[] fixed = new PObj[data.length-offset];
 		System.arraycopy(data, offset, fixed, 0, fixed.length);
-		ProvaList terms = ProvaListImpl.create(fixed);
-		return generateLiteral(symbol,terms);
+		PList terms = ProvaListImpl.create(fixed);
+		return newLiteral(symbol,terms);
 	}
 
 	/**
 	 * Assume that the first element of the array is the predicate symbol
 	 */
 	@Override
-	public ProvaLiteral generateLiteral(ProvaObject[] data) {
-		String symbol = ((ProvaConstant) data[0]).getObject().toString();
-		ProvaObject[] fixed = new ProvaObject[data.length-1];
+	public Literal newLiteral(PObj[] data) {
+		String symbol = ((Constant) data[0]).getObject().toString();
+		PObj[] fixed = new PObj[data.length-1];
 		System.arraycopy(data, 1, fixed, 0, fixed.length);
-		ProvaList terms = ProvaListImpl.create(fixed);
-		return generateLiteral(symbol,terms);
+		PList terms = ProvaListImpl.create(fixed);
+		return newLiteral(symbol,terms);
 	}
 
 	@Override
-	public /*synchronized*/ ProvaPredicate getPredicate(String symbol, int arity) {
+	public /*synchronized*/ Predicate getPredicate(String symbol, int arity) {
 		if( arity==-1 ) {
 			String key = symbol+"/-2";
 			return predicates.get(key);
 		}
 		String key = symbol+"/"+arity;
-		ProvaPredicate predicate = predicates.get(key);
+		Predicate predicate = predicates.get(key);
 		return predicate;
 	}
 	
 	@Override
-	public /*synchronized*/ ProvaPredicate getOrGeneratePredicate(String symbol, int arity) {
+	public /*synchronized*/ Predicate getOrGeneratePredicate(String symbol, int arity) {
 		/*
 		if( arity==-1 ) {
 			String key = symbol+"/-2";
@@ -444,7 +448,7 @@ public class ProvaKnowledgeBaseImpl implements ProvaKnowledgeBase {
 		}
 		*/
 		String key = symbol+"/"+arity;
-		ProvaPredicate predicate = predicates.get(key);
+		Predicate predicate = predicates.get(key);
 		if( predicate==null ) {
 			predicate = new ProvaPredicateImpl(symbol,arity,this);
 			predicates.put(key,predicate);
@@ -464,19 +468,19 @@ public class ProvaKnowledgeBaseImpl implements ProvaKnowledgeBase {
 		return predicate;
 	}
 	
-	private ProvaPredicate getOrGeneratePredicate(String symbol, ProvaList terms) {
+	private Predicate getOrGeneratePredicate(String symbol, PList terms) {
 		final int arity = terms.computeSize();
 		return getOrGeneratePredicate(symbol, arity);
 	}
 
 	@Override
-	public ProvaLiteral generateHeadLiteral(String symbol, ProvaList terms) {
-		ProvaPredicate pred = getOrGeneratePredicate(symbol,terms);
+	public Literal newHeadLiteral(String symbol, PList terms) {
+		Predicate pred = getOrGeneratePredicate(symbol,terms);
 		return new ProvaLiteralImpl(pred,terms);
 	}
 	
-	private ProvaLiteral generateHeadLiteral(String symbol, ProvaList terms, List<ProvaLiteral> guard) {
-		ProvaPredicate pred = getOrGeneratePredicate(symbol,terms);
+	private Literal generateHeadLiteral(String symbol, PList terms, List<Literal> guard) {
+		Predicate pred = getOrGeneratePredicate(symbol,terms);
 		return new ProvaGuardedLiteralImpl(pred,terms,guard);
 	}
 	
@@ -518,10 +522,10 @@ public class ProvaKnowledgeBaseImpl implements ProvaKnowledgeBase {
 	*/
 
 	@Override
-	public ProvaRule generateRule(ProvaLiteral head, ProvaLiteral[] body) {
-		if( head!=null && head.getPredicate() instanceof ProvaBuiltin ) {
+	public Rule newRule(Literal head, Literal[] body) {
+		if( head!=null && head.getPredicate() instanceof Operation ) {
 			// No builtins are allowed in the clause head, so we correct that on the fly
-			head = generateHeadLiteral(head.getPredicate().getSymbol(),head.getTerms());
+			head = newHeadLiteral(head.getPredicate().getSymbol(),head.getTerms());
 		}
 		long ruleId = seqRuleId.incrementAndGet();
 		return new ProvaRuleImpl(ruleId,head,body);
@@ -533,11 +537,11 @@ public class ProvaKnowledgeBaseImpl implements ProvaKnowledgeBase {
 	 * Generate a temporal rule like @temporal_rule or @temporal_rule_control.
 	 * These rules have ruleId that is negative.
 	 */
-	public ProvaRule generateRule(long ruleId, ProvaLiteral head,
-			ProvaLiteral[] body) {
-		if( head!=null && head.getPredicate() instanceof ProvaBuiltin ) {
+	public Rule newRule(long ruleId, Literal head,
+			Literal[] body) {
+		if( head!=null && head.getPredicate() instanceof Operation ) {
 			// No builtins are allowed in the clause head, so we correct that on the fly
-			head = generateHeadLiteral(head.getPredicate().getSymbol(),head.getTerms());
+			head = newHeadLiteral(head.getPredicate().getSymbol(),head.getTerms());
 		}
 		return new ProvaRuleImpl(-ruleId,head,body);
 	}
@@ -568,25 +572,25 @@ public class ProvaKnowledgeBaseImpl implements ProvaKnowledgeBase {
 	 * Add the rule in front of others in the collection.
 	 */
 	@Override
-	public ProvaRule generateRuleA(ProvaLiteral head, ProvaLiteral[] body) {
-		if( head!=null && head.getPredicate() instanceof ProvaBuiltin ) {
+	public Rule newRuleA(Literal head, Literal[] body) {
+		if( head!=null && head.getPredicate() instanceof Operation ) {
 			// No builtins are allowed in the clause head, so we correct that on the fly
-			head = generateHeadLiteral(head.getPredicate().getSymbol(),head.getTerms());
+			head = newHeadLiteral(head.getPredicate().getSymbol(),head.getTerms());
 		}
 		long ruleId = seqRuleId.incrementAndGet();
 		return new ProvaRuleImpl(ruleId,head,body,true);
 	}
 
 	@Override
-	public ProvaRule generateGoal(ProvaLiteral[] body) {
+	public Rule newGoal(Literal[] body) {
 		if( body.length==0 )
 			return null;
-		return generateRule(null, body);
+		return newRule(null, body);
 	}
 
 	@Override
-	public ProvaRule generateGoal(ProvaLiteral[] body,
-			List<ProvaVariable> variables) {
+	public Rule newGoal(Literal[] body,
+			List<Variable> variables) {
 		if( body.length==0 )
 			return null;
 		long ruleId = 0;
@@ -594,35 +598,35 @@ public class ProvaKnowledgeBaseImpl implements ProvaKnowledgeBase {
 	}
 
 	@Override
-	public ProvaRule generateSolveGoal(ProvaResultSet resultSet, ProvaLiteral[] body) {
+	public Rule newGoalSolution(Results resultSet, Literal[] body) {
 		if( body.length==0 )
 			return null;
 		// A rule with no head is a goal
-		ProvaRule solveRule = new ProvaRuleImpl(body);
+		Rule solveRule = new ProvaRuleImpl(body);
 //		ProvaRule solveRule = generateRule(null, body);
-		Vector<ProvaObject> objs = new Vector<ProvaObject>();
-		ProvaConstant cResultSet = ProvaConstantImpl.create(resultSet);
+		Vector<PObj> objs = new Vector<PObj>();
+		Constant cResultSet = ProvaConstantImpl.create(resultSet);
 		objs.add(cResultSet);
-		for( ProvaVariable var : solveRule.getVariables() ) {
-			ProvaConstant c = ProvaConstantImpl.create(var.getName());
-			ProvaList l = ProvaListImpl.create( new ProvaObject[] {c,var});
+		for( Variable var : solveRule.getVariables() ) {
+			Constant c = ProvaConstantImpl.create(var.getName());
+			PList l = ProvaListImpl.create(new PObj[] {c,var});
 			objs.add(l);
 		}
-		ProvaList ls = ProvaListImpl.create(objs.toArray(new ProvaObject[objs.size()]) );
-		ProvaLiteral solveBuiltin = generateLiteral("solve",ls);
+		PList ls = ProvaListImpl.create(objs.toArray(new PObj[objs.size()]) );
+		Literal solveBuiltin = newLiteral("solve",ls);
 		solveRule.addBodyLiteral(solveBuiltin);
 		return solveRule;
 	}
 
 	@Override
-	public ProvaLiteral generateLiteral(String symbol) {
-		return generateLiteral(symbol,null);
+	public Literal newLiteral(String symbol) {
+		return newLiteral(symbol,null);
 	}
 
 	@Override
-	public ProvaRule generateRule(ProvaLiteral head, ProvaLiteral[] newGoals,
-			ProvaLiteral[] body, int offset) {
-		ProvaLiteral[] combinedBody = new ProvaLiteral[newGoals.length+body.length-1-offset];
+	public Rule newRule(Literal head, Literal[] newGoals,
+			Literal[] body, int offset) {
+		Literal[] combinedBody = new Literal[newGoals.length+body.length-1-offset];
 		int i=0;
 		for( ; i<newGoals.length; i++ )
 			combinedBody[i] = newGoals[i];
@@ -635,23 +639,23 @@ public class ProvaKnowledgeBaseImpl implements ProvaKnowledgeBase {
 	}
 
 	@Override
-	public ProvaRule generateGoal(ProvaUnification unification, ProvaDerivationNode node, ProvaLiteral[] newGoals,
-			ProvaLiteral[] body, int offset, List<ProvaVariable> variables) {
+	public Rule newGoal(Unification unification, Derivation node, Literal[] newGoals,
+			Literal[] body, int offset, List<Variable> variables) {
 		int bodyLength = body==null ? 0 : body.length;
 		int newGoalsLength = newGoals==null ? 0 : newGoals.length;
 		if( newGoalsLength!=0 && newGoals[newGoals.length-1].getPredicate() instanceof ProvaFailImpl ) {
 			// fail() predicate in the target body cuts the goal trail
-			ProvaLiteral[] combinedBody = new ProvaLiteral[newGoalsLength];
+			Literal[] combinedBody = new Literal[newGoalsLength];
 			List<Boolean> isConstant = new ArrayList<Boolean>(1);
 			isConstant.add(true);
 			int i=0;
 			for( ; i<newGoalsLength; i++ ) {
 				if( "cut".equals(newGoals[i].getPredicate().getSymbol()) ) {
-					ProvaVariablePtr any = (ProvaVariablePtr) newGoals[i].getTerms().getFixed()[0];
+					VariableIndex any = (VariableIndex) newGoals[i].getTerms().getFixed()[0];
 					variables.get(any.getIndex()).setAssigned(ProvaConstantImpl.create(node));
 				}
 				isConstant.set(0,true);
-				combinedBody[i] = (ProvaLiteral) newGoals[i].cloneWithBoundVariables(unification, variables, isConstant);
+				combinedBody[i] = (Literal) newGoals[i].cloneWithBoundVariables(unification, variables, isConstant);
 				if( isConstant.get(0) )
 					combinedBody[i].setGround(true);
 			}
@@ -659,17 +663,17 @@ public class ProvaKnowledgeBaseImpl implements ProvaKnowledgeBase {
 		}
 
 		final int length = newGoalsLength+bodyLength-1-offset;
-		ProvaLiteral[] combinedBody = new ProvaLiteral[length];
+		Literal[] combinedBody = new Literal[length];
 		List<Boolean> isConstant = new ArrayList<Boolean>(1);
 		isConstant.add(true);
 		int i=0;
 		for( ; i<newGoalsLength; i++ ) {
 			if( "cut".equals(newGoals[i].getPredicate().getSymbol()) ) {
-				ProvaVariablePtr any = (ProvaVariablePtr) newGoals[i].getTerms().getFixed()[0];
+				VariableIndex any = (VariableIndex) newGoals[i].getTerms().getFixed()[0];
 				variables.get(any.getIndex()).setAssigned(ProvaConstantImpl.create(node));
 			}
 			isConstant.set(0,true);
-			combinedBody[i] = (ProvaLiteral) newGoals[i].cloneWithBoundVariables(unification, variables, isConstant);
+			combinedBody[i] = (Literal) newGoals[i].cloneWithBoundVariables(unification, variables, isConstant);
 			if( isConstant.get(0) )
 				combinedBody[i].setGround(true);
 		}
@@ -679,15 +683,15 @@ public class ProvaKnowledgeBaseImpl implements ProvaKnowledgeBase {
 	}
 
 	@Override
-	public ProvaLiteral generateCachedLiteral(String symbol, ProvaList terms,
-			ProvaCacheState cacheState, ProvaLocalAnswers answers) {
-		ProvaBuiltin builtin = builtins.get(symbol);
+	public Literal newCachedLiteral(String symbol, PList terms,
+			ProvaCacheState cacheState, Answers answers) {
+		Operation builtin = builtins.get(symbol);
 		if( builtin!=null )
 			return new ProvaLiteralImpl(builtin,terms);
 		final int arity = terms.computeSize();
 		if( arity==-1 ) {
 			String key = symbol+"/-2";
-			ProvaPredicate predicate = predicates.get(key);
+			Predicate predicate = predicates.get(key);
 			if( predicate==null ) {
 				predicate = new ProvaPredicateImpl(symbol,arity,this);
 				predicates.put(key,predicate);
@@ -697,19 +701,19 @@ public class ProvaKnowledgeBaseImpl implements ProvaKnowledgeBase {
 			return new ProvaCachedLiteralImpl(predicate,terms,cacheState,answers);
 		}
 		String key = symbol+"/"+arity;
-		ProvaPredicate predicate = predicates.get(key);
+		Predicate predicate = predicates.get(key);
 		if( predicate==null ) {
 			predicate = new ProvaPredicateImpl(symbol,arity,this);
 			predicates.put(key,predicate);
 		}
 		key = symbol+"/-1";
-		ProvaPredicate predicate2 = predicates.get(key);
+		Predicate predicate2 = predicates.get(key);
 		if( predicate2==null ) {
 			if( predicate==null )
 				predicate2 = new ProvaPredicateImpl(symbol,arity,this);
 			else
 				predicate2 = predicate;
-			predicate2.setKnowledgeBase(this);
+			predicate2.setKB(this);
 			predicates.put(key,predicate2);
 			if( predicate!=null )
 				return new ProvaCachedLiteralImpl(predicate,terms,cacheState,answers);
@@ -718,24 +722,24 @@ public class ProvaKnowledgeBaseImpl implements ProvaKnowledgeBase {
 	}
 
 	@Override
-	public void setPrintWriter(PrintWriter printWriter) {
+	public void setPrinter(PrintWriter printWriter) {
 		this.printWriter = printWriter;
 	}
 
 	@Override
-	public PrintWriter getPrintWriter() {
+	public PrintWriter getPrinter() {
 		return this.printWriter;
 	}
 
 	@Override
-	public ProvaConstant generateGlobalConstant(String name) {
+	public Constant newGlobalConstant(String name) {
 		if( !name.startsWith("$") ) {
 			return ProvaConstantImpl.create(name);
 		}
-		ProvaConstant oldGlobal = globals.get(name);
+		Constant oldGlobal = globals.get(name);
 		if( oldGlobal!=null )
 			return oldGlobal;
-		final ProvaConstant global = ProvaGlobalConstantImpl.create(name);
+		final Constant global = ProvaGlobalConstantImpl.create(name);
 		globals.put(name, global);
 		return global;
 	}
@@ -747,7 +751,7 @@ public class ProvaKnowledgeBaseImpl implements ProvaKnowledgeBase {
 			oldGlobal.setObject(value);
 			return;
 		}
-		final ProvaConstant global = ProvaGlobalConstantImpl.create(name);
+		final Constant global = ProvaGlobalConstantImpl.create(name);
 		global.setObject(value);
 		globals.put(name, global);
 	}
@@ -772,10 +776,10 @@ public class ProvaKnowledgeBaseImpl implements ProvaKnowledgeBase {
 	}
 
 	@Override
-	public /*synchronized*/ void addClauseSetToSrc(ProvaRuleSet ruleSet, String src) {
-		List<ProvaRuleSet> rulesets = srcMap.get(src);
+	public /*synchronized*/ void addClauseSetToSrc(RuleSet ruleSet, String src) {
+		List<RuleSet> rulesets = srcMap.get(src);
 		if( rulesets==null ) {
-			rulesets = new ArrayList<ProvaRuleSet>();
+			rulesets = new ArrayList<RuleSet>();
 			srcMap.put(src,rulesets);
 		}
 		rulesets.add(ruleSet);
@@ -783,11 +787,11 @@ public class ProvaKnowledgeBaseImpl implements ProvaKnowledgeBase {
 
 	@Override
 	public /*synchronized*/ void unconsultSync(String src) {
-		List<ProvaRuleSet> rulesets = srcMap.get(src);
+		List<RuleSet> rulesets = srcMap.get(src);
 		if( rulesets==null )
 			return;
 
-		for( ProvaRuleSet ruleset : rulesets )
+		for( RuleSet ruleset : rulesets )
 			ruleset.removeClausesBySrc(src);
 		srcMap.remove(src);
 	}

@@ -1,19 +1,19 @@
 package test.ws.prova.helper;
 
-import ws.prova.kernel2.ProvaList;
-import ws.prova.kernel2.ProvaObject;
+import ws.prova.kernel2.PList;
+import ws.prova.kernel2.PObj;
 import ws.prova.reference2.ProvaConstantImpl;
 import ws.prova.reference2.ProvaListImpl;
 
 public class ProvaListAux {
 
-	public static int calculateSize(ProvaList l){
+	public static int calculateSize(PList l){
 		return l.getFixed().length;
 	}
 	
-	public static ProvaList createProvaList(){
+	public static PList createProvaList(){
 		return ProvaListImpl.create(new
-				ProvaObject[]{ProvaConstantImpl.create("a"),ProvaConstantImpl.create("b")});
+				PObj[]{ProvaConstantImpl.create("a"),ProvaConstantImpl.create("b")});
 	}
 
 }

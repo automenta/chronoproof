@@ -22,25 +22,25 @@ import org.apache.log4j.Logger;
 import ws.prova.api2.ProvaCommunicator;
 import ws.prova.esb2.ProvaAgent;
 import ws.prova.exchange.ProvaSolution;
-import ws.prova.kernel2.ProvaConstant;
-import ws.prova.kernel2.ProvaDerivationNode;
-import ws.prova.kernel2.ProvaKnowledgeBase;
-import ws.prova.kernel2.ProvaList;
-import ws.prova.kernel2.ProvaObject;
-import ws.prova.kernel2.ProvaResolutionInferenceEngine;
-import ws.prova.kernel2.ProvaRule;
+import ws.prova.kernel2.Constant;
+import ws.prova.kernel2.Derivation;
+import ws.prova.kernel2.KB;
+import ws.prova.kernel2.PList;
+import ws.prova.kernel2.PObj;
+import ws.prova.kernel2.Inference;
+import ws.prova.kernel2.Rule;
 import ws.prova.kernel2.messaging.ProvaMessenger;
 import ws.prova.kernel2.messaging.ProvaWorkflows;
 import ws.prova.parser2.ProvaParsingException;
-import ws.prova.reference2.ProvaKnowledgeBaseImpl;
-import ws.prova.reference2.ProvaResolutionInferenceEngineImpl;
+import ws.prova.reference2.DefaultKB;
+import ws.prova.reference2.DefaultInference;
 import ws.prova.reference2.ProvaSwingAdaptor;
 import ws.prova.reference2.messaging.ProvaMessengerImpl;
 import ws.prova.reference2.messaging.ProvaWorkflowsImpl;
 import ws.prova.service.ProvaMiniService;
 
 @SuppressWarnings("unused")
-public class ProvaReagentImpl implements ProvaReagent {
+public class ProvaReagentImpl implements Reagent {
 
     private final static Logger log = Logger.getLogger("prova");
 
@@ -52,7 +52,7 @@ public class ProvaReagentImpl implements ProvaReagent {
 
     private String port;
 
-    private ProvaKnowledgeBase kb;
+    private KB kb;
 
     private String machine;
 
@@ -77,9 +77,9 @@ public class ProvaReagentImpl implements ProvaReagent {
 
     private boolean allowedShutdown = true;
 
-    final int threadsPerPool = 10;
-    final int threadsPerPartition = 1;
-    final int partitions = 32;
+    final int threadsPerPool = 4;
+    final int threadsPerPartition = 2;
+    final int partitions = 8;
     
     public ProvaReagentImpl(ProvaCommunicator communicator, ProvaMiniService service, String agent,
             String port, String[] prot, Object rules, boolean async,
@@ -88,15 +88,14 @@ public class ProvaReagentImpl implements ProvaReagent {
         this.port = port;
         // this.queue = queue;
         try {
-            this.machine = InetAddress.getLocalHost().getHostName()
-                    .toLowerCase();
+            this.machine = InetAddress.getLocalHost().getHostName().toLowerCase();
         } catch (UnknownHostException ex) {
         }
 
-        kb = new ProvaKnowledgeBaseImpl();
+        kb = new DefaultKB();
         kb.setGlobals(globals);
 
-        this.executor = Executors.newFixedThreadPool(1, new ThreadFactory() {
+        this.executor = Executors.newSingleThreadExecutor(new ThreadFactory() {
 
             @Override
             public Thread newThread(Runnable r) {
@@ -112,8 +111,7 @@ public class ProvaReagentImpl implements ProvaReagent {
         partitionedPool = new ExecutorService[partitions];
         for (int i = 0; i < partitions; i++) {
             final int index = i;
-            this.partitionedPool[i] = Executors.newFixedThreadPool(threadsPerPartition,
-                    new ThreadFactory() {
+            this.partitionedPool[i] = Executors.newFixedThreadPool(threadsPerPartition,new ThreadFactory() {
 
                         @Override
                         public Thread newThread(Runnable r) {
@@ -258,7 +256,7 @@ public class ProvaReagentImpl implements ProvaReagent {
      * return null; } };
      */
     @Override
-    public void submitAsync(final long partition, final ProvaRule goal,
+    public void submitAsync(final long partition, final Rule goal,
             final ProvaThreadpoolEnum threadPool) {
         this.latestTimestamp = System.currentTimeMillis();
 
@@ -321,7 +319,11 @@ public class ProvaReagentImpl implements ProvaReagent {
     @Override
     public void executeTask(final long partition, final Runnable task,
             final ProvaThreadpoolEnum threadPool) {
+        
         switch (threadPool) {
+            case IMMEDIATE:
+                task.run();
+                break;
             case MAIN:
                 executor.execute(task);
                 break;
@@ -347,38 +349,38 @@ public class ProvaReagentImpl implements ProvaReagent {
     }
 
     @Override
-    public Future<?> spawn(final ProvaList terms) {
-        final ProvaObject[] data = terms.getFixed();
+    public Future<?> spawn(final PList terms) {
+        final PObj[] data = terms.getFixed();
         final int length = data.length;
         if (length < 4) {
             return null;
         }
-        if (!(data[0] instanceof ProvaConstant)) {
+        if (!(data[0] instanceof Constant)) {
             return null;
         }
-        if (!(data[2] instanceof ProvaConstant)) {
+        if (!(data[2] instanceof Constant)) {
             return null;
         }
-        final String method = (String) ((ProvaConstant) data[2]).getObject();
-        if (!(data[1] instanceof ProvaConstant)) {
+        final String method = (String) ((Constant) data[2]).getObject();
+        if (!(data[1] instanceof Constant)) {
             return null;
         }
-        final Object target = ((ProvaConstant) data[1]).getObject();
+        final Object target = ((Constant) data[1]).getObject();
         Object[] args0 = null;
         final Object argsRaw = data[3];
-        if (argsRaw instanceof ProvaList) {
-            final ProvaList argsList = (ProvaList) argsRaw;
+        if (argsRaw instanceof PList) {
+            final PList argsList = (PList) argsRaw;
             args0 = new Object[argsList.getFixed().length];
             for (int i = 0; i < args0.length; i++) {
-                ProvaObject po = argsList.getFixed()[i];
-                if (!(po instanceof ProvaConstant)) {
+                PObj po = argsList.getFixed()[i];
+                if (!(po instanceof Constant)) {
                     return null;
                 }
-                args0[i] = ((ProvaConstant) po).getObject();
+                args0[i] = ((Constant) po).getObject();
             }
-        } else if (argsRaw instanceof ProvaConstant) {
+        } else if (argsRaw instanceof Constant) {
             args0 = new Object[1];
-            args0[0] = ((ProvaConstant) argsRaw).getObject();
+            args0[0] = ((Constant) argsRaw).getObject();
         }
         final Object[] args = args0;
         Callable<?> task = new Callable<Object>() {
@@ -392,22 +394,22 @@ public class ProvaReagentImpl implements ProvaReagent {
                 } else {
                     ret = MethodUtils.invokeMethod(target, method, args);
                 }
-                messenger.sendReturnAsMsg((ProvaConstant) data[0], ret);
+                messenger.sendReturnAsMsg((Constant) data[0], ret);
                 return ret;
             }
         };
         return pool.submit(task);
     }
 
-    public ProvaDerivationNode submitSyncInternal(ProvaRule goal) {
-        ProvaResolutionInferenceEngine engine = new ProvaResolutionInferenceEngineImpl(kb, goal);
+    public Derivation submitSyncInternal(Rule goal) {
+        Inference engine = new DefaultInference(kb, goal);
         engine.setReagent(this);
         return engine.run();
     }
 
     @Override
     public void setPrintWriter(PrintWriter printWriter) {
-        kb.setPrintWriter(printWriter);
+        kb.setPrinter(printWriter);
     }
 
     @Override
@@ -416,7 +418,7 @@ public class ProvaReagentImpl implements ProvaReagent {
     }
 
     @Override
-    public ProvaKnowledgeBase getKb() {
+    public KB getKb() {
         return kb;
     }
 

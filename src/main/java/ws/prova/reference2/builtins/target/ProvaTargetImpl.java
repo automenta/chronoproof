@@ -1,34 +1,34 @@
 package ws.prova.reference2.builtins.target;
 
-import ws.prova.kernel2.ProvaGoal;
-import ws.prova.kernel2.ProvaRule;
+import ws.prova.kernel2.Goal;
+import ws.prova.kernel2.Rule;
 
 public class ProvaTargetImpl implements ProvaTarget {
 
-	private final ProvaGoal target;
+	private final Goal target;
 	
-	private ProvaRule candidate;
+	private Rule candidate;
 
-	private ProvaTargetImpl(ProvaGoal target) {
+	private ProvaTargetImpl(Goal target) {
 		this.target = target;
 	}
 
-	public static ProvaTarget create(ProvaGoal target) {
+	public static ProvaTarget create(Goal target) {
 		return new ProvaTargetImpl(target);
 	}
 
 	@Override
-	public ProvaGoal getTarget() {
+	public Goal getTarget() {
 		return target;
 	}
 
 	@Override
-	public ProvaRule getCandidate() {
+	public Rule getCandidate() {
 		return candidate;
 	}
 
 	@Override
-	public void setCandidate( ProvaRule candidate ) {
+	public void setCandidate( Rule candidate ) {
 		this.candidate = candidate;
 	}
 

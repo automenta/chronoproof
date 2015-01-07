@@ -7,13 +7,13 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import ws.prova.agent2.ProvaReagent;
+import ws.prova.agent2.Reagent;
 import ws.prova.agent2.ProvaThreadpoolEnum;
-import ws.prova.kernel2.ProvaKnowledgeBase;
-import ws.prova.kernel2.ProvaList;
-import ws.prova.kernel2.ProvaLiteral;
-import ws.prova.kernel2.ProvaObject;
-import ws.prova.kernel2.ProvaRule;
+import ws.prova.kernel2.KB;
+import ws.prova.kernel2.PList;
+import ws.prova.kernel2.Literal;
+import ws.prova.kernel2.PObj;
+import ws.prova.kernel2.Rule;
 import ws.prova.kernel2.messaging.ProvaMessenger;
 
 /**
@@ -25,14 +25,14 @@ public class ProvaSwingAdaptor implements
 		MouseListener,
 		MouseMotionListener {
 
-	private final ProvaReagent prova;
+	private final Reagent prova;
 
-	private final ProvaKnowledgeBase kb;
+	private final KB kb;
 	
 	@SuppressWarnings("unused")
 	private final ProvaMessenger messenger;
 
-	public ProvaSwingAdaptor(ProvaReagent prova) {
+	public ProvaSwingAdaptor(Reagent prova) {
 		this.prova = prova;
 		this.kb = prova.getKb();
 		this.messenger = prova.getMessenger();
@@ -82,18 +82,18 @@ public class ProvaSwingAdaptor implements
 	public void actionPerformed(ActionEvent e) {
 		Object src = e.getSource();
 		Object cmd = e.getActionCommand();
-		ProvaList terms = ProvaListImpl.create(new ProvaObject[] {
+		PList terms = ProvaListImpl.create(new PObj[] {
 				ProvaConstantImpl.create("s"),
 				ProvaConstantImpl.create("task"),
 				ProvaConstantImpl.create("0"),
 				ProvaConstantImpl.create("swing"),
-				ProvaListImpl.create(new ProvaObject[] {
+				ProvaListImpl.create(new PObj[] {
 						ProvaConstantImpl.create("action"),
 						ProvaConstantImpl.create(cmd),
 						ProvaConstantImpl.create(src),
 						ProvaConstantImpl.create(e)})});
-		ProvaLiteral lit = kb.generateHeadLiteral("rcvMsg",terms);
-		ProvaRule goal = kb.generateGoal(new ProvaLiteral[] {lit,kb.generateLiteral("fail")});
+		Literal lit = kb.newHeadLiteral("rcvMsg",terms);
+		Rule goal = kb.newGoal(new Literal[] {lit,kb.newLiteral("fail")});
 		prova.submitAsync(0,goal,ProvaThreadpoolEnum.TASK);
 	}
 
@@ -105,17 +105,17 @@ public class ProvaSwingAdaptor implements
         @Override
 	public void stateChanged(ChangeEvent e) {
 		Object src = e.getSource();
-		ProvaList terms = ProvaListImpl.create(new ProvaObject[] {
+		PList terms = ProvaListImpl.create(new PObj[] {
 				ProvaConstantImpl.create("s"),
 				ProvaConstantImpl.create("task"),
 				ProvaConstantImpl.create("0"),
 				ProvaConstantImpl.create("swing"),
-				ProvaListImpl.create(new ProvaObject[] {
+				ProvaListImpl.create(new PObj[] {
 						ProvaConstantImpl.create("change"),
 						ProvaConstantImpl.create(src),
 						ProvaConstantImpl.create(e)})});
-		ProvaLiteral lit = kb.generateHeadLiteral("rcvMsg",terms);
-		ProvaRule goal = kb.generateGoal(new ProvaLiteral[] {lit,kb.generateLiteral("fail")});
+		Literal lit = kb.newHeadLiteral("rcvMsg",terms);
+		Rule goal = kb.newGoal(new Literal[] {lit,kb.newLiteral("fail")});
 		prova.submitAsync(0,goal,ProvaThreadpoolEnum.TASK);
 	}
 
@@ -127,18 +127,18 @@ public class ProvaSwingAdaptor implements
         @Override
 	public void mouseClicked(MouseEvent e) {
 		Object src = e.getSource();
-		ProvaList terms = ProvaListImpl.create(new ProvaObject[] {
+		PList terms = ProvaListImpl.create(new PObj[] {
 				ProvaConstantImpl.create("s"),
 				ProvaConstantImpl.create("task"),
 				ProvaConstantImpl.create("0"),
 				ProvaConstantImpl.create("swing"),
-				ProvaListImpl.create(new ProvaObject[] {
+				ProvaListImpl.create(new PObj[] {
 						ProvaConstantImpl.create("mouse"),
 						ProvaConstantImpl.create("clicked"),
 						ProvaConstantImpl.create(src),
 						ProvaConstantImpl.create(e)})});
-		ProvaLiteral lit = kb.generateHeadLiteral("rcvMsg",terms);
-		ProvaRule goal = kb.generateGoal(new ProvaLiteral[] {lit,kb.generateLiteral("fail")});
+		Literal lit = kb.newHeadLiteral("rcvMsg",terms);
+		Rule goal = kb.newGoal(new Literal[] {lit,kb.newLiteral("fail")});
 		prova.submitAsync(0,goal,ProvaThreadpoolEnum.TASK);
 	}
 
@@ -150,18 +150,18 @@ public class ProvaSwingAdaptor implements
         @Override
 	public void mouseEntered(MouseEvent e) {
 		Object src = e.getSource();
-		ProvaList terms = ProvaListImpl.create(new ProvaObject[] {
+		PList terms = ProvaListImpl.create(new PObj[] {
 				ProvaConstantImpl.create("s"),
 				ProvaConstantImpl.create("task"),
 				ProvaConstantImpl.create("0"),
 				ProvaConstantImpl.create("swing"),
-				ProvaListImpl.create(new ProvaObject[] {
+				ProvaListImpl.create(new PObj[] {
 						ProvaConstantImpl.create("mouse"),
 						ProvaConstantImpl.create("entered"),
 						ProvaConstantImpl.create(src),
 						ProvaConstantImpl.create(e)})});
-		ProvaLiteral lit = kb.generateHeadLiteral("rcvMsg",terms);
-		ProvaRule goal = kb.generateGoal(new ProvaLiteral[] {lit,kb.generateLiteral("fail")});
+		Literal lit = kb.newHeadLiteral("rcvMsg",terms);
+		Rule goal = kb.newGoal(new Literal[] {lit,kb.newLiteral("fail")});
 		prova.submitAsync(0,goal,ProvaThreadpoolEnum.TASK);
 	}
 
@@ -173,18 +173,18 @@ public class ProvaSwingAdaptor implements
         @Override
 	public void mouseExited(MouseEvent e) {
 		Object src = e.getSource();
-		ProvaList terms = ProvaListImpl.create(new ProvaObject[] {
+		PList terms = ProvaListImpl.create(new PObj[] {
 				ProvaConstantImpl.create("s"),
 				ProvaConstantImpl.create("task"),
 				ProvaConstantImpl.create("0"),
 				ProvaConstantImpl.create("swing"),
-				ProvaListImpl.create(new ProvaObject[] {
+				ProvaListImpl.create(new PObj[] {
 						ProvaConstantImpl.create("mouse"),
 						ProvaConstantImpl.create("exited"),
 						ProvaConstantImpl.create(src),
 						ProvaConstantImpl.create(e)})});
-		ProvaLiteral lit = kb.generateHeadLiteral("rcvMsg",terms);
-		ProvaRule goal = kb.generateGoal(new ProvaLiteral[] {lit,kb.generateLiteral("fail")});
+		Literal lit = kb.newHeadLiteral("rcvMsg",terms);
+		Rule goal = kb.newGoal(new Literal[] {lit,kb.newLiteral("fail")});
 		prova.submitAsync(0,goal,ProvaThreadpoolEnum.TASK);
 	}
 
@@ -196,18 +196,18 @@ public class ProvaSwingAdaptor implements
         @Override
 	public void mousePressed(MouseEvent e) {
 		Object src = e.getSource();
-		ProvaList terms = ProvaListImpl.create(new ProvaObject[] {
+		PList terms = ProvaListImpl.create(new PObj[] {
 				ProvaConstantImpl.create("s"),
 				ProvaConstantImpl.create("task"),
 				ProvaConstantImpl.create("0"),
 				ProvaConstantImpl.create("swing"),
-				ProvaListImpl.create(new ProvaObject[] {
+				ProvaListImpl.create(new PObj[] {
 						ProvaConstantImpl.create("mouse"),
 						ProvaConstantImpl.create("pressed"),
 						ProvaConstantImpl.create(src),
 						ProvaConstantImpl.create(e)})});
-		ProvaLiteral lit = kb.generateHeadLiteral("rcvMsg",terms);
-		ProvaRule goal = kb.generateGoal(new ProvaLiteral[] {lit,kb.generateLiteral("fail")});
+		Literal lit = kb.newHeadLiteral("rcvMsg",terms);
+		Rule goal = kb.newGoal(new Literal[] {lit,kb.newLiteral("fail")});
 		prova.submitAsync(0,goal,ProvaThreadpoolEnum.TASK);
 	}
 
@@ -219,54 +219,54 @@ public class ProvaSwingAdaptor implements
         @Override
 	public void mouseReleased(MouseEvent e) {
 		Object src = e.getSource();
-		ProvaList terms = ProvaListImpl.create(new ProvaObject[] {
+		PList terms = ProvaListImpl.create(new PObj[] {
 				ProvaConstantImpl.create("s"),
 				ProvaConstantImpl.create("task"),
 				ProvaConstantImpl.create("0"),
 				ProvaConstantImpl.create("swing"),
-				ProvaListImpl.create(new ProvaObject[] {
+				ProvaListImpl.create(new PObj[] {
 						ProvaConstantImpl.create("mouse"),
 						ProvaConstantImpl.create("released"),
 						ProvaConstantImpl.create(src),
 						ProvaConstantImpl.create(e)})});
-		ProvaLiteral lit = kb.generateHeadLiteral("rcvMsg",terms);
-		ProvaRule goal = kb.generateGoal(new ProvaLiteral[] {lit,kb.generateLiteral("fail")});
+		Literal lit = kb.newHeadLiteral("rcvMsg",terms);
+		Rule goal = kb.newGoal(new Literal[] {lit,kb.newLiteral("fail")});
 		prova.submitAsync(0,goal,ProvaThreadpoolEnum.TASK);
 	}
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
 		Object src = e.getSource();
-		ProvaList terms = ProvaListImpl.create(new ProvaObject[] {
+		PList terms = ProvaListImpl.create(new PObj[] {
 				ProvaConstantImpl.create("s"),
 				ProvaConstantImpl.create("task"),
 				ProvaConstantImpl.create("0"),
 				ProvaConstantImpl.create("swing"),
-				ProvaListImpl.create(new ProvaObject[] {
+				ProvaListImpl.create(new PObj[] {
 						ProvaConstantImpl.create("motion"),
 						ProvaConstantImpl.create("dragged"),
 						ProvaConstantImpl.create(src),
 						ProvaConstantImpl.create(e)})});
-		ProvaLiteral lit = kb.generateHeadLiteral("rcvMsg",terms);
-		ProvaRule goal = kb.generateGoal(new ProvaLiteral[] {lit,kb.generateLiteral("fail")});
+		Literal lit = kb.newHeadLiteral("rcvMsg",terms);
+		Rule goal = kb.newGoal(new Literal[] {lit,kb.newLiteral("fail")});
 		prova.submitAsync(0,goal,ProvaThreadpoolEnum.TASK);
 	}
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
 		Object src = e.getSource();
-		ProvaList terms = ProvaListImpl.create(new ProvaObject[] {
+		PList terms = ProvaListImpl.create(new PObj[] {
 				ProvaConstantImpl.create("s"),
 				ProvaConstantImpl.create("task"),
 				ProvaConstantImpl.create("0"),
 				ProvaConstantImpl.create("swing"),
-				ProvaListImpl.create(new ProvaObject[] {
+				ProvaListImpl.create(new PObj[] {
 						ProvaConstantImpl.create("motion"),
 						ProvaConstantImpl.create("moved"),
 						ProvaConstantImpl.create(src),
 						ProvaConstantImpl.create(e)})});
-		ProvaLiteral lit = kb.generateHeadLiteral("rcvMsg",terms);
-		ProvaRule goal = kb.generateGoal(new ProvaLiteral[] {lit,kb.generateLiteral("fail")});
+		Literal lit = kb.newHeadLiteral("rcvMsg",terms);
+		Rule goal = kb.newGoal(new Literal[] {lit,kb.newLiteral("fail")});
 		prova.submitAsync(0,goal,ProvaThreadpoolEnum.TASK);
 	}
 }

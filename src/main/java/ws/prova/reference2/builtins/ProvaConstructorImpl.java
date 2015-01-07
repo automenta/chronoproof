@@ -5,68 +5,68 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.apache.commons.beanutils.ConstructorUtils;
-import ws.prova.agent2.ProvaReagent;
-import ws.prova.kernel2.ProvaConstant;
-import ws.prova.kernel2.ProvaDerivationNode;
-import ws.prova.kernel2.ProvaGoal;
-import ws.prova.kernel2.ProvaKnowledgeBase;
-import ws.prova.kernel2.ProvaList;
-import ws.prova.kernel2.ProvaLiteral;
-import ws.prova.kernel2.ProvaObject;
-import ws.prova.kernel2.ProvaRule;
-import ws.prova.kernel2.ProvaVariable;
-import ws.prova.kernel2.ProvaVariablePtr;
+import ws.prova.agent2.Reagent;
+import ws.prova.kernel2.Constant;
+import ws.prova.kernel2.Derivation;
+import ws.prova.kernel2.Goal;
+import ws.prova.kernel2.KB;
+import ws.prova.kernel2.PList;
+import ws.prova.kernel2.Literal;
+import ws.prova.kernel2.PObj;
+import ws.prova.kernel2.Rule;
+import ws.prova.kernel2.Variable;
+import ws.prova.kernel2.VariableIndex;
 import ws.prova.reference2.ProvaConstantImpl;
 import ws.prova.reference2.ProvaGlobalConstantImpl;
 
 public class ProvaConstructorImpl extends ProvaBuiltinImpl {
 
-	public ProvaConstructorImpl(ProvaKnowledgeBase kb) {
+	public ProvaConstructorImpl(KB kb) {
 		super(kb, "construct");
 	}
 
 	@Override
-	public boolean process(ProvaReagent prova, ProvaDerivationNode node,
-			ProvaGoal goal, List<ProvaLiteral> newLiterals, ProvaRule query) {
-		ProvaLiteral literal = goal.getGoal();
-		List<ProvaVariable> variables = query.getVariables();
-		ProvaList terms = (ProvaList) literal.getTerms().cloneWithVariables(variables);
-		ProvaObject[] data = terms.getFixed();
+	public boolean process(Reagent prova, Derivation node,
+			Goal goal, List<Literal> newLiterals, Rule query) {
+		Literal literal = goal.getGoal();
+		List<Variable> variables = query.getVariables();
+		PList terms = (PList) literal.getTerms().cloneWithVariables(variables);
+		PObj[] data = terms.getFixed();
 		if( data.length!=3 )
 			return false;
-		if( !(data[0] instanceof ProvaConstant) || !(data[2] instanceof ProvaList) ) {
+		if( !(data[0] instanceof Constant) || !(data[2] instanceof PList) ) {
 			return false;
 		}
-		ProvaObject lt = data[1];
+		PObj lt = data[1];
 //		if( lt instanceof ProvaVariablePtr ) {
 //			ProvaVariablePtr varPtr = (ProvaVariablePtr) lt;
 //			lt = variables.get(varPtr.getIndex()).getRecursivelyAssigned();
 //		}
-		if( !(lt instanceof ProvaVariable) && !(lt instanceof ProvaConstant) ) {
+		if( !(lt instanceof Variable) && !(lt instanceof Constant) ) {
 			return false;
 		}
-		ProvaConstant classRef = (ProvaConstant) data[0];
+		Constant classRef = (Constant) data[0];
 		if( !(classRef.getObject() instanceof Class<?>) )
 			return false;
 		Class<?> targetClass = (Class<?>) classRef.getObject();
-		ProvaList argsList = (ProvaList) data[2];
+		PList argsList = (PList) data[2];
 		List<Object> args = new ArrayList<Object>();
 		// TODO: deal with the list tail
-		for( ProvaObject argObject : argsList.getFixed() ) {
-			if( argObject instanceof ProvaVariablePtr ) {
-				ProvaVariablePtr varPtr = (ProvaVariablePtr) argObject;
+		for( PObj argObject : argsList.getFixed() ) {
+			if( argObject instanceof VariableIndex ) {
+				VariableIndex varPtr = (VariableIndex) argObject;
 				argObject = variables.get(varPtr.getIndex()).getRecursivelyAssigned();
 			}
-			if( argObject instanceof ProvaConstant ) {
-				args.add(((ProvaConstant) argObject).getObject());
-			} else if( argObject instanceof ProvaList ) {
+			if( argObject instanceof Constant ) {
+				args.add(((Constant) argObject).getObject());
+			} else if( argObject instanceof PList ) {
 				// Prova lists are converted to Java lists
-				ProvaList list = (ProvaList) argObject;
-				ProvaObject[] os = list.getFixed();
+				PList list = (PList) argObject;
+				PObj[] os = list.getFixed();
 				Object[] objs = new Object[os.length];
 				for( int i=0; i<os.length; i++ ) {
-					if( os[i] instanceof ProvaConstant )
-						objs[i] = ((ProvaConstant) os[i]).getObject();
+					if( os[i] instanceof Constant )
+						objs[i] = ((Constant) os[i]).getObject();
 					else
 						objs[i] = os[i];
 				}
@@ -77,12 +77,12 @@ public class ProvaConstructorImpl extends ProvaBuiltinImpl {
 		}
 		try {
 			final Object result = ConstructorUtils.invokeConstructor(targetClass, args.toArray());
-			if( lt instanceof ProvaVariable )
-				((ProvaVariable) lt).setAssigned(ProvaConstantImpl.create(result));
+			if( lt instanceof Variable )
+				((Variable) lt).setAssigned(ProvaConstantImpl.create(result));
 			else if( lt instanceof ProvaGlobalConstantImpl )
-				((ProvaConstant) lt).setObject(result);
+				((Constant) lt).setObject(result);
 			else
-				return ((ProvaConstant) lt).getObject().equals(result);
+				return ((Constant) lt).getObject().equals(result);
 		} catch (SecurityException e) {
 			throw new RuntimeException(e);
 		} catch (NoSuchMethodException e) {

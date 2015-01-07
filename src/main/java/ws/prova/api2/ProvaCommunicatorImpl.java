@@ -8,11 +8,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
-import ws.prova.agent2.ProvaReagent;
+import ws.prova.agent2.Reagent;
 import ws.prova.agent2.ProvaReagentImpl;
 import ws.prova.esb2.ProvaAgent;
 import ws.prova.exchange.ProvaSolution;
-import ws.prova.kernel2.ProvaList;
+import ws.prova.kernel2.PList;
 import ws.prova.kernel2.messaging.ProvaMessenger;
 import ws.prova.parser2.ProvaParsingException;
 import ws.prova.service.ProvaMiniService;
@@ -23,7 +23,7 @@ public class ProvaCommunicatorImpl implements ProvaCommunicator {
 
 	final public static boolean SYNC = false;
 	
-	private ProvaReagent prova;
+	private Reagent prova;
 
 	private ProvaMessenger messenger;
 	
@@ -344,12 +344,12 @@ public class ProvaCommunicatorImpl implements ProvaCommunicator {
 	}
 
 	@Override
-	public ProvaReagent getReagent() {
+	public Reagent getReagent() {
 		return prova;
 	}
 
 	@Override
-	public void addMsg(ProvaList terms) {
+	public void addMsg(PList terms) {
 		messenger.addMsg(terms);
 	}
 

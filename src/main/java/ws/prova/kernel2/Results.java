@@ -4,7 +4,7 @@ import java.util.Vector;
 import ws.prova.exchange.ProvaSolution;
 import ws.prova.parser2.ProvaParsingException;
 
-public interface ProvaResultSet {
+public interface Results {
 
 	public void add(ProvaSolution solution);
 

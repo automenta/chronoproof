@@ -3,9 +3,9 @@ package ws.prova.api2;
 import java.io.BufferedReader;
 import java.io.PrintWriter;
 import java.util.List;
-import ws.prova.agent2.ProvaReagent;
+import ws.prova.agent2.Reagent;
 import ws.prova.exchange.ProvaSolution;
-import ws.prova.kernel2.ProvaList;
+import ws.prova.kernel2.PList;
 import ws.prova.kernel2.messaging.ProvaMessenger;
 
 public interface ProvaCommunicator {
@@ -28,9 +28,9 @@ public interface ProvaCommunicator {
 
 	public void shutdown();
 
-	public ProvaReagent getReagent();
+	public Reagent getReagent();
 
-	public void addMsg(ProvaList terms);
+	public void addMsg(PList terms);
 
 	public void unconsultSync(String src);
 

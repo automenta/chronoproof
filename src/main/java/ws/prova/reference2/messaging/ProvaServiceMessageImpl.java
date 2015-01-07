@@ -1,9 +1,9 @@
 package ws.prova.reference2.messaging;
 
 import java.util.Map;
-import ws.prova.agent2.ProvaReagent;
-import ws.prova.kernel2.ProvaConstant;
-import ws.prova.kernel2.ProvaList;
+import ws.prova.agent2.Reagent;
+import ws.prova.kernel2.Constant;
+import ws.prova.kernel2.PList;
 import ws.prova.reference2.ProvaConstantImpl;
 import ws.prova.reference2.ProvaMapImpl;
 import ws.prova.service.ProvaMiniService;
@@ -22,7 +22,7 @@ public class ProvaServiceMessageImpl implements ProvaDelayedCommand {
 
 	private final String verb;
 	
-	public ProvaServiceMessageImpl(String dest, ProvaList terms,
+	public ProvaServiceMessageImpl(String dest, PList terms,
 			String agent, ProvaMiniService service2) {
 		this.xid = terms.getFixed()[0].toString();
 		this.dest = dest;
@@ -32,12 +32,12 @@ public class ProvaServiceMessageImpl implements ProvaDelayedCommand {
 		this.payload = terms.getFixed()[4];
 		if( this.payload instanceof ProvaMapImpl )
 			this.payload = ((ProvaMapImpl) payload).unwrap();
-		else if( this.payload.getClass()==ProvaConstantImpl.class && ((ProvaConstant) this.payload).getObject() instanceof Map) 
-			this.payload = ((ProvaConstant) this.payload).getObject();
+		else if( this.payload.getClass()==ProvaConstantImpl.class && ((Constant) this.payload).getObject() instanceof Map) 
+			this.payload = ((Constant) this.payload).getObject();
 	}
 
 	@Override
-	public void process(ProvaReagent prova) {
+	public void process(Reagent prova) {
 		try {
 			service.send(xid, dest, agent, verb, payload);
 		} catch (Exception e) {

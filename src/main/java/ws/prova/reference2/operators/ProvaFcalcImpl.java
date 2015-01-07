@@ -4,9 +4,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.beanutils.MethodUtils;
-import ws.prova.kernel2.ProvaConstant;
-import ws.prova.kernel2.ProvaList;
-import ws.prova.kernel2.ProvaObject;
+import ws.prova.kernel2.Constant;
+import ws.prova.kernel2.PList;
+import ws.prova.kernel2.PObj;
 
 public class ProvaFcalcImpl implements ProvaOperator {
 
@@ -21,16 +21,16 @@ public class ProvaFcalcImpl implements ProvaOperator {
 
 	@Override
 	public Object evaluate(Object... na) {
-		ProvaList argsList = (ProvaList) na[1];
+		PList argsList = (PList) na[1];
 		List<Object> args = new ArrayList<Object>();
-		for( ProvaObject po : argsList.getFixed() ) {
+		for( PObj po : argsList.getFixed() ) {
 //			if( po instanceof ProvaVariablePtr ) {
 //				ProvaVariablePtr varPtr = (ProvaVariablePtr) po;
 //				po = variables.get(varPtr.getIndex()).getRecursivelyAssigned();
 //			} else if( !(po instanceof ProvaConstant) )
 //				return false;
-			if( po instanceof ProvaConstant ) {
-				args.add( ((ProvaConstant) po).getObject() );
+			if( po instanceof Constant ) {
+				args.add(((Constant) po).getObject() );
 				continue;
 			}
 			args.add(po);

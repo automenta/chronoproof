@@ -5,14 +5,14 @@ import java.io.PrintWriter;
 import java.util.List;
 import java.util.concurrent.Future;
 import ws.prova.exchange.ProvaSolution;
-import ws.prova.kernel2.ProvaKnowledgeBase;
-import ws.prova.kernel2.ProvaList;
-import ws.prova.kernel2.ProvaRule;
+import ws.prova.kernel2.KB;
+import ws.prova.kernel2.PList;
+import ws.prova.kernel2.Rule;
 import ws.prova.kernel2.messaging.ProvaMessenger;
 import ws.prova.kernel2.messaging.ProvaWorkflows;
 import ws.prova.reference2.ProvaSwingAdaptor;
 
-public interface ProvaReagent {
+public interface Reagent {
 
 	public void setPrintWriter(PrintWriter printWriter);
 
@@ -23,15 +23,15 @@ public interface ProvaReagent {
 
 	public ProvaMessenger getMessenger();
 
-	public ProvaKnowledgeBase getKb();
+	public KB getKb();
 
 	public void consultAsync(final String src, final String key, final Object[] objects);
 
 	public void consultAsync(final BufferedReader in, final String key, final Object[] objects);
 
-	public void submitAsync(final long partition, final ProvaRule goal, final ProvaThreadpoolEnum targetPool);
+	public void submitAsync(final long partition, final Rule goal, final ProvaThreadpoolEnum targetPool);
 
-	public Future<?> spawn(final ProvaList terms);
+	public Future<?> spawn(final PList terms);
 
 	public String getAgent();
 

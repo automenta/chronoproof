@@ -10,13 +10,13 @@
 	import java.util.HashMap;
 	
 	import ws.prova.util2.ProvaClassUtils;
-	import ws.prova.kernel2.ProvaObject;
-	import ws.prova.kernel2.ProvaConstant;
-	import ws.prova.kernel2.ProvaVariable;
-	import ws.prova.kernel2.ProvaList;
-	import ws.prova.kernel2.ProvaLiteral;
-	import ws.prova.kernel2.ProvaRule;
-	import ws.prova.kernel2.ProvaResultSet;
+	import ws.prova.kernel2.PObj;
+	import ws.prova.kernel2.Constant;
+	import ws.prova.kernel2.Variable;
+	import ws.prova.kernel2.PList;
+	import ws.prova.kernel2.Literal;
+	import ws.prova.kernel2.Rule;
+	import ws.prova.kernel2.Results;
 	import ws.prova.reference2.ProvaConstantImpl;
 	import ws.prova.reference2.ProvaVariableImpl;
 	import ws.prova.reference2.ProvaMapImpl;
@@ -305,9 +305,9 @@ public class ProvaWalker2 extends TreeParser {
         List ret = null;
 
 
-        ProvaRule c =null;
+        Rule c =null;
 
-        ProvaRule q =null;
+        Rule q =null;
 
 
 
@@ -398,8 +398,8 @@ public class ProvaWalker2 extends TreeParser {
 
     // $ANTLR start "clause"
     // C:\\home\\kozlenkova\\git\\prova\\src\\main\\antlr\\ws\\prova\\parser\\ProvaWalker2.g:116:1: clause returns [ProvaRule ret] : ( ^(cl= CLAUSE (m= metadata )? r= relation (l= literals )? ) | ^(cl= CLAUSE (m= metadata )? pred= LCWORD params= list_body result= list_body (l= literals )? ) );
-    public final ProvaRule clause() throws RecognitionException {
-        ProvaRule ret = null;
+    public final Rule clause() throws RecognitionException {
+        Rule ret = null;
 
 
         CommonTree cl=null;
@@ -408,11 +408,11 @@ public class ProvaWalker2 extends TreeParser {
 
         List r =null;
 
-        List<ProvaLiteral> l =null;
+        List<Literal> l =null;
 
-        ProvaList params =null;
+        PList params =null;
 
-        ProvaList result =null;
+        PList result =null;
 
 
         try {
@@ -482,9 +482,9 @@ public class ProvaWalker2 extends TreeParser {
 
 
                     ((stat_scope)stat_stack.peek()).ret0[5]=m; ((stat_scope)stat_stack.peek()).ret0[1]=r; ((stat_scope)stat_stack.peek()).ret0[2]=l;
-                    	ProvaLiteral head = ProvaParserImpl.tlKB.get().generateLiteral((String) r.get(0),(ProvaList) r.get(1));
-                    	ProvaLiteral[] body = (l==null) ? new ProvaLiteral[0] : l.toArray(new ProvaLiteral[0]);
-                    	ret = ProvaParserImpl.tlKB.get().generateRule(head,body);
+                    	Literal head = ProvaParserImpl.tlKB.get().newLiteral((String) r.get(0),(PList) r.get(1));
+                    	Literal[] body = (l==null) ? new Literal[0] : l.toArray(new Literal[0]);
+                    	ret = ProvaParserImpl.tlKB.get().newRule(head,body);
                           	ret.computeSourceCode();
                     	ret.setLine(cl.getLine());
                     	ret.setSrc(Arrays.asList(new Object[] {((stat_scope)stat_stack.peek()).src}));
@@ -566,16 +566,16 @@ public class ProvaWalker2 extends TreeParser {
                     	List rel = new ArrayList();
                     	((stat_scope)stat_stack.peek()).ret0[5]=m; ((stat_scope)stat_stack.peek()).ret0[1]=rel; ((stat_scope)stat_stack.peek()).ret0[2]=l;
                     	rel.add(pred.toString());
-                    	ProvaObject p = params;
+                    	PObj p = params;
                     	if( params.getFixed().length==1 )
                     		p = params.getFixed()[0];
-                    	ProvaObject o = result;
+                    	PObj o = result;
                     	if( result.getFixed().length==1 )
                     		o = result.getFixed()[0];
-                    	rel.add(ProvaListImpl.create(new ProvaObject[] {p,o},null));
-                    	ProvaLiteral head = ProvaParserImpl.tlKB.get().generateLiteral(pred.toString(),(ProvaList) rel.get(1));
-                    	ProvaLiteral[] body = (l==null) ? new ProvaLiteral[0] : l.toArray(new ProvaLiteral[0]);
-                    	ret = ProvaParserImpl.tlKB.get().generateRule(head,body);
+                    	rel.add(ProvaListImpl.create(new PObj[] {p,o},null));
+                    	Literal head = ProvaParserImpl.tlKB.get().newLiteral(pred.toString(),(PList) rel.get(1));
+                    	Literal[] body = (l==null) ? new Literal[0] : l.toArray(new Literal[0]);
+                    	ret = ProvaParserImpl.tlKB.get().newRule(head,body);
                     	ret.setLine(cl.getLine());
                     	ret.setSrc(Arrays.asList(new Object[] {((stat_scope)stat_stack.peek()).src}));
                     	ret.addMetadata(m);
@@ -774,7 +774,7 @@ public class ProvaWalker2 extends TreeParser {
         CommonTree u=null;
         String s =null;
 
-        ProvaConstant n =null;
+        Constant n =null;
 
 
         try {
@@ -876,15 +876,15 @@ public class ProvaWalker2 extends TreeParser {
 
     // $ANTLR start "literals"
     // C:\\home\\kozlenkova\\git\\prova\\src\\main\\antlr\\ws\\prova\\parser\\ProvaWalker2.g:177:1: literals returns [List<ProvaLiteral> ret] : ^( LITERAL (l= literal )+ ) ;
-    public final List<ProvaLiteral> literals() throws RecognitionException {
-        List<ProvaLiteral> ret = null;
+    public final List<Literal> literals() throws RecognitionException {
+        List<Literal> ret = null;
 
 
-        ProvaLiteral l =null;
+        Literal l =null;
 
 
 
-        	ret = new ArrayList<ProvaLiteral>();
+        	ret = new ArrayList<Literal>();
         	((stat_scope)stat_stack.peek()).isBody = true;
 
         try {
@@ -959,9 +959,9 @@ public class ProvaWalker2 extends TreeParser {
 
         String pred =null;
 
-        ProvaList params =null;
+        PList params =null;
 
-        ProvaList result =null;
+        PList result =null;
 
 
 
@@ -1017,16 +1017,16 @@ public class ProvaWalker2 extends TreeParser {
             			ret.add(ProvaVariableImpl.create(pred));
             		else
             			ret.add(ProvaConstantImpl.create(pred));
-            		ProvaObject p = params;
+            		PObj p = params;
             		if( params.getFixed().length==1 )
             			p = params.getFixed()[0];
             		if( result==null )
-            			ret.add(ProvaListImpl.create(new ProvaObject[] {p,null},null));
+            			ret.add(ProvaListImpl.create(new PObj[] {p,null},null));
             		else {
-            			ProvaObject o = result;
+            			PObj o = result;
             			if( result.getFixed().length==1 )
             				o = result.getFixed()[0];
-            			ret.add(ProvaListImpl.create(new ProvaObject[] {p,o},null));
+            			ret.add(ProvaListImpl.create(new PObj[] {p,o},null));
             		}
             	
 
@@ -1049,8 +1049,8 @@ public class ProvaWalker2 extends TreeParser {
 
     // $ANTLR start "literal"
     // C:\\home\\kozlenkova\\git\\prova\\src\\main\\antlr\\ws\\prova\\parser\\ProvaWalker2.g:209:1: literal returns [ProvaLiteral ret] : ( ^(rel= RELATION (m= metadata )? r= relation (g= guard )? ) | ^(sem= SEMANTIC_ATTACHMENT (m= metadata )? sa= semantic_attachment (g= guard )? ) | ^(fun= FUNCTION (m= metadata )? f= function_call ) | ^(cu= CUT c= cut ) );
-    public final ProvaLiteral literal() throws RecognitionException {
-        ProvaLiteral ret = null;
+    public final Literal literal() throws RecognitionException {
+        Literal ret = null;
 
 
         CommonTree rel=null;
@@ -1061,9 +1061,9 @@ public class ProvaWalker2 extends TreeParser {
 
         List r =null;
 
-        List<ProvaLiteral> g =null;
+        List<Literal> g =null;
 
-        List<ProvaObject> sa =null;
+        List<PObj> sa =null;
 
         List f =null;
 
@@ -1165,17 +1165,17 @@ public class ProvaWalker2 extends TreeParser {
 
                     		Object pred = r.get(0);
                           		if( pred.equals("cache") ) {
-                           			String actualPred = ((ProvaList) ((ProvaList) r.get(1)).getFixed()[0]).getFixed()[0].toString();
+                           			String actualPred = ((PList) ((PList) r.get(1)).getFixed()[0]).getFixed()[0].toString();
                            			ProvaParserImpl.tlKB.get().addCachePredicate(actualPred);
                            		}
-                    		ret = ProvaParserImpl.tlKB.get().generateLiteral((String) pred,(ProvaList) r.get(1),g);
+                    		ret = ProvaParserImpl.tlKB.get().newLiteral((String) pred,(PList) r.get(1),g);
                     		ret.setLine(rel.getLine());
-                    		List<ProvaObject> metaVariables = ret.addMetadata(m);
+                    		List<PObj> metaVariables = ret.addMetadata(m);
                     		if( metaVariables!=null ) {
                     			metaVariables.add(0,ProvaConstantImpl.create(pred));
-                    			metaVariables.add(1,(ProvaList) r.get(1));
-                    			ProvaList metaList = ProvaListImpl.create( metaVariables );
-                    			ret = ProvaParserImpl.tlKB.get().generateLiteral("metadata",metaList,g);
+                    			metaVariables.add(1,(PList) r.get(1));
+                    			PList metaList = ProvaListImpl.create( metaVariables );
+                    			ret = ProvaParserImpl.tlKB.get().newLiteral("metadata",metaList,g);
                     			ret.setLine(rel.getLine());
                     			ret.addMetadata(m);
                     		}
@@ -1245,7 +1245,7 @@ public class ProvaWalker2 extends TreeParser {
 
 
 
-                    		ret =ProvaParserImpl.tlKB.get().generateLiteral((String) ((ProvaConstant) sa.get(0)).getObject(),(ProvaList) sa.get(1),g);
+                    		ret =ProvaParserImpl.tlKB.get().newLiteral((String) ((Constant) sa.get(0)).getObject(),(PList) sa.get(1),g);
                     		ret.setLine(sem.getLine());
                     		ret.addMetadata(m);
                     	
@@ -1291,12 +1291,12 @@ public class ProvaWalker2 extends TreeParser {
 
 
 
-                    		ProvaList argsResult = (ProvaList) f.get(1);
+                    		PList argsResult = (PList) f.get(1);
                     		if( argsResult.getFixed()[1]==null ) {
                     			// Just a predicate call
-                    			ret =ProvaParserImpl.tlKB.get().generateLiteral((String) ((ProvaConstant) f.get(0)).getObject(), (ProvaList) argsResult.getFixed()[0]);
+                    			ret =ProvaParserImpl.tlKB.get().newLiteral((String) ((Constant) f.get(0)).getObject(), (PList) argsResult.getFixed()[0]);
                     		} else
-                    			ret =ProvaParserImpl.tlKB.get().generateLiteral((String) ((ProvaConstant) f.get(0)).getObject(), argsResult);
+                    			ret =ProvaParserImpl.tlKB.get().newLiteral((String) ((Constant) f.get(0)).getObject(), argsResult);
                     		ret.setLine(fun.getLine());
                     		ret.addMetadata(m);
                     	
@@ -1319,9 +1319,9 @@ public class ProvaWalker2 extends TreeParser {
 
 
 
-                    		ProvaVariable any1 = ProvaVariableImpl.create();
-                    		ProvaList lany1 = ProvaListImpl.create( new ProvaObject[] {any1});
-                    		ret = ProvaParserImpl.tlKB.get().generateLiteral("cut",lany1);
+                    		Variable any1 = ProvaVariableImpl.create();
+                    		PList lany1 = ProvaListImpl.create(new PObj[] {any1});
+                    		ret = ProvaParserImpl.tlKB.get().newLiteral("cut",lany1);
                     		ret.setLine(cu.getLine());
                     	
 
@@ -1346,12 +1346,12 @@ public class ProvaWalker2 extends TreeParser {
 
     // $ANTLR start "guard"
     // C:\\home\\kozlenkova\\git\\prova\\src\\main\\antlr\\ws\\prova\\parser\\ProvaWalker2.g:252:1: guard returns [List<ProvaLiteral> ret] : ^(g= GUARD lits= literals ) ;
-    public final List<ProvaLiteral> guard() throws RecognitionException {
-        List<ProvaLiteral> ret = null;
+    public final List<Literal> guard() throws RecognitionException {
+        List<Literal> ret = null;
 
 
         CommonTree g=null;
-        List<ProvaLiteral> lits =null;
+        List<Literal> lits =null;
 
 
         try {
@@ -1419,17 +1419,17 @@ public class ProvaWalker2 extends TreeParser {
 
     // $ANTLR start "semantic_attachment"
     // C:\\home\\kozlenkova\\git\\prova\\src\\main\\antlr\\ws\\prova\\parser\\ProvaWalker2.g:262:1: semantic_attachment returns [List<ProvaObject> ret] : (pjc= predicate_java_call |bo= binary_operation );
-    public final List<ProvaObject> semantic_attachment() throws RecognitionException {
-        List<ProvaObject> ret = null;
+    public final List<PObj> semantic_attachment() throws RecognitionException {
+        List<PObj> ret = null;
 
 
-        List<ProvaObject> pjc =null;
+        List<PObj> pjc =null;
 
-        List<ProvaObject> bo =null;
+        List<PObj> bo =null;
 
 
 
-        	ret = new ArrayList<ProvaObject>();
+        	ret = new ArrayList<PObj>();
 
         try {
             // C:\\home\\kozlenkova\\git\\prova\\src\\main\\antlr\\ws\\prova\\parser\\ProvaWalker2.g:266:2: (pjc= predicate_java_call |bo= binary_operation )
@@ -1460,8 +1460,8 @@ public class ProvaWalker2 extends TreeParser {
 
 
 
-                    			ProvaConstant symbolConstant = (ProvaConstant) pjc.remove(0);
-                    			ProvaList pl = ProvaListImpl.create(pjc.toArray(new ProvaObject[0]));
+                    			Constant symbolConstant = (Constant) pjc.remove(0);
+                    			PList pl = ProvaListImpl.create(pjc.toArray(new PObj[0]));
                     			String method = symbolConstant.equals("s")?"scalc":"pcalc";
                     			ret.add(ProvaConstantImpl.create(method));
                     			ret.add(pl);
@@ -1479,9 +1479,9 @@ public class ProvaWalker2 extends TreeParser {
 
 
 
-                    			ProvaConstant symbolConstant = (ProvaConstant) bo.remove(0);
+                    			Constant symbolConstant = (Constant) bo.remove(0);
                     			ret.add(symbolConstant);
-                    			ProvaList pl = ProvaListImpl.create(bo.toArray(new ProvaObject[0]));
+                    			PList pl = ProvaListImpl.create(bo.toArray(new PObj[0]));
                     			ret.add(pl);
                     		
 
@@ -1506,13 +1506,13 @@ public class ProvaWalker2 extends TreeParser {
 
     // $ANTLR start "predicate_java_call"
     // C:\\home\\kozlenkova\\git\\prova\\src\\main\\antlr\\ws\\prova\\parser\\ProvaWalker2.g:281:1: predicate_java_call returns [List<ProvaObject> ret] : (sjc= static_java_call |ijc= instance_java_call );
-    public final List<ProvaObject> predicate_java_call() throws RecognitionException {
-        List<ProvaObject> ret = null;
+    public final List<PObj> predicate_java_call() throws RecognitionException {
+        List<PObj> ret = null;
 
 
-        List<ProvaObject> sjc =null;
+        List<PObj> sjc =null;
 
-        List<ProvaObject> ijc =null;
+        List<PObj> ijc =null;
 
 
         try {
@@ -1583,13 +1583,13 @@ public class ProvaWalker2 extends TreeParser {
 
     // $ANTLR start "static_java_call"
     // C:\\home\\kozlenkova\\git\\prova\\src\\main\\antlr\\ws\\prova\\parser\\ProvaWalker2.g:290:1: static_java_call returns [List<ProvaObject> ret] : ^( STATIC_JAVA_CALL sc= static_call a= args ) ;
-    public final List<ProvaObject> static_java_call() throws RecognitionException {
-        List<ProvaObject> ret = null;
+    public final List<PObj> static_java_call() throws RecognitionException {
+        List<PObj> ret = null;
 
 
-        List<ProvaObject> sc =null;
+        List<PObj> sc =null;
 
-        ProvaList a =null;
+        PList a =null;
 
 
         try {
@@ -1644,20 +1644,20 @@ public class ProvaWalker2 extends TreeParser {
 
     // $ANTLR start "binary_operation"
     // C:\\home\\kozlenkova\\git\\prova\\src\\main\\antlr\\ws\\prova\\parser\\ProvaWalker2.g:297:1: binary_operation returns [List<ProvaObject> ret] : lt= left_term ( EQUAL (cjc= constructor_java_call |pl= prova_list |c= constant |e= expr ) | not_equal c= constant |bo= binary_operator e= expr ) ;
-    public final List<ProvaObject> binary_operation() throws RecognitionException {
+    public final List<PObj> binary_operation() throws RecognitionException {
         binary_operation_stack.push(new binary_operation_scope());
-        List<ProvaObject> ret = null;
+        List<PObj> ret = null;
 
 
-        ProvaObject lt =null;
+        PObj lt =null;
 
-        List<ProvaObject> cjc =null;
+        List<PObj> cjc =null;
 
-        ProvaList pl =null;
+        PList pl =null;
 
-        ProvaConstant c =null;
+        Constant c =null;
 
-        ProvaObject e =null;
+        PObj e =null;
 
         String bo =null;
 
@@ -1746,7 +1746,7 @@ public class ProvaWalker2 extends TreeParser {
 
 
 
-                            				ret =new java.util.ArrayList<ProvaObject>();
+                            				ret =new java.util.ArrayList<PObj>();
                             				ret.add(ProvaConstantImpl.create("construct"));
                             				ret.add(cjc.get(0));
                             				ret.add(lt);
@@ -1765,7 +1765,7 @@ public class ProvaWalker2 extends TreeParser {
 
 
 
-                            				ret =new java.util.ArrayList<ProvaObject>();
+                            				ret =new java.util.ArrayList<PObj>();
                             				ret.add(ProvaConstantImpl.create("equals"));
                             				ret.add(lt);
                             				ret.add(pl);
@@ -1783,7 +1783,7 @@ public class ProvaWalker2 extends TreeParser {
 
 
 
-                            				ret =new java.util.ArrayList<ProvaObject>();
+                            				ret =new java.util.ArrayList<PObj>();
                             				ret.add(ProvaConstantImpl.create("equals"));
                             				ret.add(lt);
                             				ret.add(c);
@@ -1801,7 +1801,7 @@ public class ProvaWalker2 extends TreeParser {
 
 
 
-                            				ret =new java.util.ArrayList<ProvaObject>();
+                            				ret =new java.util.ArrayList<PObj>();
                             				ret.add(ProvaConstantImpl.create("expr_literal"));
                             				ret.add(ProvaConstantImpl.create(ProvaBinaryOperatorFactoryImpl.create("=")));
                             				ret.add(lt);
@@ -1832,7 +1832,7 @@ public class ProvaWalker2 extends TreeParser {
 
 
 
-                    			ret =new java.util.ArrayList<ProvaObject>();
+                    			ret =new java.util.ArrayList<PObj>();
                     			ret.add(ProvaConstantImpl.create("ne"));
                     			ret.add(lt);
                     			ret.add(c);
@@ -1856,7 +1856,7 @@ public class ProvaWalker2 extends TreeParser {
 
 
 
-                    			ret =new java.util.ArrayList<ProvaObject>();
+                    			ret =new java.util.ArrayList<PObj>();
                     			ret.add(ProvaConstantImpl.create("expr_literal"));
                     			ret.add(ProvaConstantImpl.create(ProvaBinaryOperatorFactoryImpl.create(bo)));
                     			ret.add(lt);
@@ -1889,19 +1889,19 @@ public class ProvaWalker2 extends TreeParser {
 
     // $ANTLR start "expr"
     // C:\\home\\kozlenkova\\git\\prova\\src\\main\\antlr\\ws\\prova\\parser\\ProvaWalker2.g:359:1: expr returns [ProvaObject ret] : a= aterm (op= ( PLUS | MINUS ) b= aterm )* ;
-    public final ProvaObject expr() throws RecognitionException {
-        ProvaObject ret = null;
+    public final PObj expr() throws RecognitionException {
+        PObj ret = null;
 
 
         CommonTree op=null;
-        ProvaObject a =null;
+        PObj a =null;
 
-        ProvaObject b =null;
+        PObj b =null;
 
 
 
         	List<String> ops = new ArrayList<String>();
-        	List<ProvaObject> other = new ArrayList<ProvaObject>();
+        	List<PObj> other = new ArrayList<PObj>();
 
         try {
             // C:\\home\\kozlenkova\\git\\prova\\src\\main\\antlr\\ws\\prova\\parser\\ProvaWalker2.g:364:2: (a= aterm (op= ( PLUS | MINUS ) b= aterm )* )
@@ -1988,21 +1988,21 @@ public class ProvaWalker2 extends TreeParser {
 
     // $ANTLR start "aterm"
     // C:\\home\\kozlenkova\\git\\prova\\src\\main\\antlr\\ws\\prova\\parser\\ProvaWalker2.g:378:1: aterm returns [ProvaObject ret] : ( (m= MINUS )? v= variable |n= number | (m= MINUS )? pjc= predicate_java_call | OPEN e= expr CLOSE ) (op= ( MULT | DIV | REM ) a= aterm )? ;
-    public final ProvaObject aterm() throws RecognitionException {
-        ProvaObject ret = null;
+    public final PObj aterm() throws RecognitionException {
+        PObj ret = null;
 
 
         CommonTree m=null;
         CommonTree op=null;
-        ProvaObject v =null;
+        PObj v =null;
 
-        ProvaConstant n =null;
+        Constant n =null;
 
-        List<ProvaObject> pjc =null;
+        List<PObj> pjc =null;
 
-        ProvaObject e =null;
+        PObj e =null;
 
-        ProvaObject a =null;
+        PObj a =null;
 
 
         try {
@@ -2208,7 +2208,7 @@ public class ProvaWalker2 extends TreeParser {
             		if( op==null ) {
             			if( m==null ) {
             				if( pjc!=null ) {
-            					List plist = new java.util.ArrayList<ProvaObject>();
+            					List plist = new java.util.ArrayList<PObj>();
             					plist.add(ProvaConstantImpl.create(ProvaOperatorFactoryImpl.createFunctionCall(pjc.get(0),pjc.get(2))));
             					plist.add(pjc.get(1));
             					plist.add(pjc.get(3));
@@ -2219,7 +2219,7 @@ public class ProvaWalker2 extends TreeParser {
             				List list = new ArrayList();
             				list.add(ProvaConstantImpl.create(ProvaOperatorFactoryImpl.create("neg")));
             				if( pjc!=null ) {
-            					List plist = new java.util.ArrayList<ProvaObject>();
+            					List plist = new java.util.ArrayList<PObj>();
             					plist.add(ProvaConstantImpl.create(ProvaOperatorFactoryImpl.createFunctionCall(pjc.get(0),pjc.get(2))));
             					plist.add(pjc.get(1));
             					plist.add(pjc.get(3));
@@ -2232,7 +2232,7 @@ public class ProvaWalker2 extends TreeParser {
             			List list = new ArrayList();
             			list.add(ProvaConstantImpl.create(ProvaOperatorFactoryImpl.create(op.getText())));
             			if( pjc!=null ) {
-            				List plist = new java.util.ArrayList<ProvaObject>();
+            				List plist = new java.util.ArrayList<PObj>();
             				plist.add(ProvaConstantImpl.create(ProvaOperatorFactoryImpl.createFunctionCall(pjc.get(0),pjc.get(2))));
             				plist.add(pjc.get(1));
             				plist.add(pjc.get(3));
@@ -2263,13 +2263,13 @@ public class ProvaWalker2 extends TreeParser {
 
     // $ANTLR start "variable_or_number"
     // C:\\home\\kozlenkova\\git\\prova\\src\\main\\antlr\\ws\\prova\\parser\\ProvaWalker2.g:421:1: variable_or_number returns [ProvaObject ret] : (v= variable |n= number );
-    public final ProvaObject variable_or_number() throws RecognitionException {
-        ProvaObject ret = null;
+    public final PObj variable_or_number() throws RecognitionException {
+        PObj ret = null;
 
 
-        ProvaObject v =null;
+        PObj v =null;
 
-        ProvaConstant n =null;
+        Constant n =null;
 
 
         try {
@@ -2336,18 +2336,18 @@ public class ProvaWalker2 extends TreeParser {
 
     // $ANTLR start "constructor_java_call"
     // C:\\home\\kozlenkova\\git\\prova\\src\\main\\antlr\\ws\\prova\\parser\\ProvaWalker2.g:424:1: constructor_java_call returns [List<ProvaObject> ret] : (qjc= qualified_java_class |o= UCWORD ) a= args ;
-    public final List<ProvaObject> constructor_java_call() throws RecognitionException {
-        List<ProvaObject> ret = null;
+    public final List<PObj> constructor_java_call() throws RecognitionException {
+        List<PObj> ret = null;
 
 
         CommonTree o=null;
-        ProvaConstant qjc =null;
+        Constant qjc =null;
 
-        ProvaList a =null;
+        PList a =null;
 
 
 
-        	ret = new ArrayList<ProvaObject>();
+        	ret = new ArrayList<PObj>();
 
         try {
             // C:\\home\\kozlenkova\\git\\prova\\src\\main\\antlr\\ws\\prova\\parser\\ProvaWalker2.g:428:2: ( (qjc= qualified_java_class |o= UCWORD ) a= args )
@@ -2595,13 +2595,13 @@ public class ProvaWalker2 extends TreeParser {
 
     // $ANTLR start "instance_java_call"
     // C:\\home\\kozlenkova\\git\\prova\\src\\main\\antlr\\ws\\prova\\parser\\ProvaWalker2.g:452:1: instance_java_call returns [List<ProvaObject> ret] : ^( INSTANCE_JAVA_CALL ic= instance_call a= args ) ;
-    public final List<ProvaObject> instance_java_call() throws RecognitionException {
-        List<ProvaObject> ret = null;
+    public final List<PObj> instance_java_call() throws RecognitionException {
+        List<PObj> ret = null;
 
 
-        List<ProvaObject> ic =null;
+        List<PObj> ic =null;
 
-        ProvaList a =null;
+        PList a =null;
 
 
         try {
@@ -2650,12 +2650,12 @@ public class ProvaWalker2 extends TreeParser {
 
     // $ANTLR start "instance_call"
     // C:\\home\\kozlenkova\\git\\prova\\src\\main\\antlr\\ws\\prova\\parser\\ProvaWalker2.g:460:1: instance_call returns [List<ProvaObject> ret] : v= variable l= LCWORD ;
-    public final List<ProvaObject> instance_call() throws RecognitionException {
-        List<ProvaObject> ret = null;
+    public final List<PObj> instance_call() throws RecognitionException {
+        List<PObj> ret = null;
 
 
         CommonTree l=null;
-        ProvaObject v =null;
+        PObj v =null;
 
 
 
@@ -2678,7 +2678,7 @@ public class ProvaWalker2 extends TreeParser {
             			// Prefix set to "" to signal that the predicate_java_call is an instance one
             			//   but can be reclassified as a static call if v is a constant
             			//   representing a class from a default package java.lang or ws.prova
-            			String s = (v instanceof ProvaVariable || v instanceof ProvaGlobalConstantImpl || (v instanceof ProvaConstant && !(((ProvaConstant) v).getObject() instanceof Class<?>)))?"":"s";
+            			String s = (v instanceof Variable || v instanceof ProvaGlobalConstantImpl || (v instanceof Constant && !(((Constant) v).getObject() instanceof Class<?>)))?"":"s";
             			ret.add(ProvaConstantImpl.create(s));
             			ret.add(v);
             			ret.add(ProvaConstantImpl.create((l!=null?l.getText():null)));
@@ -2706,16 +2706,16 @@ public class ProvaWalker2 extends TreeParser {
 
     // $ANTLR start "static_call"
     // C:\\home\\kozlenkova\\git\\prova\\src\\main\\antlr\\ws\\prova\\parser\\ProvaWalker2.g:479:1: static_call returns [List<ProvaObject> ret] : qjc= qualified_java_class l= LCWORD ;
-    public final List<ProvaObject> static_call() throws RecognitionException {
-        List<ProvaObject> ret = null;
+    public final List<PObj> static_call() throws RecognitionException {
+        List<PObj> ret = null;
 
 
         CommonTree l=null;
-        ProvaConstant qjc =null;
+        Constant qjc =null;
 
 
 
-        	ret = new ArrayList<ProvaObject>();
+        	ret = new ArrayList<PObj>();
 
         try {
             // C:\\home\\kozlenkova\\git\\prova\\src\\main\\antlr\\ws\\prova\\parser\\ProvaWalker2.g:483:2: (qjc= qualified_java_class l= LCWORD )
@@ -2759,7 +2759,7 @@ public class ProvaWalker2 extends TreeParser {
         String ret = null;
 
 
-        ProvaConstant c =null;
+        Constant c =null;
 
 
         try {
@@ -2793,8 +2793,8 @@ public class ProvaWalker2 extends TreeParser {
 
     // $ANTLR start "query"
     // C:\\home\\kozlenkova\\git\\prova\\src\\main\\antlr\\ws\\prova\\parser\\ProvaWalker2.g:495:1: query returns [ProvaRule ret] : ^( QUERY qp= query_predicate r= relation ) ;
-    public final ProvaRule query() throws RecognitionException {
-        ProvaRule ret = null;
+    public final Rule query() throws RecognitionException {
+        Rule ret = null;
 
 
         String qp =null;
@@ -2825,14 +2825,14 @@ public class ProvaWalker2 extends TreeParser {
 
 
 
-            			ProvaLiteral q=ProvaParserImpl.tlKB.get().generateLiteral((String) r.get(0),(ProvaList) r.get(1));
+            			Literal q=ProvaParserImpl.tlKB.get().newLiteral((String) r.get(0),(PList) r.get(1));
             			if( qp.equals("eval") ) {
-            				ret = new ProvaRuleImpl( new ProvaLiteral[] {q});
-            				ProvaLiteral fail = ProvaParserImpl.tlKB.get().generateLiteral("fail");
+            				ret = new ProvaRuleImpl( new Literal[] {q});
+            				Literal fail = ProvaParserImpl.tlKB.get().newLiteral("fail");
             				ret.addBodyLiteral(fail);
             			} else if( qp.equals("solve") ) {
-            				ProvaResultSet resultSet = ProvaParserImpl.tlRS.get();
-            				ret =ProvaParserImpl.tlKB.get().generateSolveGoal(resultSet, new ProvaLiteral[] {q});
+            				Results resultSet = ProvaParserImpl.tlRS.get();
+            				ret =ProvaParserImpl.tlKB.get().newGoalSolution(resultSet, new Literal[] {q});
             			} else throw new RuntimeException();
             		
 
@@ -2861,7 +2861,7 @@ public class ProvaWalker2 extends TreeParser {
 
         String p =null;
 
-        ProvaList l =null;
+        PList l =null;
 
 
 
@@ -3004,15 +3004,15 @@ public class ProvaWalker2 extends TreeParser {
 
     // $ANTLR start "func"
     // C:\\home\\kozlenkova\\git\\prova\\src\\main\\antlr\\ws\\prova\\parser\\ProvaWalker2.g:537:1: func returns [ProvaObject ret] : (l= LCWORD |u= UCWORD |s= string |tv= typed_variable );
-    public final ProvaObject func() throws RecognitionException {
-        ProvaObject ret = null;
+    public final PObj func() throws RecognitionException {
+        PObj ret = null;
 
 
         CommonTree l=null;
         CommonTree u=null;
         String s =null;
 
-        ProvaObject tv =null;
+        PObj tv =null;
 
 
         try {
@@ -3126,14 +3126,14 @@ public class ProvaWalker2 extends TreeParser {
 
     // $ANTLR start "list_body"
     // C:\\home\\kozlenkova\\git\\prova\\src\\main\\antlr\\ws\\prova\\parser\\ProvaWalker2.g:552:1: list_body returns [ProvaList ret] : ^( LIST_BODY (t= terms (lt= list_tail )? )? ) ;
-    public final ProvaList list_body() throws RecognitionException {
+    public final PList list_body() throws RecognitionException {
         list_body_stack.push(new list_body_scope());
-        ProvaList ret = null;
+        PList ret = null;
 
 
-        List<ProvaObject> t =null;
+        List<PObj> t =null;
 
-        ProvaObject lt =null;
+        PObj lt =null;
 
 
         try {
@@ -3199,9 +3199,9 @@ public class ProvaWalker2 extends TreeParser {
              				if( lt==null )
             	 				ret = ProvaListImpl.emptyRList;
             	 			else
-            					ret = ProvaListImpl.create(new ProvaObject[0],lt);
+            					ret = ProvaListImpl.create(new PObj[0],lt);
              			} else
-            				ret = ProvaListImpl.create(t.toArray(new ProvaObject[0]),lt);
+            				ret = ProvaListImpl.create(t.toArray(new PObj[0]),lt);
             			// TODO: deal with the case when t is not ComplexTerm
              		
 
@@ -3225,15 +3225,15 @@ public class ProvaWalker2 extends TreeParser {
 
     // $ANTLR start "terms"
     // C:\\home\\kozlenkova\\git\\prova\\src\\main\\antlr\\ws\\prova\\parser\\ProvaWalker2.g:569:1: terms returns [List<ProvaObject> ret] : ^( TERM (t= term )+ ) ;
-    public final List<ProvaObject> terms() throws RecognitionException {
-        List<ProvaObject> ret = null;
+    public final List<PObj> terms() throws RecognitionException {
+        List<PObj> ret = null;
 
 
-        ProvaObject t =null;
+        PObj t =null;
 
 
 
-        	ret = new ArrayList<ProvaObject>();
+        	ret = new ArrayList<PObj>();
 
         try {
             // C:\\home\\kozlenkova\\git\\prova\\src\\main\\antlr\\ws\\prova\\parser\\ProvaWalker2.g:573:2: ( ^( TERM (t= term )+ ) )
@@ -3301,15 +3301,15 @@ public class ProvaWalker2 extends TreeParser {
 
     // $ANTLR start "term"
     // C:\\home\\kozlenkova\\git\\prova\\src\\main\\antlr\\ws\\prova\\parser\\ProvaWalker2.g:576:1: term returns [ProvaObject ret] : (lt= left_term |ft= func_term |map= prova_map );
-    public final ProvaObject term() throws RecognitionException {
-        ProvaObject ret = null;
+    public final PObj term() throws RecognitionException {
+        PObj ret = null;
 
 
-        ProvaObject lt =null;
+        PObj lt =null;
 
-        ProvaObject ft =null;
+        PObj ft =null;
 
-        ProvaObject map =null;
+        PObj map =null;
 
 
         try {
@@ -3375,17 +3375,17 @@ public class ProvaWalker2 extends TreeParser {
 
     // $ANTLR start "left_term"
     // C:\\home\\kozlenkova\\git\\prova\\src\\main\\antlr\\ws\\prova\\parser\\ProvaWalker2.g:583:1: left_term returns [ProvaObject ret] : (c= constant |v= variable |n= number |p= prova_list );
-    public final ProvaObject left_term() throws RecognitionException {
-        ProvaObject ret = null;
+    public final PObj left_term() throws RecognitionException {
+        PObj ret = null;
 
 
-        ProvaConstant c =null;
+        Constant c =null;
 
-        ProvaObject v =null;
+        PObj v =null;
 
-        ProvaConstant n =null;
+        Constant n =null;
 
-        ProvaList p =null;
+        PList p =null;
 
 
         try {
@@ -3500,18 +3500,18 @@ public class ProvaWalker2 extends TreeParser {
 
     // $ANTLR start "right_term"
     // C:\\home\\kozlenkova\\git\\prova\\src\\main\\antlr\\ws\\prova\\parser\\ProvaWalker2.g:590:1: right_term returns [ProvaObject ret] : ( ( (m= MINUS )? (c= constant |v= variable ) ) |n= number |p= prova_list );
-    public final ProvaObject right_term() throws RecognitionException {
-        ProvaObject ret = null;
+    public final PObj right_term() throws RecognitionException {
+        PObj ret = null;
 
 
         CommonTree m=null;
-        ProvaConstant c =null;
+        Constant c =null;
 
-        ProvaObject v =null;
+        PObj v =null;
 
-        ProvaConstant n =null;
+        Constant n =null;
 
-        ProvaList p =null;
+        PList p =null;
 
 
 
@@ -3705,9 +3705,9 @@ public class ProvaWalker2 extends TreeParser {
 
     // $ANTLR start "qualified_java_class"
     // C:\\home\\kozlenkova\\git\\prova\\src\\main\\antlr\\ws\\prova\\parser\\ProvaWalker2.g:602:1: qualified_java_class returns [ProvaConstant ret] : ^( QUALIFIED_JAVA_CLASS ( (l= LCWORD d= DOT ) )+ u= UCWORD ) ;
-    public final ProvaConstant qualified_java_class() throws RecognitionException {
+    public final Constant qualified_java_class() throws RecognitionException {
         qualified_java_class_stack.push(new qualified_java_class_scope());
-        ProvaConstant ret = null;
+        Constant ret = null;
 
 
         CommonTree l=null;
@@ -3800,13 +3800,13 @@ public class ProvaWalker2 extends TreeParser {
 
     // $ANTLR start "func_term"
     // C:\\home\\kozlenkova\\git\\prova\\src\\main\\antlr\\ws\\prova\\parser\\ProvaWalker2.g:620:1: func_term returns [ProvaObject ret] : f= func a= args ;
-    public final ProvaObject func_term() throws RecognitionException {
-        ProvaObject ret = null;
+    public final PObj func_term() throws RecognitionException {
+        PObj ret = null;
 
 
-        ProvaObject f =null;
+        PObj f =null;
 
-        ProvaList a =null;
+        PList a =null;
 
 
         try {
@@ -3826,10 +3826,10 @@ public class ProvaWalker2 extends TreeParser {
 
 
 
-            			List<ProvaObject> fixed = new ArrayList<ProvaObject>();
+            			List<PObj> fixed = new ArrayList<PObj>();
             			fixed.add(f);
             			fixed.addAll(Arrays.asList(a.getFixed()));
-            			ret=ProvaListImpl.create((ProvaObject[]) fixed.toArray(new ProvaObject[0]),a.getTail());
+            			ret=ProvaListImpl.create((PObj[]) fixed.toArray(new PObj[0]),a.getTail());
             //			ret =reagent.cplx(reagent.flist,a,f);
             		
 
@@ -3852,14 +3852,14 @@ public class ProvaWalker2 extends TreeParser {
 
     // $ANTLR start "typed_variable"
     // C:\\home\\kozlenkova\\git\\prova\\src\\main\\antlr\\ws\\prova\\parser\\ProvaWalker2.g:630:1: typed_variable returns [ProvaObject ret] : ( ^( TYPED_VARIABLE q= qualified_java_class (w= LCWORD |w= UCWORD ) ) | ^( TYPED_VARIABLE u= UCWORD l= LCWORD ) | ^( TYPED_VARIABLE u= UCWORD w= UCWORD ) );
-    public final ProvaObject typed_variable() throws RecognitionException {
-        ProvaObject ret = null;
+    public final PObj typed_variable() throws RecognitionException {
+        PObj ret = null;
 
 
         CommonTree w=null;
         CommonTree u=null;
         CommonTree l=null;
-        ProvaConstant q =null;
+        Constant q =null;
 
 
         try {
@@ -4072,11 +4072,11 @@ public class ProvaWalker2 extends TreeParser {
 
     // $ANTLR start "prova_list"
     // C:\\home\\kozlenkova\\git\\prova\\src\\main\\antlr\\ws\\prova\\parser\\ProvaWalker2.g:685:1: prova_list returns [ProvaList ret] : ^( PROVA_LIST l= list_body ) ;
-    public final ProvaList prova_list() throws RecognitionException {
-        ProvaList ret = null;
+    public final PList prova_list() throws RecognitionException {
+        PList ret = null;
 
 
-        ProvaList l =null;
+        PList l =null;
 
 
         try {
@@ -4116,8 +4116,8 @@ public class ProvaWalker2 extends TreeParser {
 
     // $ANTLR start "prova_map"
     // C:\\home\\kozlenkova\\git\\prova\\src\\main\\antlr\\ws\\prova\\parser\\ProvaWalker2.g:689:1: prova_map returns [ProvaObject ret] : ^( PROVA_MAP (kv= key_value )* ) ;
-    public final ProvaObject prova_map() throws RecognitionException {
-        ProvaObject ret = null;
+    public final PObj prova_map() throws RecognitionException {
+        PObj ret = null;
 
 
         List<Object> kv =null;
@@ -4198,7 +4198,7 @@ public class ProvaWalker2 extends TreeParser {
 
         String k =null;
 
-        ProvaObject v =null;
+        PObj v =null;
 
 
 
@@ -4253,14 +4253,14 @@ public class ProvaWalker2 extends TreeParser {
 
     // $ANTLR start "variable"
     // C:\\home\\kozlenkova\\git\\prova\\src\\main\\antlr\\ws\\prova\\parser\\ProvaWalker2.g:706:1: variable returns [ProvaObject ret] : (u= UCWORD |usw= USWORD |tv= typed_variable |gc= DOLLARWORD );
-    public final ProvaObject variable() throws RecognitionException {
-        ProvaObject ret = null;
+    public final PObj variable() throws RecognitionException {
+        PObj ret = null;
 
 
         CommonTree u=null;
         CommonTree usw=null;
         CommonTree gc=null;
-        ProvaObject tv =null;
+        PObj tv =null;
 
 
         try {
@@ -4344,14 +4344,14 @@ public class ProvaWalker2 extends TreeParser {
                     {
                     gc=(CommonTree)match(input,DOLLARWORD,FOLLOW_DOLLARWORD_in_variable1752); 
 
-                    ret =ProvaParserImpl.tlKB.get().generateGlobalConstant(gc.toString());
+                    ret =ProvaParserImpl.tlKB.get().newGlobalConstant(gc.toString());
 
                     }
                     break;
 
             }
 
-            	if( ret instanceof ProvaVariable ) {
+            	if( ret instanceof Variable ) {
             		((stat_scope)stat_stack.peek()).vars.add(ret);
             	}
 
@@ -4372,11 +4372,11 @@ public class ProvaWalker2 extends TreeParser {
 
     // $ANTLR start "args"
     // C:\\home\\kozlenkova\\git\\prova\\src\\main\\antlr\\ws\\prova\\parser\\ProvaWalker2.g:731:1: args returns [ProvaList ret] : ^( ARGS lb= list_body ) ;
-    public final ProvaList args() throws RecognitionException {
-        ProvaList ret = null;
+    public final PList args() throws RecognitionException {
+        PList ret = null;
 
 
-        ProvaList lb =null;
+        PList lb =null;
 
 
         try {
@@ -4416,13 +4416,13 @@ public class ProvaWalker2 extends TreeParser {
 
     // $ANTLR start "list_tail"
     // C:\\home\\kozlenkova\\git\\prova\\src\\main\\antlr\\ws\\prova\\parser\\ProvaWalker2.g:735:1: list_tail returns [ProvaObject ret] : (v= variable |p= prova_list );
-    public final ProvaObject list_tail() throws RecognitionException {
-        ProvaObject ret = null;
+    public final PObj list_tail() throws RecognitionException {
+        PObj ret = null;
 
 
-        ProvaObject v =null;
+        PObj v =null;
 
-        ProvaList p =null;
+        PList p =null;
 
 
 
@@ -4497,14 +4497,14 @@ public class ProvaWalker2 extends TreeParser {
 
     // $ANTLR start "constant"
     // C:\\home\\kozlenkova\\git\\prova\\src\\main\\antlr\\ws\\prova\\parser\\ProvaWalker2.g:748:1: constant returns [ProvaConstant ret] : (d= LCWORD |s= string |qjc= qualified_java_class );
-    public final ProvaConstant constant() throws RecognitionException {
-        ProvaConstant ret = null;
+    public final Constant constant() throws RecognitionException {
+        Constant ret = null;
 
 
         CommonTree d=null;
         String s =null;
 
-        ProvaConstant qjc =null;
+        Constant qjc =null;
 
 
         try {
@@ -4548,7 +4548,7 @@ public class ProvaWalker2 extends TreeParser {
                     			else if ("true".equals(sd) )
                     				ret =ProvaConstantImpl.create(java.lang.Boolean.TRUE);
                     			else
-                    				ret =ProvaParserImpl.tlKB.get().generateGlobalConstant((String) sd);
+                    				ret =ProvaParserImpl.tlKB.get().newGlobalConstant((String) sd);
                     		
 
                     }
@@ -4890,8 +4890,8 @@ public class ProvaWalker2 extends TreeParser {
 
     // $ANTLR start "number"
     // C:\\home\\kozlenkova\\git\\prova\\src\\main\\antlr\\ws\\prova\\parser\\ProvaWalker2.g:802:1: number returns [ProvaConstant ret] : (m= '-' )? p= pos_number ;
-    public final ProvaConstant number() throws RecognitionException {
-        ProvaConstant ret = null;
+    public final Constant number() throws RecognitionException {
+        Constant ret = null;
 
 
         CommonTree m=null;

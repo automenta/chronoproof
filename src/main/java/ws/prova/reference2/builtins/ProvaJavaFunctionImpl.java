@@ -4,18 +4,18 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.beanutils.MethodUtils;
-import ws.prova.agent2.ProvaReagent;
-import ws.prova.kernel2.ProvaConstant;
-import ws.prova.kernel2.ProvaDerivationNode;
-import ws.prova.kernel2.ProvaGoal;
-import ws.prova.kernel2.ProvaKnowledgeBase;
-import ws.prova.kernel2.ProvaList;
-import ws.prova.kernel2.ProvaLiteral;
-import ws.prova.kernel2.ProvaObject;
-import ws.prova.kernel2.ProvaPredicate;
-import ws.prova.kernel2.ProvaRule;
-import ws.prova.kernel2.ProvaVariable;
-import ws.prova.kernel2.ProvaVariablePtr;
+import ws.prova.agent2.Reagent;
+import ws.prova.kernel2.Constant;
+import ws.prova.kernel2.Derivation;
+import ws.prova.kernel2.Goal;
+import ws.prova.kernel2.KB;
+import ws.prova.kernel2.PList;
+import ws.prova.kernel2.Literal;
+import ws.prova.kernel2.PObj;
+import ws.prova.kernel2.Predicate;
+import ws.prova.kernel2.Rule;
+import ws.prova.kernel2.Variable;
+import ws.prova.kernel2.VariableIndex;
 import ws.prova.reference2.ProvaConstantImpl;
 import ws.prova.reference2.ProvaListImpl;
 import ws.prova.reference2.ProvaLiteralImpl;
@@ -25,45 +25,45 @@ import ws.prova.reference2.ProvaRuleImpl;
 
 public class ProvaJavaFunctionImpl extends ProvaBuiltinImpl {
 
-	public ProvaJavaFunctionImpl(ProvaKnowledgeBase kb) {
+	public ProvaJavaFunctionImpl(KB kb) {
 		super(kb, "fcalc");
 	}
 
 	@Override
-	public boolean process(ProvaReagent prova, ProvaDerivationNode node,
-			ProvaGoal goal, List<ProvaLiteral> newLiterals, ProvaRule query) {
-		ProvaLiteral literal = goal.getGoal();
-		List<ProvaVariable> variables = query.getVariables();
-		ProvaList terms = literal.getTerms();
-		ProvaObject[] data = terms.getFixed();
+	public boolean process(Reagent prova, Derivation node,
+			Goal goal, List<Literal> newLiterals, Rule query) {
+		Literal literal = goal.getGoal();
+		List<Variable> variables = query.getVariables();
+		PList terms = literal.getTerms();
+		PObj[] data = terms.getFixed();
 		if( data.length!=5 )
 				return false;
-		if( !(data[1] instanceof ProvaConstant) || !(data[3] instanceof ProvaConstant) || !(data[4] instanceof ProvaList)) {
+		if( !(data[1] instanceof Constant) || !(data[3] instanceof Constant) || !(data[4] instanceof PList)) {
 			return false;
 		}
-		ProvaObject lt = data[0];
-		if( lt instanceof ProvaVariablePtr ) {
-			ProvaVariablePtr varPtr = (ProvaVariablePtr) lt;
+		PObj lt = data[0];
+		if( lt instanceof VariableIndex ) {
+			VariableIndex varPtr = (VariableIndex) lt;
 			lt = variables.get(varPtr.getIndex()).getRecursivelyAssigned();
 		}
-		if( !(lt instanceof ProvaVariable) && !(lt instanceof ProvaConstant)) {
+		if( !(lt instanceof Variable) && !(lt instanceof Constant)) {
 			return false;
 		}
-		String type = (String) ((ProvaConstant) data[1]).getObject();
-		ProvaList argsList = (ProvaList) data[4];
+		String type = (String) ((Constant) data[1]).getObject();
+		PList argsList = (PList) data[4];
 		// TODO: deal with the list tail
-		String method = (String) ((ProvaConstant) data[3]).getObject();
+		String method = (String) ((Constant) data[3]).getObject();
 		List<Object> args = new ArrayList<Object>();
-		for( ProvaObject argObject : argsList.getFixed() ) {
-			if( argObject instanceof ProvaVariablePtr ) {
-				ProvaVariablePtr varPtr = (ProvaVariablePtr) argObject;
+		for( PObj argObject : argsList.getFixed() ) {
+			if( argObject instanceof VariableIndex ) {
+				VariableIndex varPtr = (VariableIndex) argObject;
 				argObject = variables.get(varPtr.getIndex()).getRecursivelyAssigned();
 			}
 			if( argObject instanceof ProvaMapImpl ) {
 				final ProvaMapImpl map = (ProvaMapImpl) ((ProvaMapImpl) argObject).cloneWithVariables(variables);
 				args.add( map.getObject() );
-			} else if( argObject instanceof ProvaConstant ) {
-				args.add(((ProvaConstant) argObject).getObject());
+			} else if( argObject instanceof Constant ) {
+				args.add(((Constant) argObject).getObject());
 			} else {
 				args.add(argObject);
 			}
@@ -71,7 +71,7 @@ public class ProvaJavaFunctionImpl extends ProvaBuiltinImpl {
 		Object ret = null;
 		if( type.equals("s") ) {
 			// A static call
-			ProvaConstant classRef = (ProvaConstant) data[2];
+			Constant classRef = (Constant) data[2];
 			if( !(classRef.getObject() instanceof Class<?>) )
 				return false;
 			Class<?> targetClass = (Class<?>) classRef.getObject();
@@ -90,13 +90,13 @@ public class ProvaJavaFunctionImpl extends ProvaBuiltinImpl {
 			}
 		} else {
 			// An instance call
-			ProvaObject target = data[2];
-			if( target instanceof ProvaVariablePtr ) {
-				ProvaVariablePtr varPtr = (ProvaVariablePtr) target;
+			PObj target = data[2];
+			if( target instanceof VariableIndex ) {
+				VariableIndex varPtr = (VariableIndex) target;
 				target = variables.get(varPtr.getIndex()).getRecursivelyAssigned();
 			}
-			if( target instanceof ProvaConstant ) {
-				Object oTarget = ((ProvaConstant) target).getObject();
+			if( target instanceof Constant ) {
+				Object oTarget = ((Constant) target).getObject();
 				try {
 					ret = MethodUtils.invokeMethod(oTarget,method,args.toArray());
 				} catch (NoSuchMethodException e) {
@@ -108,36 +108,35 @@ public class ProvaJavaFunctionImpl extends ProvaBuiltinImpl {
 				}
 			}
 		}
-		if( lt instanceof ProvaVariable ) {
-			((ProvaVariable) lt).setAssigned( 
-					ret instanceof ProvaObject ? (ProvaObject) ret : ProvaConstantImpl.create(ret) );
-		} else if( lt instanceof ProvaConstant ) {
-			if( ret instanceof ProvaObject ) {
+		if( lt instanceof Variable ) {
+			((Variable) lt).setAssigned(ret instanceof PObj ? (PObj) ret : ProvaConstantImpl.create(ret) );
+		} else if( lt instanceof Constant ) {
+			if( ret instanceof PObj ) {
 				// Send this to the unification
-				final ProvaPredicate pred = new ProvaPredicateImpl("", 1, kb);
-				final ProvaLiteral lit = new ProvaLiteralImpl(pred,
-						ProvaListImpl.create(new ProvaObject[] {(ProvaObject) ret}));
-				final ProvaRule clause = ProvaRuleImpl.createVirtualRule(1, lit,
+				final Predicate pred = new ProvaPredicateImpl("", 1, kb);
+				final Literal lit = new ProvaLiteralImpl(pred,
+						ProvaListImpl.create(new PObj[] {(PObj) ret}));
+				final Rule clause = ProvaRuleImpl.createVirtualRule(1, lit,
 						null);
 				pred.addClause(clause);
-				final ProvaLiteral newLiteral = new ProvaLiteralImpl(pred,
-						ProvaListImpl.create(new ProvaObject[] {lt}));
+				final Literal newLiteral = new ProvaLiteralImpl(pred,
+						ProvaListImpl.create(new PObj[] {lt}));
 				newLiterals.add(newLiteral);
 				return true;
 			}
-			return ((ProvaConstant) lt).getObject().equals(ret);
-		} else if( lt instanceof ProvaList ) {
-			if( !(ret instanceof ProvaList) )
+			return ((Constant) lt).getObject().equals(ret);
+		} else if( lt instanceof PList ) {
+			if( !(ret instanceof PList) )
 				return false;
 			// Send this to the unification
-			final ProvaPredicate pred = new ProvaPredicateImpl("", 1, kb);
-			final ProvaLiteral lit = new ProvaLiteralImpl(pred,
-					ProvaListImpl.create(new ProvaObject[] {(ProvaObject) ret}));
-			final ProvaRule clause = ProvaRuleImpl.createVirtualRule(1, lit,
+			final Predicate pred = new ProvaPredicateImpl("", 1, kb);
+			final Literal lit = new ProvaLiteralImpl(pred,
+					ProvaListImpl.create(new PObj[] {(PObj) ret}));
+			final Rule clause = ProvaRuleImpl.createVirtualRule(1, lit,
 					null);
 			pred.addClause(clause);
-			final ProvaLiteral newLiteral = new ProvaLiteralImpl(pred,
-					ProvaListImpl.create(new ProvaObject[] {lt}));
+			final Literal newLiteral = new ProvaLiteralImpl(pred,
+					ProvaListImpl.create(new PObj[] {lt}));
 			newLiterals.add(newLiteral);
 			return true;
 		} else

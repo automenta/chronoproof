@@ -1,21 +1,21 @@
 package ws.prova.reference2;
 
-import ws.prova.kernel2.ProvaKnowledgeBase;
-import ws.prova.kernel2.ProvaPredicate;
-import ws.prova.kernel2.ProvaRule;
-import ws.prova.kernel2.ProvaRuleSet;
+import ws.prova.kernel2.KB;
+import ws.prova.kernel2.Predicate;
+import ws.prova.kernel2.Rule;
+import ws.prova.kernel2.RuleSet;
 
-public class ProvaPredicateImpl implements ProvaPredicate {
+public class ProvaPredicateImpl implements Predicate {
 
 	private String symbol;
 	
 	private final int arity;
 
-	private final ProvaRuleSet clauseSet;
+	private final RuleSet clauseSet;
 	
-	private ProvaKnowledgeBase knowledgeBase;
+	private KB knowledgeBase;
 	
-	public ProvaPredicateImpl(String symbol, int arity, ProvaKnowledgeBase kb) {
+	public ProvaPredicateImpl(String symbol, int arity, KB kb) {
 		this.symbol = symbol;
 		this.arity = arity;
 		this.clauseSet = new ProvaRuleSetImpl(symbol, arity);
@@ -37,33 +37,33 @@ public class ProvaPredicateImpl implements ProvaPredicate {
 	}
 
 	@Override
-	public void addClause( ProvaRule clause ) {
+	public void addClause( Rule clause ) {
 		clauseSet.add(clause);
 	}
 	
 	@Override
-	public void addClauseA( ProvaRule clause ) {
+	public void addClauseA( Rule clause ) {
 		clauseSet.addA(clause);
 	}
 	
 	@Override
-	public ProvaRuleSet getClauseSet() {
+	public RuleSet getClauses() {
 		return clauseSet;
 	}
 
 	@Override
-	public boolean equals( ProvaPredicate predicate ) {
+	public boolean equals( Predicate predicate ) {
 		return predicate.getSymbol().equals(symbol) &&
 			(predicate.getArity()==arity || predicate.getArity()==-1 || arity==-1 );
 	}
 
         @Override
-	public void setKnowledgeBase(ProvaKnowledgeBase knowledgeBase) {
+	public void setKB(KB knowledgeBase) {
 		this.knowledgeBase = knowledgeBase;
 	}
 
 	@Override
-	public ProvaKnowledgeBase getKnowledgeBase() {
+	public KB kb() {
 		return knowledgeBase;
 	}
 

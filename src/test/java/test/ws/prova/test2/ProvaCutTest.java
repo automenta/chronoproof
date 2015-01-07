@@ -1,21 +1,21 @@
 package test.ws.prova.test2;
 
 import org.junit.Test;
-import ws.prova.kernel2.ProvaConstant;
-import ws.prova.kernel2.ProvaDerivationNode;
-import ws.prova.kernel2.ProvaKnowledgeBase;
-import ws.prova.kernel2.ProvaList;
-import ws.prova.kernel2.ProvaLiteral;
-import ws.prova.kernel2.ProvaObject;
-import ws.prova.kernel2.ProvaResolutionInferenceEngine;
-import ws.prova.kernel2.ProvaResultSet;
-import ws.prova.kernel2.ProvaRule;
-import ws.prova.kernel2.ProvaVariable;
+import ws.prova.kernel2.Constant;
+import ws.prova.kernel2.Derivation;
+import ws.prova.kernel2.KB;
+import ws.prova.kernel2.PList;
+import ws.prova.kernel2.Literal;
+import ws.prova.kernel2.PObj;
+import ws.prova.kernel2.Inference;
+import ws.prova.kernel2.Results;
+import ws.prova.kernel2.Rule;
+import ws.prova.kernel2.Variable;
 import ws.prova.reference2.ProvaConstantImpl;
-import ws.prova.reference2.ProvaKnowledgeBaseImpl;
+import ws.prova.reference2.DefaultKB;
 import ws.prova.reference2.ProvaListImpl;
-import ws.prova.reference2.ProvaResolutionInferenceEngineImpl;
-import ws.prova.reference2.ProvaResultSetImpl;
+import ws.prova.reference2.DefaultInference;
+import ws.prova.reference2.DefaultResults;
 import ws.prova.reference2.ProvaVariableImpl;
 
 public class ProvaCutTest {
@@ -23,62 +23,62 @@ public class ProvaCutTest {
 	@Test
 	@SuppressWarnings("unused")
 	public void solveProblemWithoutCut() {
-		ProvaKnowledgeBase kb = new ProvaKnowledgeBaseImpl();
-		ProvaResultSet resultSet = new ProvaResultSetImpl();
+		KB kb = new DefaultKB();
+		Results resultSet = new DefaultResults();
 		
 		// Define goal (this should be part of the way solve is encoded by the parser)
-		ProvaConstant c1 = ProvaConstantImpl.create(1);
-		ProvaVariable x = ProvaVariableImpl.create("X");
-		ProvaVariable y = ProvaVariableImpl.create("Y");
-		ProvaVariable z = ProvaVariableImpl.create("Z");
-		ProvaList l1 = ProvaListImpl.create( new ProvaObject[] {x,y,z});
-		ProvaLiteral query = kb.generateLiteral("pred1",l1);
+		Constant c1 = ProvaConstantImpl.create(1);
+		Variable x = ProvaVariableImpl.create("X");
+		Variable y = ProvaVariableImpl.create("Y");
+		Variable z = ProvaVariableImpl.create("Z");
+		PList l1 = ProvaListImpl.create(new PObj[] {x,y,z});
+		Literal query = kb.newLiteral("pred1",l1);
 		// "solve" works by accepting pairs of variable (name,value) pairs
-		ProvaConstant cx = ProvaConstantImpl.create("X");
-		ProvaConstant cy = ProvaConstantImpl.create("Y");
-		ProvaConstant cz = ProvaConstantImpl.create("Z");
-		ProvaConstant cResultSet = ProvaConstantImpl.create(resultSet);
-		ProvaList lx = ProvaListImpl.create( new ProvaObject[] {cx,x});
-		ProvaList ly = ProvaListImpl.create( new ProvaObject[] {cy,y});
-		ProvaList lz = ProvaListImpl.create( new ProvaObject[] {cz,z});
-		ProvaList ls = ProvaListImpl.create( new ProvaObject[] {cResultSet,lx,ly,lz});
+		Constant cx = ProvaConstantImpl.create("X");
+		Constant cy = ProvaConstantImpl.create("Y");
+		Constant cz = ProvaConstantImpl.create("Z");
+		Constant cResultSet = ProvaConstantImpl.create(resultSet);
+		PList lx = ProvaListImpl.create(new PObj[] {cx,x});
+		PList ly = ProvaListImpl.create(new PObj[] {cy,y});
+		PList lz = ProvaListImpl.create(new PObj[] {cz,z});
+		PList ls = ProvaListImpl.create(new PObj[] {cResultSet,lx,ly,lz});
 		// "solve" always "fails" forcing backtracking
-		ProvaLiteral solveBuiltin = kb.generateLiteral("solve",ls);
-		ProvaRule goalRule = kb.generateGoal(new ProvaLiteral[] {query,solveBuiltin});
+		Literal solveBuiltin = kb.newLiteral("solve",ls);
+		Rule goalRule = kb.newGoal(new Literal[] {query,solveBuiltin});
 
-		ProvaConstant c2 = ProvaConstantImpl.create(2);
-		ProvaConstant c3 = ProvaConstantImpl.create(3);
-		ProvaList l2 = ProvaListImpl.create( new ProvaObject[] {c1,c1,c2});
-		ProvaLiteral lit2 = kb.generateLiteral("pred1",l2);
-		ProvaRule rule1 = kb.generateRule(lit2, null);
+		Constant c2 = ProvaConstantImpl.create(2);
+		Constant c3 = ProvaConstantImpl.create(3);
+		PList l2 = ProvaListImpl.create(new PObj[] {c1,c1,c2});
+		Literal lit2 = kb.newLiteral("pred1",l2);
+		Rule rule1 = kb.newRule(lit2, null);
 
-		ProvaVariable x1 = ProvaVariableImpl.create("X");
-		ProvaVariable y1 = ProvaVariableImpl.create("Y");
-		ProvaVariable z1 = ProvaVariableImpl.create("Z");
-		ProvaList l3 = ProvaListImpl.create( new ProvaObject[] {x1,y1,z1});
-		ProvaLiteral lit3 = kb.generateLiteral("pred1",l3);
-		ProvaList l4 = ProvaListImpl.create( new ProvaObject[] {x1,y1,c1});
-		ProvaLiteral lit4 = kb.generateLiteral("pred2",l4);
-		ProvaList l4a = ProvaListImpl.create( new ProvaObject[] {x1,z1,x1});
-		ProvaLiteral lit4a = kb.generateLiteral("pred2",l4a);
-		ProvaRule rule2 = kb.generateRule(lit3, new ProvaLiteral[] {lit4,lit4a});
+		Variable x1 = ProvaVariableImpl.create("X");
+		Variable y1 = ProvaVariableImpl.create("Y");
+		Variable z1 = ProvaVariableImpl.create("Z");
+		PList l3 = ProvaListImpl.create(new PObj[] {x1,y1,z1});
+		Literal lit3 = kb.newLiteral("pred1",l3);
+		PList l4 = ProvaListImpl.create(new PObj[] {x1,y1,c1});
+		Literal lit4 = kb.newLiteral("pred2",l4);
+		PList l4a = ProvaListImpl.create(new PObj[] {x1,z1,x1});
+		Literal lit4a = kb.newLiteral("pred2",l4a);
+		Rule rule2 = kb.newRule(lit3, new Literal[] {lit4,lit4a});
 
-		ProvaList l2a = ProvaListImpl.create( new ProvaObject[] {c2,c1,c1});
-		ProvaLiteral lit2a = kb.generateLiteral("pred1",l2a);
-		ProvaRule rule1a = kb.generateRule(lit2a, null);
+		PList l2a = ProvaListImpl.create(new PObj[] {c2,c1,c1});
+		Literal lit2a = kb.newLiteral("pred1",l2a);
+		Rule rule1a = kb.newRule(lit2a, null);
 
-		ProvaVariable x2 = ProvaVariableImpl.create("X");
-		ProvaList l5 = ProvaListImpl.create( new ProvaObject[] {c1,c3,x2});
-		ProvaLiteral lit5 = kb.generateLiteral("pred2",l5);
-		ProvaRule rule3 = kb.generateRule(lit5, null);
+		Variable x2 = ProvaVariableImpl.create("X");
+		PList l5 = ProvaListImpl.create(new PObj[] {c1,c3,x2});
+		Literal lit5 = kb.newLiteral("pred2",l5);
+		Rule rule3 = kb.newRule(lit5, null);
 		
-		ProvaVariable x3 = ProvaVariableImpl.create("X");
-		ProvaList l6 = ProvaListImpl.create( new ProvaObject[] {c1,x3,c1});
-		ProvaLiteral lit6 = kb.generateLiteral("pred2",l6);
-		ProvaRule rule4 = kb.generateRule(lit6, null);
+		Variable x3 = ProvaVariableImpl.create("X");
+		PList l6 = ProvaListImpl.create(new PObj[] {c1,x3,c1});
+		Literal lit6 = kb.newLiteral("pred2",l6);
+		Rule rule4 = kb.newRule(lit6, null);
 		
-		ProvaResolutionInferenceEngine engine = new ProvaResolutionInferenceEngineImpl(kb, goalRule);
-		ProvaDerivationNode result = engine.run();
+		Inference engine = new DefaultInference(kb, goalRule);
+		Derivation result = engine.run();
 		
 		org.junit.Assert.assertEquals(resultSet.getSolutions().size(),6);
 	}
@@ -86,65 +86,65 @@ public class ProvaCutTest {
 	@Test
 	@SuppressWarnings("unused")
 	public void solveProblemWithCut() {
-		ProvaKnowledgeBase kb = new ProvaKnowledgeBaseImpl();
-		ProvaResultSet resultSet = new ProvaResultSetImpl();
+		KB kb = new DefaultKB();
+		Results resultSet = new DefaultResults();
 
 		// Define goal (this should be part of the way solve is encoded by the parser)
-		ProvaConstant c1 = ProvaConstantImpl.create(1);
-		ProvaVariable x = ProvaVariableImpl.create("X");
-		ProvaVariable y = ProvaVariableImpl.create("Y");
-		ProvaVariable z = ProvaVariableImpl.create("Z");
-		ProvaList l1 = ProvaListImpl.create( new ProvaObject[] {x,y,z});
-		ProvaLiteral query = kb.generateLiteral("pred1",l1);
+		Constant c1 = ProvaConstantImpl.create(1);
+		Variable x = ProvaVariableImpl.create("X");
+		Variable y = ProvaVariableImpl.create("Y");
+		Variable z = ProvaVariableImpl.create("Z");
+		PList l1 = ProvaListImpl.create(new PObj[] {x,y,z});
+		Literal query = kb.newLiteral("pred1",l1);
 		// "solve" works by accepting pairs of variable (name,value) pairs
-		ProvaConstant cx = ProvaConstantImpl.create("X");
-		ProvaConstant cy = ProvaConstantImpl.create("Y");
-		ProvaConstant cz = ProvaConstantImpl.create("Z");
-		ProvaConstant cResultSet = ProvaConstantImpl.create(resultSet);
-		ProvaList lx = ProvaListImpl.create( new ProvaObject[] {cx,x});
-		ProvaList ly = ProvaListImpl.create( new ProvaObject[] {cy,y});
-		ProvaList lz = ProvaListImpl.create( new ProvaObject[] {cz,z});
-		ProvaList ls = ProvaListImpl.create( new ProvaObject[] {cResultSet,lx,ly,lz});
+		Constant cx = ProvaConstantImpl.create("X");
+		Constant cy = ProvaConstantImpl.create("Y");
+		Constant cz = ProvaConstantImpl.create("Z");
+		Constant cResultSet = ProvaConstantImpl.create(resultSet);
+		PList lx = ProvaListImpl.create(new PObj[] {cx,x});
+		PList ly = ProvaListImpl.create(new PObj[] {cy,y});
+		PList lz = ProvaListImpl.create(new PObj[] {cz,z});
+		PList ls = ProvaListImpl.create(new PObj[] {cResultSet,lx,ly,lz});
 		// "solve" always "fails" forcing backtracking
-		ProvaLiteral solveBuiltin = kb.generateLiteral("solve",ls);
-		ProvaRule goalRule = kb.generateGoal(new ProvaLiteral[] {query,solveBuiltin});
+		Literal solveBuiltin = kb.newLiteral("solve",ls);
+		Rule goalRule = kb.newGoal(new Literal[] {query,solveBuiltin});
 
-		ProvaConstant c2 = ProvaConstantImpl.create(2);
-		ProvaConstant c3 = ProvaConstantImpl.create(3);
-		ProvaList l2 = ProvaListImpl.create( new ProvaObject[] {c1,c1,c2});
-		ProvaLiteral lit2 = kb.generateLiteral("pred1",l2);
-		ProvaRule rule1 = kb.generateRule(lit2, null);
+		Constant c2 = ProvaConstantImpl.create(2);
+		Constant c3 = ProvaConstantImpl.create(3);
+		PList l2 = ProvaListImpl.create(new PObj[] {c1,c1,c2});
+		Literal lit2 = kb.newLiteral("pred1",l2);
+		Rule rule1 = kb.newRule(lit2, null);
 
-		ProvaVariable x1 = ProvaVariableImpl.create("X");
-		ProvaVariable y1 = ProvaVariableImpl.create("Y");
-		ProvaVariable z1 = ProvaVariableImpl.create("Z");
-		ProvaList l3 = ProvaListImpl.create( new ProvaObject[] {x1,y1,z1});
-		ProvaLiteral lit3 = kb.generateLiteral("pred1",l3);
-		ProvaList l4 = ProvaListImpl.create( new ProvaObject[] {x1,y1,c1});
-		ProvaLiteral lit4 = kb.generateLiteral("pred2",l4);
-		ProvaVariable any1 = ProvaVariableImpl.create("_");
-		ProvaList lany1 = ProvaListImpl.create( new ProvaObject[] {any1});
-		ProvaLiteral litCut = kb.generateLiteral("cut",lany1);
-		ProvaList l4a = ProvaListImpl.create( new ProvaObject[] {x1,z1,x1});
-		ProvaLiteral lit4a = kb.generateLiteral("pred2",l4a);
-		ProvaRule rule2 = kb.generateRule(lit3, new ProvaLiteral[] {lit4,litCut,lit4a});
+		Variable x1 = ProvaVariableImpl.create("X");
+		Variable y1 = ProvaVariableImpl.create("Y");
+		Variable z1 = ProvaVariableImpl.create("Z");
+		PList l3 = ProvaListImpl.create(new PObj[] {x1,y1,z1});
+		Literal lit3 = kb.newLiteral("pred1",l3);
+		PList l4 = ProvaListImpl.create(new PObj[] {x1,y1,c1});
+		Literal lit4 = kb.newLiteral("pred2",l4);
+		Variable any1 = ProvaVariableImpl.create("_");
+		PList lany1 = ProvaListImpl.create(new PObj[] {any1});
+		Literal litCut = kb.newLiteral("cut",lany1);
+		PList l4a = ProvaListImpl.create(new PObj[] {x1,z1,x1});
+		Literal lit4a = kb.newLiteral("pred2",l4a);
+		Rule rule2 = kb.newRule(lit3, new Literal[] {lit4,litCut,lit4a});
 
-		ProvaList l2a = ProvaListImpl.create( new ProvaObject[] {c2,c1,c1});
-		ProvaLiteral lit2a = kb.generateLiteral("pred1",l2a);
-		ProvaRule rule1a = kb.generateRule(lit2a, null);
+		PList l2a = ProvaListImpl.create(new PObj[] {c2,c1,c1});
+		Literal lit2a = kb.newLiteral("pred1",l2a);
+		Rule rule1a = kb.newRule(lit2a, null);
 
-		ProvaVariable x2 = ProvaVariableImpl.create("X");
-		ProvaList l5 = ProvaListImpl.create( new ProvaObject[] {c1,c3,x2});
-		ProvaLiteral lit5 = kb.generateLiteral("pred2",l5);
-		ProvaRule rule3 = kb.generateRule(lit5, null);
+		Variable x2 = ProvaVariableImpl.create("X");
+		PList l5 = ProvaListImpl.create(new PObj[] {c1,c3,x2});
+		Literal lit5 = kb.newLiteral("pred2",l5);
+		Rule rule3 = kb.newRule(lit5, null);
 		
-		ProvaVariable x3 = ProvaVariableImpl.create("X");
-		ProvaList l6 = ProvaListImpl.create( new ProvaObject[] {c1,x3,c1});
-		ProvaLiteral lit6 = kb.generateLiteral("pred2",l6);
-		ProvaRule rule4 = kb.generateRule(lit6, null);
+		Variable x3 = ProvaVariableImpl.create("X");
+		PList l6 = ProvaListImpl.create(new PObj[] {c1,x3,c1});
+		Literal lit6 = kb.newLiteral("pred2",l6);
+		Rule rule4 = kb.newRule(lit6, null);
 		
-		ProvaResolutionInferenceEngine engine = new ProvaResolutionInferenceEngineImpl(kb, goalRule);
-		ProvaDerivationNode result = engine.run();
+		Inference engine = new DefaultInference(kb, goalRule);
+		Derivation result = engine.run();
 		
 		org.junit.Assert.assertEquals(resultSet.getSolutions().size(),3);
 	}

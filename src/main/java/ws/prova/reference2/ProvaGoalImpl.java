@@ -1,53 +1,54 @@
 package ws.prova.reference2;
 
+import com.sun.xml.internal.xsom.impl.scd.Iterators;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.apache.log4j.Logger;
-import ws.prova.kernel2.ProvaConstant;
-import ws.prova.kernel2.ProvaGoal;
-import ws.prova.kernel2.ProvaKnowledgeBase;
-import ws.prova.kernel2.ProvaList;
-import ws.prova.kernel2.ProvaLiteral;
-import ws.prova.kernel2.ProvaObject;
-import ws.prova.kernel2.ProvaPredicate;
-import ws.prova.kernel2.ProvaRule;
-import ws.prova.kernel2.ProvaUnification;
-import ws.prova.kernel2.ProvaVariable;
-import ws.prova.kernel2.ProvaVariablePtr;
+import ws.prova.kernel2.Constant;
+import ws.prova.kernel2.Goal;
+import ws.prova.kernel2.KB;
+import ws.prova.kernel2.PList;
+import ws.prova.kernel2.Literal;
+import ws.prova.kernel2.PObj;
+import ws.prova.kernel2.Predicate;
+import ws.prova.kernel2.Rule;
+import ws.prova.kernel2.Unification;
+import ws.prova.kernel2.Variable;
+import ws.prova.kernel2.VariableIndex;
 
-public class ProvaGoalImpl implements ProvaGoal {
+public class ProvaGoalImpl implements Goal {
 
 	@SuppressWarnings("unused")
 	private final static Logger log = Logger.getLogger("prova");
 	
-	private ProvaRule query;
+	private Rule query;
 	
-	private ProvaLiteral goal;
+	private Literal goal;
 	
-	private ProvaPredicate predicate;
+	private Predicate predicate;
 	
-	private Iterator<ProvaRule> iterator;
+	private Iterator<Rule> iterator;
 	
-	private final List<ProvaVariable> variables;
+	private final List<Variable> variables;
 	
 	private boolean cut = false;
 	
-	private List<ProvaList> extraAnswers;
+	private List<PList> extraAnswers;
 	
-	private List<ProvaList> outerAnswers;
+	private List<PList> outerAnswers;
 
 	private boolean singleClause;
 	
-	private ProvaRule rule;
+	private Rule rule;
 
-	private List<ProvaList> meta;
+	private List<PList> meta;
 	
-	private ProvaRule lastMatch;
+	private Rule lastMatch;
 
-	public ProvaGoalImpl(ProvaRule query) {
+	public ProvaGoalImpl(Rule query) {
 		this.query = query;
 		this.variables = query.getVariables();
 		this.goal = query.getTop();
@@ -57,11 +58,11 @@ public class ProvaGoalImpl implements ProvaGoal {
 //			this.iterator.next();
 	}
 
-	public ProvaGoalImpl(List<ProvaVariable> variables, ProvaLiteral goal) {
+	public ProvaGoalImpl(List<Variable> variables, Literal goal) {
 		this.variables = variables;
 		this.goal = goal;
 		this.predicate = goal.getPredicate();
-		this.iterator = predicate.getClauseSet().getClauses().iterator();
+		this.iterator = predicate.getClauses().getClauses().iterator();
 		for( int i=0; i<query.getOffset(); i++ )
 			this.iterator.next();
 	}
@@ -76,72 +77,75 @@ public class ProvaGoalImpl implements ProvaGoal {
 	 * Creates the iterator on a copy of the iterated collection of clauses
 	 */
 	private void createIterator() {
-		ProvaObject[] fixed = this.goal.getTerms().getFixed();
+		PObj[] fixed = this.goal.getTerms().getFixed();
 		if( fixed.length!=0 ) {
-			ProvaObject firstObject = fixed[0];
-			if( firstObject instanceof ProvaVariablePtr ) {
-				firstObject = variables.get(((ProvaVariablePtr) firstObject).getIndex());
+			PObj firstObject = fixed[0];
+			if( firstObject instanceof VariableIndex ) {
+				firstObject = variables.get(((VariableIndex) firstObject).getIndex());
 				firstObject = firstObject.getRecursivelyAssigned();
 			}
-			if( firstObject instanceof ProvaConstant && !(firstObject instanceof ProvaMapImpl ) ) {
-				Object o = ((ProvaConstant) firstObject).getObject();
-				final List<ProvaRule> keyClauses = predicate.getClauseSet().getClauses(o, fixed);
+			if( firstObject instanceof Constant && !(firstObject instanceof ProvaMapImpl ) ) {
+				Object o = ((Constant) firstObject).getObject();
+				final List<Rule> keyClauses = predicate.getClauses().getClauses(o, fixed);
 				if( keyClauses!=null ) {
 					if( keyClauses.size()==1 ) {
 						this.singleClause = true;
 					}
-					final List<ProvaRule> tempClauses = new ArrayList<ProvaRule>(keyClauses);
+					final List<Rule> tempClauses = new ArrayList<Rule>(keyClauses);
 					this.iterator = tempClauses.iterator();
 				}
 				return;
 			}
 		}
-		final List<ProvaRule> clauses = predicate.getClauseSet().getClauses();
-		if( clauses.size()==1 ) {
-			this.iterator = clauses.iterator();
+		final List<Rule> clauses = predicate.getClauses().getClauses();
+                this.iterator = clauses.iterator();
+		if( predicate.getClauses().numClauses() ==1 ) {
 //			if( !predicate.getKnowledgeBase().isCachePredicate(predicate.getSymbol()) )
-				this.singleClause = true;
+			this.singleClause = true;
 			return;
 		}
-		this.iterator = clauses.iterator();
+                		
 //		final List<ProvaRule> tempClauses = new ArrayList<ProvaRule>(clauses);
 //		this.iterator = tempClauses.iterator();
 	}
 
 	@Override
 	public void updateMetadataGoal() {
-		ProvaObject[] fixed = goal.getTerms().getFixed();
-		String symbol = (String) ((ProvaConstant) fixed[0]).getObject();
-		ProvaList terms = (ProvaList) fixed[1];
+		PObj[] fixed = goal.getTerms().getFixed();
+		String symbol = (String) ((Constant) fixed[0]).getObject();
+		PList terms = (PList) fixed[1];
 		Map<String,List<Object>> m = goal.getMetadata();
-		meta = new ArrayList<ProvaList>();
+		meta = new ArrayList<PList>();
 		for( int i=2; i<fixed.length; i++ ) {
-			meta.add((ProvaList) fixed[i]);
+			meta.add((PList) fixed[i]);
 		}
-		goal = predicate.getKnowledgeBase().generateLiteral(symbol, terms, goal.getGuard());
+		goal = predicate.kb().newLiteral(symbol, terms, goal.getGuard());
 		goal.addMetadata(m);
 		query.getBody()[query.getOffset()] = goal;
 		predicate = goal.getPredicate();
 	}
 	
 	@Override
-	public ProvaRule next() {
+	public Rule next() {
 		if( extraAnswers!=null ) {
-			ProvaPredicate pred = new ProvaPredicateImpl(predicate.getSymbol(),predicate.getArity(),predicate.getKnowledgeBase());
-			for( ProvaList answer : extraAnswers ) {
-				ProvaList ls = ProvaListImpl.create( answer.getFixed() );
-				ProvaLiteral lit = new ProvaLiteralImpl(pred,ls);
-				ProvaRule clause = ProvaRuleImpl.createVirtualRule(1, lit, null);
+			Predicate pred = new ProvaPredicateImpl(predicate.getSymbol(),predicate.getArity(),predicate.kb());
+			for( PList answer : extraAnswers ) {
+				PList ls = ProvaListImpl.create( answer.getFixed() );
+				Literal lit = new ProvaLiteralImpl(pred,ls);
+				Rule clause = ProvaRuleImpl.createVirtualRule(1, lit, null);
 				pred.addClause(clause);
 			}
-			iterator = pred.getClauseSet().getClauses().iterator();
+
+                        
+                        iterator = pred.getClauses().iterator();
+                        
 //			query.removeAt(1);
 			extraAnswers = null;
 		} else if( iterator==null ) {
 			createIterator();
 		}
 		try {
-			final ProvaRule nextRule = (iterator!=null && iterator.hasNext()) ? iterator.next() : null;
+			final Rule nextRule = (iterator!=null && iterator.hasNext()) ? iterator.next() : null;
 			if( nextRule!=null && !iterator.hasNext() )
 				singleClause = true;
 			return nextRule;
@@ -152,7 +156,7 @@ public class ProvaGoalImpl implements ProvaGoal {
 	}
 	
 	@Override
-	public ProvaUnification nextUnification(ProvaKnowledgeBase kb) {
+	public Unification nextUnification(KB kb) {
 		if( cut )
 			return null;
 		rule = null;
@@ -163,14 +167,17 @@ public class ProvaGoalImpl implements ProvaGoal {
 				rule = next();
 			if( rule==null ) {
 				if( outerAnswers!=null ) {
-					ProvaPredicate pred = new ProvaPredicateImpl(predicate.getSymbol(),predicate.getArity(),predicate.getKnowledgeBase());
-					for( ProvaList answer : outerAnswers ) {
-						ProvaList ls = ProvaListImpl.create( answer.getFixed() );
-						ProvaLiteral lit = new ProvaLiteralImpl(pred,ls);
-						ProvaRule clause = ProvaRuleImpl.createVirtualRule(1, lit, null);
+					Predicate pred = new ProvaPredicateImpl(predicate.getSymbol(),predicate.getArity(),predicate.kb());
+					for( PList answer : outerAnswers ) {
+						PList ls = ProvaListImpl.create( answer.getFixed() );
+						Literal lit = new ProvaLiteralImpl(pred,ls);
+						Rule clause = ProvaRuleImpl.createVirtualRule(1, lit, null);
 						pred.addClause(clause);
 					}
-					iterator = pred.getClauseSet().getClauses().iterator();
+                                        if (pred.getClauses().numClauses() == 0)
+                                            iterator = Iterators.empty();
+                                        else
+                                            iterator = pred.getClauses().getClauses().iterator();
 					outerAnswers.clear();
 					rule = iterator.hasNext() ? iterator.next() : null;
 				}
@@ -179,7 +186,7 @@ public class ProvaGoalImpl implements ProvaGoal {
 					return null;
 				}
 			}
-			ProvaRule clone = query.cloneRule(!singleClause);
+			Rule clone = query.cloneRule(!singleClause);
 			final ProvaUnificationImpl unification = new ProvaUnificationImpl(
 					clone,
 					rule);
@@ -189,25 +196,25 @@ public class ProvaGoalImpl implements ProvaGoal {
 	}
 	
 	@Override
-	public ProvaLiteral getGoal() {
+	public Literal getGoal() {
 		return goal;
 	}
 	
 	@Override
-	public ProvaRule getQuery() {
+	public Rule getQuery() {
 		return query;
 	}
 	
-	public ProvaPredicate getPredicate() {
+	public Predicate getPredicate() {
 		return predicate;
 	}
 
-	public void setIterator(Iterator<ProvaRule> iterator) {
+	public void setIterator(Iterator<Rule> iterator) {
 		this.iterator = iterator;
 	}
 
 	@Override
-	public Iterator<ProvaRule> getIterator() {
+	public Iterator<Rule> getIterator() {
 		return iterator;
 	}
 
@@ -215,7 +222,7 @@ public class ProvaGoalImpl implements ProvaGoal {
 //		this.variables = variables;
 //	}
 
-	public List<ProvaVariable> getVariables() {
+	public List<Variable> getVariables() {
 		return variables;
 	}
 
@@ -230,7 +237,7 @@ public class ProvaGoalImpl implements ProvaGoal {
 	}
 
 	@Override
-	public void setGoal(ProvaLiteral goal) {
+	public void setGoal(Literal goal) {
 		this.goal = goal;
 	}
 
@@ -240,16 +247,16 @@ public class ProvaGoalImpl implements ProvaGoal {
 	}
 
 	@Override
-	public void addAnswer(ProvaList terms) {
+	public void addAnswer(PList terms) {
 		if( extraAnswers==null )
-			extraAnswers = new ArrayList<ProvaList>();
+			extraAnswers = new ArrayList<PList>();
 		extraAnswers.add(terms);
 	}
 
 	@Override
-	public void addOuterAnswer(ProvaList terms) {
+	public void addOuterAnswer(PList terms) {
 		if( outerAnswers==null )
-			outerAnswers = new ArrayList<ProvaList>();
+			outerAnswers = new ArrayList<PList>();
 		outerAnswers.add(terms);
 	}
 
@@ -265,27 +272,27 @@ public class ProvaGoalImpl implements ProvaGoal {
 	}
 
 	@Override
-	public Object lookupMetadata(String reference, List<ProvaVariable> variables) {
+	public Object lookupMetadata(String reference, List<Variable> variables) {
 		if( meta==null )
 			return reference;
-		for( ProvaList p : meta ) {
-			ProvaList pair = (ProvaList) p.cloneWithVariables(variables);
+		for( PList p : meta ) {
+			PList pair = (PList) p.cloneWithVariables(variables);
 			String name = pair.getFixed()[0].toString();
 			if( name.equals(reference) ) {
-				final ProvaObject data = pair.getFixed()[1];
-				return data instanceof ProvaConstant ? ((ProvaConstant) data).getObject() : ProvaVariableImpl.create(name, data);
+				final PObj data = pair.getFixed()[1];
+				return data instanceof Constant ? ((Constant) data).getObject() : ProvaVariableImpl.create(name, data);
 			}
 		}
 		return reference;
 	}
 
 	@Override
-	public void setLastMatch(ProvaRule lastMatch) {
+	public void setLastMatch(Rule lastMatch) {
 		this.lastMatch = lastMatch;
 	}
 
 	@Override
-	public ProvaRule getLastMatch() {
+	public Rule getLastMatch() {
 		return lastMatch;
 	}
 

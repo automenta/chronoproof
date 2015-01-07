@@ -3,45 +3,45 @@ package ws.prova.reference2;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import ws.prova.kernel2.ProvaConstant;
-import ws.prova.kernel2.ProvaDerivationNode;
-import ws.prova.kernel2.ProvaKnowledgeBase;
-import ws.prova.kernel2.ProvaList;
-import ws.prova.kernel2.ProvaListPtr;
-import ws.prova.kernel2.ProvaLiteral;
-import ws.prova.kernel2.ProvaObject;
-import ws.prova.kernel2.ProvaPredicate;
-import ws.prova.kernel2.ProvaRule;
-import ws.prova.kernel2.ProvaUnification;
-import ws.prova.kernel2.ProvaVariable;
-import ws.prova.kernel2.ProvaVariablePtr;
+import ws.prova.kernel2.Constant;
+import ws.prova.kernel2.Derivation;
+import ws.prova.kernel2.KB;
+import ws.prova.kernel2.PList;
+import ws.prova.kernel2.PListIndex;
+import ws.prova.kernel2.Literal;
+import ws.prova.kernel2.PObj;
+import ws.prova.kernel2.Predicate;
+import ws.prova.kernel2.Rule;
+import ws.prova.kernel2.Unification;
+import ws.prova.kernel2.Variable;
+import ws.prova.kernel2.VariableIndex;
 import ws.prova.reference2.builtins.ProvaFailImpl;
 
-public class ProvaUnificationImpl implements ProvaUnification {
+public class ProvaUnificationImpl implements Unification {
 
-	private ProvaRule source;
+	private Rule source;
 	
-	private ProvaRule target;
+	private Rule target;
 
 	private long sourceRuleId;
 	
 	private long targetRuleId;
 	
-	private List<ProvaVariable> sourceVariables;
+	private List<Variable> sourceVariables;
 	
-	private List<ProvaVariable> targetVariables;
+	private List<Variable> targetVariables;
 
-	private List<ProvaList> meta;
+	private List<PList> meta;
 	
-	public ProvaUnificationImpl(ProvaRule source, ProvaRule target) {
+	public ProvaUnificationImpl(Rule source, Rule target) {
 		init(source,target,true);
 	}
 	
-	public ProvaUnificationImpl(ProvaRule source, ProvaRule target, boolean cloneTarget) {
+	public ProvaUnificationImpl(Rule source, Rule target, boolean cloneTarget) {
 		init(source,target,cloneTarget);
 	}
 	
-	private void init(ProvaRule source, ProvaRule target, boolean cloneTarget) {
+	private void init(Rule source, Rule target, boolean cloneTarget) {
 		this.source = source;
 		this.target = target;
 		this.sourceRuleId = source.getRuleId();
@@ -53,21 +53,21 @@ public class ProvaUnificationImpl implements ProvaUnification {
 			this.targetVariables = target.getVariables();
 	}
 	
-	public void setSource(ProvaRule source) {
+	public void setSource(Rule source) {
 		this.source = source;
 	}
 
 	@Override
-	public ProvaRule getSource() {
+	public Rule getSource() {
 		return source;
 	}
 
-	public void setTarget(ProvaRule target) {
+	public void setTarget(Rule target) {
 		this.target = target;
 	}
 
 	@Override
-	public ProvaRule getTarget() {
+	public Rule getTarget() {
 		return target;
 	}
 
@@ -89,41 +89,41 @@ public class ProvaUnificationImpl implements ProvaUnification {
 		return targetRuleId;
 	}
 
-	public void setSourceVariables(List<ProvaVariable> sourceVariables) {
+	public void setSourceVariables(List<Variable> sourceVariables) {
 		this.sourceVariables = sourceVariables;
 	}
 
 	@Override
-	public List<ProvaVariable> getSourceVariables() {
+	public List<Variable> getSourceVariables() {
 		return sourceVariables;
 	}
 
-	public void setTargetVariables(List<ProvaVariable> targetVariables) {
+	public void setTargetVariables(List<Variable> targetVariables) {
 		this.targetVariables = targetVariables;
 	}
 
 	@Override
-	public List<ProvaVariable> getTargetVariables() {
+	public List<Variable> getTargetVariables() {
 		return targetVariables;
 	}
 
 	@Override
 	public boolean unify() {
-		ProvaLiteral[] sourceLiterals = source.getBody();
+		Literal[] sourceLiterals = source.getBody();
 		// TODO: throw something
 //		if( sourceLiterals.length==0 )
 //			throw 
-		ProvaLiteral sourceLiteral = sourceLiterals[source.getOffset()];
+		Literal sourceLiteral = sourceLiterals[source.getOffset()];
 		if( !matchMetadata(sourceLiteral,target) )
 			return false;
-		ProvaLiteral targetLiteral = target.getHead();
-		ProvaPredicate sourcePredicate = sourceLiteral.getPredicate();
-		ProvaPredicate targetPredicate = targetLiteral.getPredicate();
+		Literal targetLiteral = target.getHead();
+		Predicate sourcePredicate = sourceLiteral.getPredicate();
+		Predicate targetPredicate = targetLiteral.getPredicate();
 
 		return sourcePredicate.equals(targetPredicate) && sourceLiteral.unify(targetLiteral, this);
 	}
 
-	private boolean matchMetadata(final ProvaLiteral sourceLiteral, final ProvaRule target) {
+	private boolean matchMetadata(final Literal sourceLiteral, final Rule target) {
 		Map<String,List<Object>> sourceMetadata = sourceLiteral.getMetadata();
 		if( sourceMetadata==null || sourceMetadata.isEmpty() )
 			// No source metadata or only line number
@@ -151,22 +151,22 @@ public class ProvaUnificationImpl implements ProvaUnification {
 						if( meta==null )
 							// Should not normally happen
 							return false;
-						for( ProvaList m : meta ) {
-							ProvaObject[] mo = m.getFixed();
-							String varName = (String) ((ProvaConstant) mo[0]).getObject();
-							ProvaObject var = mo[1];
+						for( PList m : meta ) {
+							PObj[] mo = m.getFixed();
+							String varName = (String) ((Constant) mo[0]).getObject();
+							PObj var = mo[1];
 							if( varName.equals(sV) ) {
-								if( mo[1] instanceof ProvaVariablePtr ) {
-									ProvaVariablePtr varPtr = (ProvaVariablePtr) var;
+								if( mo[1] instanceof VariableIndex ) {
+									VariableIndex varPtr = (VariableIndex) var;
 									var = sourceVariables.get(varPtr.getIndex()).getRecursivelyAssigned();
 								}
-								if( var instanceof ProvaVariable ) {
-									((ProvaVariable) var).setAssigned(ProvaConstantImpl.create(v));
+								if( var instanceof Variable ) {
+									((Variable) var).setAssigned(ProvaConstantImpl.create(v));
 									matched = true;
 									break;
-								} else if( var instanceof ProvaConstant ) {
+								} else if( var instanceof Constant ) {
 									// This allows for dynamic instantiation of metadata values from bound variables
-									sV = (String) ((ProvaConstant) var).getObject();
+									sV = (String) ((Constant) var).getObject();
 									break;
 								}
 							}
@@ -189,38 +189,38 @@ public class ProvaUnificationImpl implements ProvaUnification {
 	}
 
 	@Override
-	public ProvaLiteral[] rebuildNewGoals() {
-		final ProvaLiteral[] body = target.getBody();
+	public Literal[] rebuildNewGoals() {
+		final Literal[] body = target.getBody();
 		int bodyLength = body==null ? 0 : body.length;
-		ProvaLiteral[] goals = new ProvaLiteralImpl[bodyLength];
+		Literal[] goals = new ProvaLiteralImpl[bodyLength];
 		for( int i=0; i<bodyLength; i++ ) {
 			goals[i] = body[i].rebuild(this);
 		}
 		return goals;
 	}
 
-	private ProvaLiteral[] rebuildNewGoals(final ProvaDerivationNode node) {
+	private Literal[] rebuildNewGoals(final Derivation node) {
 		if( target.getBody()==null || target.getBody().length==0 )
-			return new ProvaLiteral[0];
+			return new Literal[0];
 		boolean allGround = true;
-		for( ProvaVariable var : targetVariables ) {
+		for( Variable var : targetVariables ) {
 			if( !var.getRecursivelyAssigned().isGround() ) {
 				allGround = false;
 				break;
 			}
 		}
-		final ProvaLiteral[] body = target.getGuardedBody(source.getBody()[0]);
+		final Literal[] body = target.getGuardedBody(source.getBody()[0]);
 		final int bodyLength = body==null ? 0 : body.length;
-		final ProvaLiteral[] goals = new ProvaLiteralImpl[bodyLength];
+		final Literal[] goals = new ProvaLiteralImpl[bodyLength];
 		for( int i=0; i<bodyLength; i++ ) {
 			if( "cut".equals(body[i].getPredicate().getSymbol()) ) {
-				final ProvaVariablePtr any = (ProvaVariablePtr) body[i].getTerms().getFixed()[0];
+				final VariableIndex any = (VariableIndex) body[i].getTerms().getFixed()[0];
 				final ProvaConstantImpl cutnode = ProvaConstantImpl.create(node);
 				if( any.getRuleId()==source.getRuleId() )
 					sourceVariables.get(any.getIndex()).setAssigned(cutnode);
 				else
 					targetVariables.get(any.getIndex()).setAssigned(cutnode);
-				goals[i] = new ProvaLiteralImpl(body[i].getPredicate(),ProvaListImpl.create( new ProvaObject[] {cutnode}));
+				goals[i] = new ProvaLiteralImpl(body[i].getPredicate(),ProvaListImpl.create(new PObj[] {cutnode}));
 				continue;
 			}
 			goals[i] = body[i].rebuild(this);
@@ -232,10 +232,10 @@ public class ProvaUnificationImpl implements ProvaUnification {
 	}
 
 	@Override
-	public ProvaLiteral[] rebuildOldGoals(final ProvaLiteral[] body) {
+	public Literal[] rebuildOldGoals(final Literal[] body) {
 		if( !isSourceSubstituted() )
 			return body;
-		final ProvaLiteral[] goals = new ProvaLiteralImpl[body.length];
+		final Literal[] goals = new ProvaLiteralImpl[body.length];
 		// Index 0 contains the current goal that does not need to be rebuilt
 		for( int i=1; i<body.length; i++ ) {
 			goals[i] = body[i].rebuildSource(this);
@@ -243,11 +243,11 @@ public class ProvaUnificationImpl implements ProvaUnification {
 		return goals;
 	}
 
-	private ProvaLiteral[] rebuildOldGoals(final ProvaLiteral[] body, final int offset) {
+	private Literal[] rebuildOldGoals(final Literal[] body, final int offset) {
 		if( body[offset].isGround() )
 			return body;
 
-		final ProvaLiteral[] goals = new ProvaLiteralImpl[body.length];
+		final Literal[] goals = new ProvaLiteralImpl[body.length];
 		// Index offset contains the current goal that does not need to be rebuilt
 		for( int i=1+offset; i<body.length; i++ ) {
 			goals[i] = body[i].rebuildSource(this);
@@ -256,29 +256,29 @@ public class ProvaUnificationImpl implements ProvaUnification {
 	}
 
 	private boolean isSourceSubstituted() {
-		for( ProvaVariable variable : sourceVariables )
+		for( Variable variable : sourceVariables )
 			if( variable.getAssigned()!=null )
 				return true;
 		return false;
 	}
 
 	@Override
-	public ProvaVariable getVariableFromVariablePtr(final ProvaVariablePtr variablePtr) {
+	public Variable getVariableFromVariablePtr(final VariableIndex variablePtr) {
 		if( variablePtr.getRuleId()==sourceRuleId )
 			return sourceVariables.get(variablePtr.getIndex());
 		return targetVariables.get(variablePtr.getIndex());
 	}
 
 	@Override
-	public ProvaObject rebuild(final ProvaVariablePtr variablePtr) {
-		final ProvaVariable variable = getVariableFromVariablePtr(variablePtr);
+	public PObj rebuild(final VariableIndex variablePtr) {
+		final Variable variable = getVariableFromVariablePtr(variablePtr);
 //		if( variable.getAssigned()==null && variablePtr.getRuleId()==sourceRuleId )
 //			return variablePtr;
-		final ProvaObject assigned = variable.getRecursivelyAssigned();
+		final PObj assigned = variable.getRecursivelyAssigned();
 		if( assigned.getClass()==ProvaConstantImpl.class )
 			return assigned;
-		if( assigned instanceof ProvaVariable ) {
-			if( ((ProvaVariable) assigned).getRuleId()==targetRuleId ) {
+		if( assigned instanceof Variable ) {
+			if( ((Variable) assigned).getRuleId()==targetRuleId ) {
 				// This is a target variable so add it to the source variables
 				int index = assigned.collectVariables(targetRuleId, sourceVariables);
 				return new ProvaVariablePtrImpl(
@@ -287,12 +287,12 @@ public class ProvaUnificationImpl implements ProvaUnification {
 			} else {
 				return new ProvaVariablePtrImpl(
 						sourceRuleId,
-						((ProvaVariable) assigned).getIndex());
+						((Variable) assigned).getIndex());
 			}
-		} else if( assigned instanceof ProvaList ) {
-			return ((ProvaList) assigned).rebuild(this);
-		} else if( assigned instanceof ProvaListPtr ) {
-			return ((ProvaListPtr) assigned).rebuild(this);
+		} else if( assigned instanceof PList ) {
+			return ((PList) assigned).rebuild(this);
+		} else if( assigned instanceof PListIndex ) {
+			return ((PListIndex) assigned).rebuild(this);
 		} else if( assigned instanceof ProvaMapImpl ) {
 			return ((ProvaMapImpl) assigned).rebuild(this);
 		}
@@ -300,16 +300,16 @@ public class ProvaUnificationImpl implements ProvaUnification {
 	}
 
 	@Override
-	public ProvaObject rebuildSource(final ProvaVariablePtr variablePtr) {
-		final ProvaVariable variable = getVariableFromVariablePtr(variablePtr);
-		final ProvaObject assigned = variable.getRecursivelyAssigned();
+	public PObj rebuildSource(final VariableIndex variablePtr) {
+		final Variable variable = getVariableFromVariablePtr(variablePtr);
+		final PObj assigned = variable.getRecursivelyAssigned();
 		
 		if( assigned==variable && variablePtr.getRuleId()==sourceRuleId )
 			return variablePtr;
 		if( assigned.getClass()==ProvaConstantImpl.class )
 			return assigned;
-		if( assigned instanceof ProvaVariable ) {
-			if( ((ProvaVariable) assigned).getRuleId()==targetRuleId ) {
+		if( assigned instanceof Variable ) {
+			if( ((Variable) assigned).getRuleId()==targetRuleId ) {
 				// This is a target variable so add it to the source variables
 				int index = assigned.collectVariables(targetRuleId, sourceVariables);
 				return new ProvaVariablePtrImpl(
@@ -318,12 +318,12 @@ public class ProvaUnificationImpl implements ProvaUnification {
 			} else {
 				return new ProvaVariablePtrImpl(
 						sourceRuleId,
-						((ProvaVariable) assigned).getIndex());
+						((Variable) assigned).getIndex());
 			}
-		} else if( assigned instanceof ProvaList ) {
-			return ((ProvaList) assigned).rebuildSource(this);
-		} else if( assigned instanceof ProvaListPtr ) {
-			return ((ProvaListPtr) assigned).rebuildSource(this);
+		} else if( assigned instanceof PList ) {
+			return ((PList) assigned).rebuildSource(this);
+		} else if( assigned instanceof PListIndex ) {
+			return ((PListIndex) assigned).rebuildSource(this);
 		} else if( assigned instanceof ProvaMapImpl ) {
 			return ((ProvaMapImpl) assigned).rebuildSource(this);
 		}
@@ -331,19 +331,19 @@ public class ProvaUnificationImpl implements ProvaUnification {
 	}
 
 	@Override
-	public ProvaRule generateQuery(String symbol, ProvaKnowledgeBase kb, ProvaRule query, ProvaDerivationNode node) {
+	public Rule generateQuery(String symbol, KB kb, Rule query, Derivation node) {
 		if( sourceVariables.isEmpty() ) {
-			return kb.generateGoal(this, node, target.getBody(), query.getBody(), query.getOffset(), targetVariables);
+			return kb.newGoal(this, node, target.getBody(), query.getBody(), query.getOffset(), targetVariables);
 		}
-		final ProvaLiteral[] newGoals = rebuildNewGoals(node);
-		ProvaLiteral[] oldGoals = null;
-		ProvaRule newQuery = null;
+		final Literal[] newGoals = rebuildNewGoals(node);
+		Literal[] oldGoals = null;
+		Rule newQuery = null;
 		if( newGoals.length!=0 && newGoals[newGoals.length-1].getPredicate() instanceof ProvaFailImpl ) {
 			// fail() predicate in the target body cuts the goal trail
 			newQuery = new ProvaRuleImpl(0, null, newGoals);
 		} else {
 			oldGoals = rebuildOldGoals(query.getBody(), query.getOffset());
-			newQuery = kb.generateRule(null, newGoals, oldGoals, query.getOffset());
+			newQuery = kb.newRule(null, newGoals, oldGoals, query.getOffset());
 			if( oldGoals==query.getBody() ) {
 				// Goal was ground
 				if( newQuery.getVariables().isEmpty() ) {
@@ -356,17 +356,17 @@ public class ProvaUnificationImpl implements ProvaUnification {
 		return rebuild(newQuery);
 	}
 
-	private ProvaRule rebuild(final ProvaRule newQuery) {
+	private Rule rebuild(final Rule newQuery) {
 		final int size = sourceVariables.size();
 		if( size==0 )
 			return newQuery;
-		final ProvaVariablePtr[] varsMap = new ProvaVariablePtr[size];
-		final List<ProvaVariable> newVariables = newQuery.getVariables();
+		final VariableIndex[] varsMap = new VariableIndex[size];
+		final List<Variable> newVariables = newQuery.getVariables();
 		int index = 0;
 		for( int i=0; i<size; i++ ) {
 			if( sourceVariables.get(i).getAssigned()==null ) {
 				varsMap[i] = new ProvaVariablePtrImpl(0,index);
-				ProvaVariable newVariable = sourceVariables.get(i); //.clone();
+				Variable newVariable = sourceVariables.get(i); //.clone();
 				newVariable.setIndex(index++);
 				newVariable.setRuleId(0);
 				newVariables.add(newVariable);
@@ -379,18 +379,18 @@ public class ProvaUnificationImpl implements ProvaUnification {
 
 	@Override
 	public boolean targetUnchanged() {
-		for( ProvaVariable var : targetVariables ) {
+		for( Variable var : targetVariables ) {
 			if( var.getAssigned()!=null
 				&&
-				(!(var.getAssigned() instanceof ProvaVariable)
+				(!(var.getAssigned() instanceof Variable)
 				||
-				var.getType()!=((ProvaVariable) var.getAssigned()).getType()))
+				var.getType()!=((Variable) var.getAssigned()).getType()))
 				return false;
 		}
 		return true;
 	}
 
-	public void setMeta(List<ProvaList> meta) {
+	public void setMeta(List<PList> meta) {
 		if( meta!=null )
 			this.meta = meta;
 	}

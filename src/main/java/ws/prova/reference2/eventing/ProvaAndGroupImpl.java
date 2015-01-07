@@ -11,12 +11,12 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import org.apache.log4j.Logger;
-import ws.prova.agent2.ProvaReagent;
-import ws.prova.kernel2.ProvaConstant;
-import ws.prova.kernel2.ProvaKnowledgeBase;
-import ws.prova.kernel2.ProvaList;
-import ws.prova.kernel2.ProvaObject;
-import ws.prova.kernel2.ProvaVariable;
+import ws.prova.agent2.Reagent;
+import ws.prova.kernel2.Constant;
+import ws.prova.kernel2.KB;
+import ws.prova.kernel2.PList;
+import ws.prova.kernel2.PObj;
+import ws.prova.kernel2.Variable;
 import ws.prova.reference2.ProvaListImpl;
 import ws.prova.reference2.ProvaLiteralImpl;
 import ws.prova.reference2.messaging.RemoveList;
@@ -31,9 +31,9 @@ public class ProvaAndGroupImpl extends ProvaBasicGroupImpl {
 		
 		
 		// Results index
-		public ProvaList result;
+		public PList result;
                 
-		public MetaVars(ProvaList result, Map<Object, Object> varList) {
+		public MetaVars(PList result, Map<Object, Object> varList) {
                     super(varList);
                     this.result = result;
 			
@@ -83,8 +83,8 @@ public class ProvaAndGroupImpl extends ProvaBasicGroupImpl {
 	}
 
 	@Override
-	public EventDetectionStatus eventDetected(ProvaKnowledgeBase kb, ProvaReagent prova,
-			long ruleid, ProvaList reaction, Map<String, List<Object>> metadata, Map<Long, ProvaGroup> ruleid2Group) {
+	public EventDetectionStatus eventDetected(KB kb, Reagent prova,
+			long ruleid, PList reaction, Map<String, List<Object>> metadata, Map<Long, ProvaGroup> ruleid2Group) {
 		if( reaction==null && !removeMap.containsKey(ruleid) )
 			// Timeout removal of a rule that was removed before
 			return EventDetectionStatus.preserved;
@@ -98,28 +98,28 @@ public class ProvaAndGroupImpl extends ProvaBasicGroupImpl {
 		if( metadata!=null && metadata.containsKey("vars") ) {
 			dynamicContext = true;
 			List<Object> vars = metadata.get("vars");
-			Map<Object, ProvaObject> contextVarsMap = ProvaLiteralImpl.tlVars.get();
+			Map<Object, PObj> contextVarsMap = ProvaLiteralImpl.tlVars.get();
 			Map<Object, Object> varsMap = new HashMap<Object, Object>(contextVarsMap.size());
 
 			// Clean up assignments
 			for( Object var : vars ) {
-				Object o = contextVarsMap.remove(((ProvaVariable) var).getName());
-				varsMap.put(((ProvaVariable) var).getName(), o instanceof ProvaConstant ? ((ProvaConstant) o).getObject() : o);
+				Object o = contextVarsMap.remove(((Variable) var).getName());
+				varsMap.put(((Variable) var).getName(), o instanceof Constant ? ((Constant) o).getObject() : o);
 			}
 
 			// Find new full AND solutions
-			List<List<ProvaList>> matches = findFullAnd(ruleid, varsMap, reaction, ruleid2Group, metadata);
+			List<List<PList>> matches = findFullAnd(ruleid, varsMap, reaction, ruleid2Group, metadata);
 			if( matches==null )
 				// Strict mismatch against vars values set by another, already closed channel
 				return EventDetectionStatus.failed;
-			addVarResults(ruleid, varsMap, (ProvaList) reaction.cloneWithVariables(null));
+			addVarResults(ruleid, varsMap, (PList) reaction.cloneWithVariables(null));
 
 			if( !matches.isEmpty() ) {
 				this.lastReaction = reaction;
-				List<List<ProvaList>> localResults = nextResults(0, matches);
-				for( List<ProvaList> localResult : localResults ) {
+				List<List<PList>> localResults = nextResults(0, matches);
+				for( List<PList> localResult : localResults ) {
 					local = new ArrayList<Object>(localResult.size());
-					for( ProvaList result : localResult )
+					for( PList result : localResult )
 						local.add(result.cloneWithVariables(null));
 					sendGroupResults(local, kb, prova);
 					if( countMax>0 && numEmitted==countMax ) {
@@ -206,8 +206,8 @@ public class ProvaAndGroupImpl extends ProvaBasicGroupImpl {
 		if( !this.isPermanent() ) {
 			RemoveList r0 = removeMap.remove(ruleid);
 			if( r0!=null && !this.isTemplate() ) {
-				r0.getP1().getClauseSet().removeTemporalClause(ruleid);
-				r0.getP2().getClauseSet().removeTemporalClause(ruleid);
+				r0.getP1().getClauses().removeTemporalClause(ruleid);
+				r0.getP2().getClauses().removeTemporalClause(ruleid);
 			}
 		}
 		if( reaction==null
@@ -251,8 +251,8 @@ public class ProvaAndGroupImpl extends ProvaBasicGroupImpl {
 				}
 				ruleid2Group.remove(ruleidToStop);
 				removeMap.remove(ruleidToStop);
-				r.getP1().getClauseSet().removeTemporalClause(ruleidToStop);
-				r.getP2().getClauseSet().removeTemporalClause(ruleidToStop);
+				r.getP1().getClauses().removeTemporalClause(ruleidToStop);
+				r.getP2().getClauses().removeTemporalClause(ruleidToStop);
 			}
 		}
 		if( !dynamicContext && isAndComplete(ruleid2Group) ) {
@@ -268,19 +268,19 @@ public class ProvaAndGroupImpl extends ProvaBasicGroupImpl {
 		return EventDetectionStatus.incomplete;
 	}
 
-	private List<List<ProvaList>> nextResults(int offset, List<List<ProvaList>> matches) {
+	private List<List<PList>> nextResults(int offset, List<List<PList>> matches) {
 		if( offset==matches.size() )
-			return Collections.<List<ProvaList>>emptyList();
-		List<List<ProvaList>> out = new ArrayList<List<ProvaList>>();
-		List<List<ProvaList>> remainder = nextResults(offset+1, matches);
-		for( ProvaList match : matches.get(offset) ) {
+			return Collections.<List<PList>>emptyList();
+		List<List<PList>> out = new ArrayList<List<PList>>();
+		List<List<PList>> remainder = nextResults(offset+1, matches);
+		for( PList match : matches.get(offset) ) {
 			if( remainder.isEmpty() ) {
-				out.add( Arrays.<ProvaList>asList( new ProvaList[] {match}));
+				out.add(Arrays.<PList>asList(new PList[] {match}));
 			} else {
-				for( List<ProvaList> r : remainder ) {
-					List<ProvaList> n = new ArrayList<ProvaList>();
+				for( List<PList> r : remainder ) {
+					List<PList> n = new ArrayList<PList>();
 					n.add(match);
-					for( ProvaList k : r )
+					for( PList k : r )
 						n.add(k);
 					out.add(n);
 				}
@@ -289,15 +289,15 @@ public class ProvaAndGroupImpl extends ProvaBasicGroupImpl {
 		return out;
 	}
 
-	private List<List<ProvaList>> findFullAnd(
+	private List<List<PList>> findFullAnd(
 			long ruleid,
 			Map<Object, Object> varsMap,
-			ProvaList reaction,
+			PList reaction,
 			Map<Long, ProvaGroup> ruleid2Group,
 			Map<String, List<Object>> metadata) {
 		
-                List<List<ProvaList>> matches = new ArrayList<List<ProvaList>>();
-                List<ProvaList> legMatches = new ArrayList<ProvaList>();    
+                List<List<PList>> matches = new ArrayList<List<PList>>();
+                List<PList> legMatches = new ArrayList<PList>();    
                 
 		for( Entry<MetaVarsKey,List<MetaVars>> e : varResults.entrySet() ) {
 			if( e.getKey().dynamicGroup!=dynamicGroup || e.getKey().ruleid==ruleid )
@@ -338,11 +338,11 @@ public class ProvaAndGroupImpl extends ProvaBasicGroupImpl {
 				matches.add(legMatches);
 		}
 		if( !matches.isEmpty() )
-			matches.add(Arrays.<ProvaList>asList( new ProvaList[] {reaction}));
+			matches.add(Arrays.<PList>asList(new PList[] {reaction}));
 		return matches;
 	}
 
-	private void addVarResults(long ruleid, Map<Object, Object> varsMap, ProvaList reaction) {
+	private void addVarResults(long ruleid, Map<Object, Object> varsMap, PList reaction) {
 		//List<MetaVars> vars = varResults.get(ruleid);
 		//if( vars==null ) {
                 List<MetaVars> vars = new ArrayList<MetaVars>();
@@ -367,8 +367,8 @@ public class ProvaAndGroupImpl extends ProvaBasicGroupImpl {
 			long ruleid = e.getKey();
 			ruleid2Group.remove(ruleid);
 			RemoveList r = removeMap.get(ruleid);
-			r.getP1().getClauseSet().removeTemporalClause(ruleid);
-			r.getP2().getClauseSet().removeTemporalClause(ruleid);
+			r.getP1().getClauses().removeTemporalClause(ruleid);
+			r.getP2().getClauses().removeTemporalClause(ruleid);
 		}
 		removeMap.clear();
 		return true;

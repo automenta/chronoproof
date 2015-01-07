@@ -4,12 +4,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import ws.prova.kernel2.ProvaConstant;
-import ws.prova.kernel2.ProvaList;
-import ws.prova.kernel2.ProvaObject;
-import ws.prova.kernel2.ProvaUnification;
-import ws.prova.kernel2.ProvaVariable;
-import ws.prova.kernel2.ProvaVariablePtr;
+import ws.prova.kernel2.Constant;
+import ws.prova.kernel2.PList;
+import ws.prova.kernel2.PObj;
+import ws.prova.kernel2.Unification;
+import ws.prova.kernel2.Variable;
+import ws.prova.kernel2.VariableIndex;
 
 /**
  * A wrapper around a Java Map that recursively (for all nested Maps) wraps all
@@ -33,17 +33,17 @@ public class ProvaMapImpl extends ProvaConstantImpl<Object> {
     }
 
     @Override
-    public int collectVariables(long ruleId, List<ProvaVariable> variables) {
+    public int collectVariables(long ruleId, List<Variable> variables) {
         int rc = -1;
-        Map<String, ProvaObject> map = (Map<String, ProvaObject>) object;
-        for (Entry<String, ProvaObject> e : map.entrySet()) {
-            final ProvaObject value = e.getValue();
-            if (value instanceof ProvaVariablePtr) {
+        Map<String, PObj> map = (Map<String, PObj>) object;
+        for (Entry<String, PObj> e : map.entrySet()) {
+            final PObj value = e.getValue();
+            if (value instanceof VariableIndex) {
                 rc = 0;
                 continue;
             }
             int r = value.collectVariables(ruleId, variables);
-            if (r != -1 && !(value instanceof ProvaList) && !(value instanceof ProvaMapImpl)) {
+            if (r != -1 && !(value instanceof PList) && !(value instanceof ProvaMapImpl)) {
                 e.setValue(new ProvaVariablePtrImpl(ruleId, r));
                 rc = r;
             }
@@ -53,10 +53,10 @@ public class ProvaMapImpl extends ProvaConstantImpl<Object> {
 
     @SuppressWarnings("unchecked")
     @Override
-    public boolean updateGround(List<ProvaVariable> variables) {
+    public boolean updateGround(List<Variable> variables) {
         boolean rc = true;
-        Map<String, ProvaObject> map = (Map<String, ProvaObject>) object;
-        for (Entry<String, ProvaObject> e : map.entrySet()) {
+        Map<String, PObj> map = (Map<String, PObj>) object;
+        for (Entry<String, PObj> e : map.entrySet()) {
             if (!e.getValue().updateGround(variables)) {
                 rc = false;
             }
@@ -65,32 +65,32 @@ public class ProvaMapImpl extends ProvaConstantImpl<Object> {
     }
 
     @Override
-    public boolean unify(ProvaObject target, ProvaUnification unification) {
+    public boolean unify(PObj target, Unification unification) {
         if (target == null) {
             return false;
         }
-        if (target instanceof ProvaVariable) {
-            return ((ProvaVariable) target).unify(this, unification);
+        if (target instanceof Variable) {
+            return ((Variable) target).unify(this, unification);
         }
-        if (target instanceof ProvaVariablePtr) {
-            return ((ProvaVariablePtr) target).unify(this, unification);
-        } else if (target instanceof ProvaList) {
+        if (target instanceof VariableIndex) {
+            return ((VariableIndex) target).unify(this, unification);
+        } else if (target instanceof PList) {
             return false;
         } else if (target instanceof ProvaListPtrImpl) {
             return false;
         }
         // The target is a constant
-        ProvaConstant targetConstant = (ProvaConstant) target;
+        Constant targetConstant = (Constant) target;
         Object targetObject = targetConstant.getObject();
         if (object instanceof Map<?, ?> && targetObject instanceof Map<?, ?>) {
             Map<?, ?> src = (Map<?, ?>) object;
             Map<?, ?> tgt = (Map<?, ?>) targetObject;
             for (Entry<?, ?> t : tgt.entrySet()) {
-                ProvaObject srcValue = (ProvaObject) src.get(t.getKey());
+                PObj srcValue = (PObj) src.get(t.getKey());
                 if (srcValue == null) {
                     return false;
                 }
-                boolean rc = srcValue.unify((ProvaObject) t.getValue(), unification);
+                boolean rc = srcValue.unify((PObj) t.getValue(), unification);
                 if (!rc) {
                     return false;
                 }
@@ -116,12 +116,12 @@ public class ProvaMapImpl extends ProvaConstantImpl<Object> {
 
     @SuppressWarnings("unchecked")
     @Override
-    public void substituteVariables(final ProvaVariablePtr[] varsMap) {
-        final Map<String, ProvaObject> map = (Map<String, ProvaObject>) object;
-        for (Entry<String, ProvaObject> e : map.entrySet()) {
-            ProvaObject value = e.getValue();
-            if (value instanceof ProvaVariablePtr) {
-                e.setValue(varsMap[((ProvaVariablePtr) value).getIndex()]);
+    public void substituteVariables(final VariableIndex[] varsMap) {
+        final Map<String, PObj> map = (Map<String, PObj>) object;
+        for (Entry<String, PObj> e : map.entrySet()) {
+            PObj value = e.getValue();
+            if (value instanceof VariableIndex) {
+                e.setValue(varsMap[((VariableIndex) value).getIndex()]);
             } else {
                 e.getValue().substituteVariables(varsMap);
             }
@@ -131,8 +131,8 @@ public class ProvaMapImpl extends ProvaConstantImpl<Object> {
     @SuppressWarnings("unchecked")
     @Override
     public boolean isGround() {
-        final Map<String, ProvaObject> map = (Map<String, ProvaObject>) object;
-        for (Entry<String, ProvaObject> e : map.entrySet()) {
+        final Map<String, PObj> map = (Map<String, PObj>) object;
+        for (Entry<String, PObj> e : map.entrySet()) {
             if (!e.getValue().isGround()) {
                 return false;
             }
@@ -142,13 +142,13 @@ public class ProvaMapImpl extends ProvaConstantImpl<Object> {
 
     @SuppressWarnings("unchecked")
     @Override
-    public ProvaObject cloneWithBoundVariables(List<ProvaVariable> variables, List<Boolean> isConstant) {
+    public PObj cloneWithBoundVariables(List<Variable> variables, List<Boolean> isConstant) {
         if (isGround()) {
             return this;
         }
-        final Map<String, ProvaObject> map = (Map<String, ProvaObject>) object;
-        final Map<String, ProvaObject> newMap = new HashMap<String, ProvaObject>(map.size());
-        for (Entry<String, ProvaObject> e : map.entrySet()) {
+        final Map<String, PObj> map = (Map<String, PObj>) object;
+        final Map<String, PObj> newMap = new HashMap<String, PObj>(map.size());
+        for (Entry<String, PObj> e : map.entrySet()) {
             if (e.getValue().isGround()) {
                 newMap.put(e.getKey(), e.getValue());
             } else {
@@ -160,15 +160,15 @@ public class ProvaMapImpl extends ProvaConstantImpl<Object> {
 
     @SuppressWarnings("unchecked")
     @Override
-    public ProvaObject cloneWithVariables(List<ProvaVariable> variables) {
+    public PObj cloneWithVariables(List<Variable> variables) {
         if (isGround()) {
             return this;
         }
-        Map<String, ProvaObject> map = (Map<String, ProvaObject>) object;
-        Map<String, ProvaObject> newMap = new HashMap<String, ProvaObject>(map.size());
-        for (Entry<String, ProvaObject> e : map.entrySet()) {
-            ProvaObject nextValue;
-            ProvaObject ev = e.getValue();
+        Map<String, PObj> map = (Map<String, PObj>) object;
+        Map<String, PObj> newMap = new HashMap<String, PObj>(map.size());
+        for (Entry<String, PObj> e : map.entrySet()) {
+            PObj nextValue;
+            PObj ev = e.getValue();
             if (ev.isGround()) {
                 nextValue = ev;
             } else {
@@ -183,16 +183,16 @@ public class ProvaMapImpl extends ProvaConstantImpl<Object> {
 
     @SuppressWarnings("unchecked")
     @Override
-    public ProvaObject cloneWithVariables(final long ruleId, final List<ProvaVariable> variables) {
+    public PObj cloneWithVariables(final long ruleId, final List<Variable> variables) {
         if (isGround()) {
             return this;
         }
-        final Map<String, ProvaObject> map = (Map<String, ProvaObject>) object;
-        final Map<String, ProvaObject> newMap = new HashMap<String, ProvaObject>(map.size());
+        final Map<String, PObj> map = (Map<String, PObj>) object;
+        final Map<String, PObj> newMap = new HashMap<String, PObj>(map.size());
         
-        for (Entry<String, ProvaObject> e : map.entrySet()) {
-            ProvaObject nextValue;
-            ProvaObject ev = e.getValue();
+        for (Entry<String, PObj> e : map.entrySet()) {
+            PObj nextValue;
+            PObj ev = e.getValue();
             if (ev.isGround()) {
                 nextValue = ev;
             } else {
@@ -224,12 +224,12 @@ public class ProvaMapImpl extends ProvaConstantImpl<Object> {
      * @return a wrapped Map
      */
     public static ProvaMapImpl wrapValues(Map<?, ?> m) {
-        final Map<String, ProvaObject> map = new HashMap<String, ProvaObject>(m.size());
+        final Map<String, PObj> map = new HashMap<String, PObj>(m.size());
         for (Entry<?, ?> e : m.entrySet()) {
             final Object value = e.getValue();
-            ProvaObject store = null;
-            if (value instanceof ProvaObject) {
-                store = (ProvaObject) value;
+            PObj store = null;
+            if (value instanceof PObj) {
+                store = (PObj) value;
             } else if (value instanceof Map) {
                 store = wrapValues((Map<?, ?>) value);
             } else {
@@ -248,31 +248,31 @@ public class ProvaMapImpl extends ProvaConstantImpl<Object> {
      * @param o
      * @return
      */
-    public static ProvaObject wrap(Object o) {
-        return (o instanceof ProvaObject) ? (ProvaObject) o : o instanceof Map ? wrapValues((Map<?, ?>) o) : new ProvaConstantImpl(o);
+    public static PObj wrap(Object o) {
+        return (o instanceof PObj) ? (PObj) o : o instanceof Map ? wrapValues((Map<?, ?>) o) : new ProvaConstantImpl(o);
     }
 
     @SuppressWarnings("unchecked")
-    public ProvaObject rebuild(ProvaUnification unification) {
-        final Map<String, ProvaObject> map = (Map<String, ProvaObject>) object;
-        final Map<String, ProvaObject> newMap = new HashMap<String, ProvaObject>(map.size());
+    public PObj rebuild(Unification unification) {
+        final Map<String, PObj> map = (Map<String, PObj>) object;
+        final Map<String, PObj> newMap = new HashMap<String, PObj>(map.size());
         boolean changed = false;
-        for (Entry<String, ProvaObject> e : map.entrySet()) {
-            ProvaObject ov = e.getValue();
-            if (e.getValue() instanceof ProvaVariablePtr) {
-                ProvaObject nv = unification.rebuild((ProvaVariablePtr) ov);
+        for (Entry<String, PObj> e : map.entrySet()) {
+            PObj ov = e.getValue();
+            if (e.getValue() instanceof VariableIndex) {
+                PObj nv = unification.rebuild((VariableIndex) ov);
                 newMap.put(e.getKey(), nv);
                 if (ov != nv) {
                     changed = true;
                 }
-            } else if (ov instanceof ProvaList) {
-                ProvaObject nv = ((ProvaList) ov).rebuild(unification);
+            } else if (ov instanceof PList) {
+                PObj nv = ((PList) ov).rebuild(unification);
                 newMap.put(e.getKey(), nv);
                 if (ov != nv) {
                     changed = true;
                 }
             } else if (ov instanceof ProvaMapImpl) {
-                ProvaObject nv = ((ProvaMapImpl) ov).rebuild(unification);
+                PObj nv = ((ProvaMapImpl) ov).rebuild(unification);
                 newMap.put(e.getKey(), nv);
                 if (ov != nv) {
                     changed = true;
@@ -286,26 +286,26 @@ public class ProvaMapImpl extends ProvaConstantImpl<Object> {
     }
 
     @SuppressWarnings("unchecked")
-    public ProvaObject rebuildSource(ProvaUnification unification) {
-        final Map<String, ProvaObject> map = (Map<String, ProvaObject>) object;
-        final Map<String, ProvaObject> newMap = new HashMap<String, ProvaObject>(map.size());
+    public PObj rebuildSource(Unification unification) {
+        final Map<String, PObj> map = (Map<String, PObj>) object;
+        final Map<String, PObj> newMap = new HashMap<String, PObj>(map.size());
         boolean changed = false;
-        for (Entry<String, ProvaObject> e : map.entrySet()) {
-            ProvaObject ov = e.getValue();
-            if (e.getValue() instanceof ProvaVariablePtr) {
-                ProvaObject nv = unification.rebuild((ProvaVariablePtr) ov);
+        for (Entry<String, PObj> e : map.entrySet()) {
+            PObj ov = e.getValue();
+            if (e.getValue() instanceof VariableIndex) {
+                PObj nv = unification.rebuild((VariableIndex) ov);
                 newMap.put(e.getKey(), nv);
                 if (ov != nv) {
                     changed = true;
                 }
-            } else if (ov instanceof ProvaList) {
-                ProvaObject nv = ((ProvaList) ov).rebuildSource(unification);
+            } else if (ov instanceof PList) {
+                PObj nv = ((PList) ov).rebuildSource(unification);
                 newMap.put(e.getKey(), nv);
                 if (ov != nv) {
                     changed = true;
                 }
             } else if (ov instanceof ProvaMapImpl) {
-                ProvaObject nv = ((ProvaMapImpl) ov).rebuildSource(unification);
+                PObj nv = ((ProvaMapImpl) ov).rebuildSource(unification);
                 newMap.put(e.getKey(), nv);
                 if (ov != nv) {
                     changed = true;
@@ -320,19 +320,19 @@ public class ProvaMapImpl extends ProvaConstantImpl<Object> {
 
     @SuppressWarnings("unchecked")
     public Object unwrap() {
-        final Map<String, ProvaObject> map = (Map<String, ProvaObject>) object;
+        final Map<String, PObj> map = (Map<String, PObj>) object;
         final Map<String, Object> newMap = new HashMap<String, Object>(map.size());
-        for (Entry<String, ProvaObject> e : map.entrySet()) {
-            ProvaObject ov = e.getValue();
-            if (ov instanceof ProvaConstant) {
-                newMap.put(e.getKey(), ((ProvaConstant) ov).getObject());
+        for (Entry<String, PObj> e : map.entrySet()) {
+            PObj ov = e.getValue();
+            if (ov instanceof Constant) {
+                newMap.put(e.getKey(), ((Constant) ov).getObject());
             }
         }
         return newMap;
     }
 
     @Override
-    public boolean matched(ProvaConstant target) {
+    public boolean matched(Constant target) {
         return target instanceof ProvaMapImpl;
     }
 

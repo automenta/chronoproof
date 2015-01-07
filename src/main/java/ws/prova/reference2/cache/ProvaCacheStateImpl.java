@@ -5,12 +5,12 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import ws.prova.kernel2.ProvaConstant;
-import ws.prova.kernel2.ProvaGoal;
-import ws.prova.kernel2.ProvaList;
-import ws.prova.kernel2.ProvaObject;
-import ws.prova.kernel2.ProvaVariable;
-import ws.prova.kernel2.ProvaVariablePtr;
+import ws.prova.kernel2.Constant;
+import ws.prova.kernel2.Goal;
+import ws.prova.kernel2.PList;
+import ws.prova.kernel2.PObj;
+import ws.prova.kernel2.Variable;
+import ws.prova.kernel2.VariableIndex;
 import ws.prova.kernel2.cache.ProvaCacheState;
 import ws.prova.kernel2.cache.ProvaGroundKey;
 import ws.prova.reference2.ProvaListImpl;
@@ -22,19 +22,19 @@ public class ProvaCacheStateImpl implements ProvaCacheState {
 	
 	private boolean complete;
 
-	private final Map<ProvaCacheAnswerKey,ProvaList> answers;
+	private final Map<ProvaCacheAnswerKey,PList> answers;
 	
-	private final List<ProvaGoal> goals;
+	private final List<Goal> goals;
 	
 	public ProvaCacheStateImpl() {
 		this.open = false;
 		this.complete = false;
-		this.answers = new HashMap<ProvaCacheAnswerKey,ProvaList>();
-		this.goals = new ArrayList<ProvaGoal>();
+		this.answers = new HashMap<ProvaCacheAnswerKey,PList>();
+		this.goals = new ArrayList<Goal>();
 	}
 
 	@Override
-	public List<ProvaGoal> getGoals() {
+	public List<Goal> getGoals() {
 		return goals;
 	}
 	
@@ -44,7 +44,7 @@ public class ProvaCacheStateImpl implements ProvaCacheState {
 	}
 
 	@Override
-	public void addGoal( ProvaGoal goal ) {
+	public void addGoal( Goal goal ) {
 		goals.add(goal);
 	}
 	
@@ -66,8 +66,8 @@ public class ProvaCacheStateImpl implements ProvaCacheState {
 	/**
 	 * Only add new answers
 	 */
-	public boolean addSolution(ProvaCacheAnswerKey key, ProvaList literalList) {
-		ProvaList oldAnswer = answers.get(key);
+	public boolean addSolution(ProvaCacheAnswerKey key, PList literalList) {
+		PList oldAnswer = answers.get(key);
 		if( oldAnswer!=null )
 			return false;
 		answers.put(key, literalList);
@@ -75,47 +75,47 @@ public class ProvaCacheStateImpl implements ProvaCacheState {
 	}
 	
 	@Override
-	public ProvaCacheAnswerKey getCacheAnswerKey(ProvaList literalList, List<ProvaVariable> variables) {
+	public ProvaCacheAnswerKey getCacheAnswerKey(PList literalList, List<Variable> variables) {
 		if( literalList==ProvaListImpl.emptyRList )
 			return new ProvaCacheAnswerKey(0,null);
-		ProvaObject[] fixed = literalList.getFixed();
+		PObj[] fixed = literalList.getFixed();
 		final int arity = fixed.length;
 		int numBound = 0;
 		// Where are the ground terms
 		int mask = 0;
 		for( int i=0; i<arity; i++ ) {
-			ProvaObject o = fixed[i];
+			PObj o = fixed[i];
 			mask <<= 1;
-			if( o instanceof ProvaVariablePtr ) {
-				ProvaVariablePtr ptr = (ProvaVariablePtr) o;
-				ProvaVariable var = variables.get(ptr.getIndex());
+			if( o instanceof VariableIndex ) {
+				VariableIndex ptr = (VariableIndex) o;
+				Variable var = variables.get(ptr.getIndex());
 				o = var.getAssigned();
 			}
-			if( o instanceof ProvaConstant ) {
+			if( o instanceof Constant ) {
 				numBound++;
 				mask |= 1;
-			} else if( o instanceof ProvaVariable ) {
+			} else if( o instanceof Variable ) {
 			} else {
 				// TODO: return false?
 			}
 		}
 		final Object[] data = new Object[numBound];
 		for( int i=0, j=0; i<arity; i++ ) {
-			ProvaObject o = fixed[i];
-			if( o instanceof ProvaConstant )
-				data[j++] = ((ProvaConstant) o).getObject();
+			PObj o = fixed[i];
+			if( o instanceof Constant )
+				data[j++] = ((Constant) o).getObject();
 		}
 		ProvaCacheAnswerKey key = new ProvaCacheAnswerKey(mask,data);
 		return key;
 	}
 	
 	@Override
-	public Collection<ProvaList> getSolutions() {
+	public Collection<PList> getSolutions() {
 		return answers.values();
 	}
 
 	@Override
-	public ProvaGoal getGoal() {
+	public Goal getGoal() {
 		if( goals.isEmpty() )
 			return null;
 		return this.goals.get(goals.size()-1);

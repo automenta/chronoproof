@@ -3,9 +3,9 @@ package ws.prova.reference2.eventing;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
-import ws.prova.agent2.ProvaReagent;
-import ws.prova.kernel2.ProvaKnowledgeBase;
-import ws.prova.kernel2.ProvaList;
+import ws.prova.agent2.Reagent;
+import ws.prova.kernel2.KB;
+import ws.prova.kernel2.PList;
 import ws.prova.reference2.messaging.RemoveList;
 import ws.prova.reference2.messaging.where.WhereNode;
 
@@ -23,13 +23,13 @@ public interface ProvaGroup {
 
 	public String getDynamicGroup();
 
-	public void addResult(ProvaList result);
+	public void addResult(PList result);
 
-	public EventDetectionStatus eventDetected(ProvaKnowledgeBase kb, ProvaReagent prova, long ruleid, ProvaList reaction, Map<String, List<Object>> metadata, Map<Long, ProvaGroup> ruleid2Group);
+	public EventDetectionStatus eventDetected(KB kb, Reagent prova, long ruleid, PList reaction, Map<String, List<Object>> metadata, Map<Long, ProvaGroup> ruleid2Group);
 
 	public void stop();
 
-	public boolean cleanup(ProvaKnowledgeBase kb, ProvaReagent prova, Map<Long, ProvaGroup> ruleid2Group, Map<String, ProvaGroup> dynamic2Group);
+	public boolean cleanup(KB kb, Reagent prova, Map<Long, ProvaGroup> ruleid2Group, Map<String, ProvaGroup> dynamic2Group);
 
 	public boolean isOperatorConfigured();
 

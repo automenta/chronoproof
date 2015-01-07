@@ -2,14 +2,14 @@ package ws.prova.kernel2.cache;
 
 import java.util.Collection;
 import java.util.List;
-import ws.prova.kernel2.ProvaGoal;
-import ws.prova.kernel2.ProvaList;
-import ws.prova.kernel2.ProvaVariable;
+import ws.prova.kernel2.Goal;
+import ws.prova.kernel2.PList;
+import ws.prova.kernel2.Variable;
 import ws.prova.reference2.cache.ProvaCacheStateImpl.ProvaCacheAnswerKey;
 
 public interface ProvaCacheState {
 
-	public Collection<ProvaList> getSolutions();
+	public Collection<PList> getSolutions();
 
 	public void setOpen(boolean open);
 
@@ -17,16 +17,16 @@ public interface ProvaCacheState {
 
 	public boolean isComplete();
 
-	public ProvaGoal getGoal();
+	public Goal getGoal();
 
-	public ProvaCacheAnswerKey getCacheAnswerKey(ProvaList literalList,
-			List<ProvaVariable> variables);
+	public ProvaCacheAnswerKey getCacheAnswerKey(PList literalList,
+			List<Variable> variables);
 
-	boolean addSolution(ProvaCacheAnswerKey key, ProvaList literalList);
+	boolean addSolution(ProvaCacheAnswerKey key, PList literalList);
 
-	public List<ProvaGoal> getGoals();
+	public List<Goal> getGoals();
 
-	public void addGoal(ProvaGoal goal);
+	public void addGoal(Goal goal);
 
 	public void markCompletion();
 

@@ -9,7 +9,7 @@ import org.junit.Test;
 import ws.prova.api2.ProvaCommunicator;
 import ws.prova.api2.ProvaCommunicatorImpl;
 import ws.prova.exchange.ProvaSolution;
-import ws.prova.kernel2.ProvaConstant;
+import ws.prova.kernel2.Constant;
 
 public class ProvaUpdatesTest {
 
@@ -40,8 +40,8 @@ public class ProvaUpdatesTest {
 
 		org.junit.Assert.assertEquals(1,solutions.size());
 		org.junit.Assert.assertEquals(numSolutions[0],solutions.get(0).length);
-		org.junit.Assert.assertTrue(solutions.get(0)[5].getNv("X") instanceof ProvaConstant);
-		org.junit.Assert.assertEquals("h",((ProvaConstant) solutions.get(0)[5].getNv("X")).getObject());
+		org.junit.Assert.assertTrue(solutions.get(0)[5].getNv("X") instanceof Constant);
+		org.junit.Assert.assertEquals("h",((Constant) solutions.get(0)[5].getNv("X")).getObject());
 	}
 
 	@Test

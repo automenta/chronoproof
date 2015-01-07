@@ -1,23 +1,23 @@
 package ws.prova.reference2.builtins;
 
 import java.util.List;
-import ws.prova.agent2.ProvaReagent;
-import ws.prova.kernel2.ProvaConstant;
-import ws.prova.kernel2.ProvaDerivationNode;
-import ws.prova.kernel2.ProvaGoal;
-import ws.prova.kernel2.ProvaKnowledgeBase;
-import ws.prova.kernel2.ProvaList;
-import ws.prova.kernel2.ProvaLiteral;
-import ws.prova.kernel2.ProvaObject;
-import ws.prova.kernel2.ProvaRule;
-import ws.prova.kernel2.ProvaVariable;
+import ws.prova.agent2.Reagent;
+import ws.prova.kernel2.Constant;
+import ws.prova.kernel2.Derivation;
+import ws.prova.kernel2.Goal;
+import ws.prova.kernel2.KB;
+import ws.prova.kernel2.PList;
+import ws.prova.kernel2.Literal;
+import ws.prova.kernel2.PObj;
+import ws.prova.kernel2.Rule;
+import ws.prova.kernel2.Variable;
 import ws.prova.reference2.ProvaConstantImpl;
 import ws.prova.reference2.ProvaListImpl;
 import ws.prova.reference2.ProvaVariableImpl;
 
 public class ProvaLengthImpl extends ProvaBuiltinImpl {
 
-	public ProvaLengthImpl(ProvaKnowledgeBase kb) {
+	public ProvaLengthImpl(KB kb) {
 		super(kb,"length");
 	}
 
@@ -26,47 +26,47 @@ public class ProvaLengthImpl extends ProvaBuiltinImpl {
 	 * If the supplied list is a free variable but the length is given, generate a list of this length.
 	 */
 	@Override
-	public boolean process(ProvaReagent prova, ProvaDerivationNode node,
-			ProvaGoal goal, List<ProvaLiteral> newLiterals, ProvaRule query) {
-		ProvaLiteral literal = goal.getGoal();
-		List<ProvaVariable> variables = query.getVariables();
-		ProvaList terms = (ProvaList) literal.getTerms().cloneWithVariables(variables);
-		ProvaObject[] data = terms.getFixed();
+	public boolean process(Reagent prova, Derivation node,
+			Goal goal, List<Literal> newLiterals, Rule query) {
+		Literal literal = goal.getGoal();
+		List<Variable> variables = query.getVariables();
+		PList terms = (PList) literal.getTerms().cloneWithVariables(variables);
+		PObj[] data = terms.getFixed();
 		if( data.length!=2 )
 			return false;
-		ProvaObject lt = data[0];
-		if( lt instanceof ProvaVariable ) {
-			ProvaObject out = data[1];
-			if( !(out instanceof ProvaConstant) )
+		PObj lt = data[0];
+		if( lt instanceof Variable ) {
+			PObj out = data[1];
+			if( !(out instanceof Constant) )
 				return false;
-			Object olen = ((ProvaConstant) out).getObject();
+			Object olen = ((Constant) out).getObject();
 			if( !(olen instanceof Integer) )
 				return false;
 			int len = (Integer) olen;
 			// Generate a list given its length
-			ProvaObject[] fixed = new ProvaObject[len];
+			PObj[] fixed = new PObj[len];
 			for( int i=0; i<len; i++ ) {
 				fixed[i] = ProvaVariableImpl.create();
 			}
-			ProvaList newList = ProvaListImpl.create(fixed, null);
-			((ProvaVariable) lt).setAssigned(newList);
+			PList newList = ProvaListImpl.create(fixed, null);
+			((Variable) lt).setAssigned(newList);
 			return true;
 		}
-		if( !(lt instanceof ProvaList) )
+		if( !(lt instanceof PList) )
 			return false;
-		ProvaList list = (ProvaList) lt;
-		if( list.getTail() instanceof ProvaVariable )
+		PList list = (PList) lt;
+		if( list.getTail() instanceof Variable )
 			return false;
 		
-		ProvaObject out = data[1];
-		if( out instanceof ProvaConstant ) {
-			Object o = ((ProvaConstant) out).getObject();
+		PObj out = data[1];
+		if( out instanceof Constant ) {
+			Object o = ((Constant) out).getObject();
 			if( !(o instanceof Integer) )
 				return false;
 			return list.getFixed().length == (Integer) o;
 		}
-		if( out instanceof ProvaVariable ) {
-			((ProvaVariable) out).setAssigned(ProvaConstantImpl.create(list.getFixed().length));
+		if( out instanceof Variable ) {
+			((Variable) out).setAssigned(ProvaConstantImpl.create(list.getFixed().length));
 			return true;
 		}
 		return false;

@@ -1,10 +1,10 @@
 package ws.prova.kernel2;
 
-public interface ProvaVariablePtr extends ProvaObject {
+public interface VariableIndex extends PObj {
 
 	public boolean unifyReverse(
-			ProvaObject target,
-			ProvaUnification unification);
+			PObj target,
+			Unification unification);
 
 	public long getRuleId();
 

@@ -6,7 +6,7 @@ import org.junit.Test;
 import ws.prova.api2.ProvaCommunicator;
 import ws.prova.api2.ProvaCommunicatorImpl;
 import ws.prova.exchange.ProvaSolution;
-import ws.prova.kernel2.ProvaConstant;
+import ws.prova.kernel2.Constant;
 
 public class ProvaExpressionsTest {
 
@@ -34,14 +34,14 @@ public class ProvaExpressionsTest {
 
 		org.junit.Assert.assertEquals(1,solutions.size());
 		org.junit.Assert.assertEquals(numSolutions[0],solutions.get(0).length);
-		org.junit.Assert.assertTrue(solutions.get(0)[0].getNv("N") instanceof ProvaConstant);
-		final Object ans1 = ((ProvaConstant) solutions.get(0)[0].getNv("N")).getObject();
+		org.junit.Assert.assertTrue(solutions.get(0)[0].getNv("N") instanceof Constant);
+		final Object ans1 = ((Constant) solutions.get(0)[0].getNv("N")).getObject();
 		org.junit.Assert.assertTrue((Integer)ans1==5);
-		org.junit.Assert.assertTrue(solutions.get(0)[1].getNv("N") instanceof ProvaConstant);
-		final Object ans2 = ((ProvaConstant) solutions.get(0)[1].getNv("N")).getObject();
+		org.junit.Assert.assertTrue(solutions.get(0)[1].getNv("N") instanceof Constant);
+		final Object ans2 = ((Constant) solutions.get(0)[1].getNv("N")).getObject();
 		org.junit.Assert.assertTrue((Integer)ans2==-5);
-		org.junit.Assert.assertTrue(solutions.get(0)[2].getNv("N") instanceof ProvaConstant);
-		final Object ans3 = ((ProvaConstant) solutions.get(0)[2].getNv("N")).getObject();
+		org.junit.Assert.assertTrue(solutions.get(0)[2].getNv("N") instanceof Constant);
+		final Object ans3 = ((Constant) solutions.get(0)[2].getNv("N")).getObject();
 		org.junit.Assert.assertTrue((Integer)ans3==4);
 	}
 
@@ -55,11 +55,11 @@ public class ProvaExpressionsTest {
 
 		org.junit.Assert.assertEquals(1,solutions.size());
 		org.junit.Assert.assertEquals(numSolutions[0],solutions.get(0).length);
-		org.junit.Assert.assertTrue(solutions.get(0)[0].getNv("N") instanceof ProvaConstant);
-		final Object ans1 = ((ProvaConstant) solutions.get(0)[0].getNv("N")).getObject();
+		org.junit.Assert.assertTrue(solutions.get(0)[0].getNv("N") instanceof Constant);
+		final Object ans1 = ((Constant) solutions.get(0)[0].getNv("N")).getObject();
 		org.junit.Assert.assertTrue((Integer)ans1==2);
-		org.junit.Assert.assertTrue(solutions.get(0)[1].getNv("N") instanceof ProvaConstant);
-		final Object ans2 = ((ProvaConstant) solutions.get(0)[1].getNv("N")).getObject();
+		org.junit.Assert.assertTrue(solutions.get(0)[1].getNv("N") instanceof Constant);
+		final Object ans2 = ((Constant) solutions.get(0)[1].getNv("N")).getObject();
 		org.junit.Assert.assertTrue((Integer)ans2==-1);
 	}
 
@@ -76,8 +76,8 @@ public class ProvaExpressionsTest {
 
 		org.junit.Assert.assertEquals(1,solutions.size());
 		org.junit.Assert.assertEquals(numSolutions[0],solutions.get(0).length);
-		org.junit.Assert.assertTrue(solutions.get(0)[0].getNv("A") instanceof ProvaConstant);
-		final Object ans1 = ((ProvaConstant) solutions.get(0)[0].getNv("A")).getObject();
+		org.junit.Assert.assertTrue(solutions.get(0)[0].getNv("A") instanceof Constant);
+		final Object ans1 = ((Constant) solutions.get(0)[0].getNv("A")).getObject();
 		org.junit.Assert.assertEquals(ans1,"yes");
 	}
 

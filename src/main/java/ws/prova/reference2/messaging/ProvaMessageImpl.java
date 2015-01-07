@@ -1,18 +1,18 @@
 package ws.prova.reference2.messaging;
 
-import ws.prova.agent2.ProvaReagent;
+import ws.prova.agent2.Reagent;
 import ws.prova.agent2.ProvaThreadpoolEnum;
-import ws.prova.kernel2.ProvaRule;
+import ws.prova.kernel2.Rule;
 
 public class ProvaMessageImpl implements ProvaDelayedCommand {
 
 	private final long id;
 	
-	private final ProvaRule goal;
+	private final Rule goal;
 	
 	private final ProvaThreadpoolEnum pool;
 	
-	public ProvaMessageImpl(long id, ProvaRule goal,
+	public ProvaMessageImpl(long id, Rule goal,
 			ProvaThreadpoolEnum pool) {
 		this.id = id;
 		this.goal = goal;
@@ -20,7 +20,7 @@ public class ProvaMessageImpl implements ProvaDelayedCommand {
 	}
 
 	@Override
-	public void process(ProvaReagent prova) {
+	public void process(Reagent prova) {
 		prova.submitAsync(id,goal,pool);
 //		System.out.println("sent:"+goal);
 	}

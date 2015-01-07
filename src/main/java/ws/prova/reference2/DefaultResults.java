@@ -2,10 +2,10 @@ package ws.prova.reference2;
 
 import java.util.Vector;
 import ws.prova.exchange.ProvaSolution;
-import ws.prova.kernel2.ProvaResultSet;
+import ws.prova.kernel2.Results;
 import ws.prova.parser2.ProvaParsingException;
 
-public class ProvaResultSetImpl implements ProvaResultSet {
+public class DefaultResults implements Results {
 
 	private Vector<ProvaSolution> solutions = new Vector<ProvaSolution>();
 	

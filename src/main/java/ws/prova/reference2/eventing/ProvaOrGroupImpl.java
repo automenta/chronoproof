@@ -6,10 +6,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.apache.log4j.Logger;
-import ws.prova.agent2.ProvaReagent;
+import ws.prova.agent2.Reagent;
 import ws.prova.eventing.ProvaEventsAccumulator;
-import ws.prova.kernel2.ProvaKnowledgeBase;
-import ws.prova.kernel2.ProvaList;
+import ws.prova.kernel2.KB;
+import ws.prova.kernel2.PList;
 import ws.prova.reference2.ProvaListImpl;
 import ws.prova.reference2.messaging.RemoveList;
 
@@ -41,8 +41,8 @@ public class ProvaOrGroupImpl extends ProvaBasicGroupImpl {
 	}
 
 	@Override
-	public EventDetectionStatus eventDetected(ProvaKnowledgeBase kb, ProvaReagent prova,
-			long ruleid, ProvaList reaction, Map<String, List<Object>> metadata, Map<Long, ProvaGroup> ruleid2Group) {
+	public EventDetectionStatus eventDetected(KB kb, Reagent prova,
+			long ruleid, PList reaction, Map<String, List<Object>> metadata, Map<Long, ProvaGroup> ruleid2Group) {
 		if( reaction==null && !removeMap.containsKey(ruleid) )
 			// Timeout removal of a rule that was removed before
 			return EventDetectionStatus.preserved;
@@ -93,8 +93,8 @@ public class ProvaOrGroupImpl extends ProvaBasicGroupImpl {
 				ruleid2Group.remove(ruleid);
 				RemoveList r = removeMap.remove(ruleid);
 				if( r!=null ) {
-					r.getP1().getClauseSet().removeTemporalClause(ruleid);
-					r.getP2().getClauseSet().removeTemporalClause(ruleid);
+					r.getP1().getClauses().removeTemporalClause(ruleid);
+					r.getP2().getClauses().removeTemporalClause(ruleid);
 				}
 				if( future!=null )
 					future.cancel(true);
@@ -108,7 +108,7 @@ public class ProvaOrGroupImpl extends ProvaBasicGroupImpl {
 					return EventDetectionStatus.preserved;
 				}
 				if( this.lastReaction==null )
-					this.lastReaction = (ProvaList) resultRemoveEntry.getReaction().shallowCopy(); 
+					this.lastReaction = (PList) resultRemoveEntry.getReaction().shallowCopy(); 
 				if( log.isDebugEnabled() ) {
 					log.debug("resultRemoveEntry.getReaction(): "+resultRemoveEntry.getReaction());
 					log.debug("Set last reaction to: "+this.lastReaction);
@@ -137,8 +137,8 @@ public class ProvaOrGroupImpl extends ProvaBasicGroupImpl {
 				ruleid2Group.remove(ruleid);
 				RemoveList r = removeMap.remove(ruleid);
 				if( r!=null && !isTemplate() ) {
-					r.getP1().getClauseSet().removeTemporalClause(ruleid);
-					r.getP2().getClauseSet().removeTemporalClause(ruleid);
+					r.getP1().getClauses().removeTemporalClause(ruleid);
+					r.getP2().getClauses().removeTemporalClause(ruleid);
 				}
 			}
 		}
@@ -190,8 +190,8 @@ public class ProvaOrGroupImpl extends ProvaBasicGroupImpl {
 					ruleid2Group.remove(ruleidToStop);
 					RemoveList r = removeMap.remove(ruleidToStop);
 					if( r!=null ) {
-						r.getP1().getClauseSet().removeTemporalClause(ruleidToStop);
-						r.getP2().getClauseSet().removeTemporalClause(ruleidToStop);
+						r.getP1().getClauses().removeTemporalClause(ruleidToStop);
+						r.getP2().getClauses().removeTemporalClause(ruleidToStop);
 					}
 				}
 				if( log.isDebugEnabled() )

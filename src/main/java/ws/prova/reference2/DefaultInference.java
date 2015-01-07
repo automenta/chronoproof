@@ -1,47 +1,48 @@
 package ws.prova.reference2;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Stack;
 import org.apache.log4j.Logger;
-import ws.prova.agent2.ProvaReagent;
-import ws.prova.kernel2.ProvaBuiltin;
-import ws.prova.kernel2.ProvaConstant;
-import ws.prova.kernel2.ProvaDerivationNode;
-import ws.prova.kernel2.ProvaGoal;
-import ws.prova.kernel2.ProvaKnowledgeBase;
-import ws.prova.kernel2.ProvaLiteral;
-import ws.prova.kernel2.ProvaObject;
-import ws.prova.kernel2.ProvaPredicate;
-import ws.prova.kernel2.ProvaResolutionInferenceEngine;
-import ws.prova.kernel2.ProvaRule;
-import ws.prova.kernel2.ProvaUnification;
-import ws.prova.kernel2.ProvaVariablePtr;
+import ws.prova.agent2.Reagent;
+import ws.prova.kernel2.Operation;
+import ws.prova.kernel2.Constant;
+import ws.prova.kernel2.Derivation;
+import ws.prova.kernel2.Goal;
+import ws.prova.kernel2.KB;
+import ws.prova.kernel2.Literal;
+import ws.prova.kernel2.PObj;
+import ws.prova.kernel2.Predicate;
+import ws.prova.kernel2.Inference;
+import ws.prova.kernel2.Rule;
+import ws.prova.kernel2.Unification;
+import ws.prova.kernel2.VariableIndex;
 import ws.prova.reference2.builtins.ProvaFailImpl;
 import ws.prova.reference2.messaging.ProvaDelayedCommand;
 import ws.prova.reference2.messaging.ProvaMessengerImpl;
 
-public class ProvaResolutionInferenceEngineImpl implements ProvaResolutionInferenceEngine {
+public class DefaultInference implements Inference {
 
     private final static Logger log = Logger.getLogger("prova");
 
-    private ProvaKnowledgeBase kb;
+    private KB kb;
 
-    private final Stack<ProvaDerivationNode> tabledNodes;
+    private final Stack<Derivation> tabledNodes;
 
-    private ProvaDerivationNode node;
+    private Derivation node;
 
     private final ProvaDerivationStepCounter counter;
 
-    private ProvaReagent prova;
+    private Reagent prova;
 
     public static ThreadLocal<List<ProvaDelayedCommand>> delayedCommands = new ThreadLocal<List<ProvaDelayedCommand>>();
 
-    public ProvaResolutionInferenceEngineImpl(ProvaKnowledgeBase kb, ProvaRule query) {
+    public DefaultInference(KB kb, Rule query) {
         this.kb = kb;
 
-        tabledNodes = new Stack<ProvaDerivationNode>();
+        tabledNodes = new Stack<Derivation>();
         counter = new ProvaDerivationStepCounter();
         node = new ProvaDerivationNodeImpl();
         node.setFailed(true);
@@ -52,13 +53,12 @@ public class ProvaResolutionInferenceEngineImpl implements ProvaResolutionInfere
     }
 
     @Override
-    public ProvaDerivationNode run() {
+    public Derivation run() {
         // This might be set if it is a nested resolution run, for example, from consult()
         List<ProvaDelayedCommand> delayed0 = delayedCommands.get();
         try {
-            if (delayed0 == null) {
-                final ArrayList<ProvaDelayedCommand> delayed = new ArrayList<ProvaDelayedCommand>();
-                delayedCommands.set(delayed);
+            if (delayed0 == null) {               
+                delayedCommands.set(new ArrayList());
             }
             return _run();
         } finally {
@@ -77,25 +77,25 @@ public class ProvaResolutionInferenceEngineImpl implements ProvaResolutionInfere
         }
     }
 
-    public ProvaDerivationNode _run() {
-        List<ProvaLiteral> newLiterals = new ArrayList<ProvaLiteral>(100);
+    public Derivation _run() {
+        List<Literal> newLiterals = new ArrayList<Literal>();
         tabledNodes.push(node);
-        ProvaRule query;
+        Rule query;
         while (!tabledNodes.empty()) {
-            node = (ProvaDerivationNode) tabledNodes.pop();
+            node = tabledNodes.pop();
             query = node.getQuery();
             if (log.isDebugEnabled()) {
                 log.debug(query);
             }
-            final ProvaGoal goal = node.getCurrentGoal();
+            final Goal goal = node.getCurrentGoal();
 
             if (goal == null) {
                 node.setFailed(true);
                 return node; // fail
             }
 
-            ProvaLiteral goalLiteral = goal.getGoal();
-            ProvaPredicate predicate = goalLiteral.getPredicate();
+            Literal goalLiteral = goal.getGoal();
+            Predicate predicate = goalLiteral.getPredicate();
             if (predicate instanceof ProvaFailImpl) {
                 if (node.getParent() == null) {
                     node.setFailed(true);
@@ -113,10 +113,19 @@ public class ProvaResolutionInferenceEngineImpl implements ProvaResolutionInfere
                 predicate = goalLiteral.getPredicate();
             }
 
-            if (predicate instanceof ProvaBuiltin) {
-                ProvaBuiltin builtin = (ProvaBuiltin) predicate;
+            if (predicate instanceof Operation) {
+                Operation builtin = (Operation) predicate;
                 newLiterals.clear();
-                boolean result = builtin.process_(prova, node, goal, newLiterals, query);
+                
+                boolean result;
+                //try {
+                    result = builtin.process(prova, node, goal, newLiterals, query);
+                //}
+//                catch (Throwable t) {
+//                    log.error(t);
+//                    continue;
+//                }
+                
                 if (!result) {
                     node = node.getParent();
                 } else {
@@ -163,8 +172,8 @@ public class ProvaResolutionInferenceEngineImpl implements ProvaResolutionInfere
                 }
             }
 
-            ProvaDerivationNode newNode = null;
-            ProvaUnification unification = null;
+            Derivation newNode = null;
+            Unification unification = null;
             goal.updateGround();
             while ((unification = goal.nextUnification(kb)) != null) {
                 boolean result = unification.unify();
@@ -174,7 +183,7 @@ public class ProvaResolutionInferenceEngineImpl implements ProvaResolutionInfere
                 if (log.isDebugEnabled()) {
                     log.debug(">>> [" + unification.getTarget().getMetadata() + ']' + unification.getTarget().getSourceCode());
                 }
-                ProvaRule newQuery = unification.generateQuery(symbol, kb, query, node);
+                Rule newQuery = unification.generateQuery(symbol, kb, query, node);
                 if (goal.isSingleClause()) {
                     node.setCurrentGoal(new ProvaGoalImpl(newQuery));
                     node.setQuery(newQuery);
@@ -212,22 +221,22 @@ public class ProvaResolutionInferenceEngineImpl implements ProvaResolutionInfere
      * @param query.get
      * @return 0, if no cut found; otherwise, the node-id of the CUT
      */
-    private boolean checkCut(final ProvaDerivationNode node, final ProvaGoal goal) {
+    private boolean checkCut(final Derivation node, final Goal goal) {
         // The assumption is that cuts are only occurring in instances of TmpClause
         // in the first proof step, goal is an instance of Fact (originating from the query),
         // but then the predicate cannot be a cut anyway
         boolean rc = false;
-        ProvaRule query = goal.getQuery();
-        ProvaLiteral top = query.getTop();
+        Rule query = goal.getQuery();
+        Literal top = query.getTop();
         String symbol = top.getPredicate().getSymbol();
         while ("cut".equals(symbol)) {
             rc = true;
-            ProvaObject ref = top.getTerms().getFixed()[0];
-            if (ref instanceof ProvaVariablePtr) {
+            PObj ref = top.getTerms().getFixed()[0];
+            if (ref instanceof VariableIndex) {
                 log.error("checkCut: " + ref);
             }
-            ProvaDerivationNode cutNode = (ProvaDerivationNode) ((ProvaConstant) ref).getObject();
-            ProvaGoal cutGoal = cutNode.getCurrentGoal();
+            Derivation cutNode = (Derivation) ((Constant) ref).getObject();
+            Goal cutGoal = cutNode.getCurrentGoal();
             cutGoal.setCut(true);
             cutNode.setCut(true);
             query.advance();
@@ -246,16 +255,16 @@ public class ProvaResolutionInferenceEngineImpl implements ProvaResolutionInfere
         return rc;
     }
 
-    public void setKb(ProvaKnowledgeBase kb) {
+    public void setKb(KB kb) {
         this.kb = kb;
     }
 
-    public ProvaKnowledgeBase getKb() {
+    public KB getKb() {
         return kb;
     }
 
     @Override
-    public void setReagent(ProvaReagent prova) {
+    public void setReagent(Reagent prova) {
         this.prova = prova;
     }
 

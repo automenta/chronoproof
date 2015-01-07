@@ -5,8 +5,8 @@ import java.util.Map;
 import java.util.Random;
 import ws.prova.api2.ProvaCommunicator;
 import ws.prova.api2.ProvaCommunicatorImpl;
-import ws.prova.kernel2.ProvaList;
-import ws.prova.kernel2.ProvaObject;
+import ws.prova.kernel2.PList;
+import ws.prova.kernel2.PObj;
 import ws.prova.reference2.ProvaConstantImpl;
 import ws.prova.reference2.ProvaListImpl;
 
@@ -34,12 +34,12 @@ public class ProvaSimpleAgent {
 			for( int i=0; i<100; i++ ) {
 				Map<String,Object> payload = new HashMap<String,Object>();
 				payload.put("field", r.nextDouble());
-				ProvaList terms = ProvaListImpl.create( new ProvaObject[] {
+				PList terms = ProvaListImpl.create(new PObj[] {
 						ProvaConstantImpl.create("test"),
 						ProvaConstantImpl.create("async"),
 						ProvaConstantImpl.create(0),
 						ProvaConstantImpl.create("inform"),
-						ProvaListImpl.create(new ProvaObject[] {
+						ProvaListImpl.create(new PObj[] {
 								ProvaConstantImpl.create("a"),
 								ProvaConstantImpl.create(payload)
 								})

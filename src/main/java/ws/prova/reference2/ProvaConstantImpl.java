@@ -3,14 +3,14 @@ package ws.prova.reference2;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import ws.prova.kernel2.ProvaComputable;
-import ws.prova.kernel2.ProvaConstant;
-import ws.prova.kernel2.ProvaObject;
-import ws.prova.kernel2.ProvaUnification;
-import ws.prova.kernel2.ProvaVariable;
-import ws.prova.kernel2.ProvaVariablePtr;
+import ws.prova.kernel2.Computable;
+import ws.prova.kernel2.Constant;
+import ws.prova.kernel2.PObj;
+import ws.prova.kernel2.Unification;
+import ws.prova.kernel2.Variable;
+import ws.prova.kernel2.VariableIndex;
 
-public class ProvaConstantImpl<O> extends ProvaTermImpl implements ProvaConstant<O>, ProvaComputable {
+public class ProvaConstantImpl<O> extends ProvaTermImpl implements Constant<O>, Computable {
 
     private static final long serialVersionUID = -3976583974992460058L;
 
@@ -35,15 +35,15 @@ public class ProvaConstantImpl<O> extends ProvaTermImpl implements ProvaConstant
     }
 
     @Override
-    public ProvaObject getRecursivelyAssigned() {
+    public PObj getRecursivelyAssigned() {
         return this;
     }
 
     @Override
-    public int collectVariables(long ruleId, List<ProvaVariable> variables) {
+    public int collectVariables(long ruleId, List<Variable> variables) {
         if (object instanceof Map<?, ?>) {
-            Map<String, ProvaObject> map = (Map<String, ProvaObject>) object;
-            for (Entry<String, ProvaObject> e : map.entrySet()) {
+            Map<String, PObj> map = (Map<String, PObj>) object;
+            for (Entry<String, PObj> e : map.entrySet()) {
                 int r = e.getValue().collectVariables(ruleId, variables);
                 if (r != -1) {
                     e.setValue(new ProvaVariablePtrImpl(ruleId, r));
@@ -63,7 +63,7 @@ public class ProvaConstantImpl<O> extends ProvaTermImpl implements ProvaConstant
     }
 
     @Override
-    public boolean matched(ProvaConstant target) {
+    public boolean matched(Constant target) {
         if (target instanceof ProvaMapImpl) {
             return false;
         }
@@ -71,25 +71,25 @@ public class ProvaConstantImpl<O> extends ProvaTermImpl implements ProvaConstant
     }
 
     @Override
-    public boolean unify(ProvaObject target, ProvaUnification unification) {
+    public boolean unify(PObj target, Unification unification) {
         if (target == null) {
             return false;
         }
-        if (target instanceof ProvaConstant) {
+        if (target instanceof Constant) {
             // The target is a constant
-            ProvaConstant targetConstant = (ProvaConstant) target;
+            Constant targetConstant = (Constant) target;
             // TODO: deal with types later
             Object targetObject = targetConstant.getObject();
             return object.equals(targetObject);
         }
-        if (target instanceof ProvaVariable) {
+        if (target instanceof Variable) {
             return target.unify(this, unification);
         }
-        if (target instanceof ProvaVariablePtr) {
+        if (target instanceof VariableIndex) {
             return target.unify(this, unification);
         }
-        if (object instanceof ProvaObject) {
-            return ((ProvaObject) object).unify(target, unification);
+        if (object instanceof PObj) {
+            return ((PObj) object).unify(target, unification);
         }
         return false;
     }
@@ -109,7 +109,7 @@ public class ProvaConstantImpl<O> extends ProvaTermImpl implements ProvaConstant
     }
 
     @Override
-    public void substituteVariables(final ProvaVariablePtr[] varsMap) {
+    public void substituteVariables(final VariableIndex[] varsMap) {
     }
 
     @Override
@@ -118,22 +118,22 @@ public class ProvaConstantImpl<O> extends ProvaTermImpl implements ProvaConstant
     }
 
     @Override
-    public String toString(List<ProvaVariable> variables) {
+    public String toString(List<Variable> variables) {
         return object.toString();
     }
 
     @Override
-    public ProvaObject cloneWithBoundVariables(List<ProvaVariable> variables, List<Boolean> isConstant) {
+    public PObj cloneWithBoundVariables(List<Variable> variables, List<Boolean> isConstant) {
         return this;
     }
 
     @Override
-    public ProvaObject cloneWithVariables(List<ProvaVariable> variables) {
+    public PObj cloneWithVariables(List<Variable> variables) {
         return this;
     }
 
     @Override
-    public ProvaObject cloneWithVariables(final long ruleId, final List<ProvaVariable> variables) {
+    public PObj cloneWithVariables(final long ruleId, final List<Variable> variables) {
         return this;
     }
 
@@ -147,12 +147,12 @@ public class ProvaConstantImpl<O> extends ProvaTermImpl implements ProvaConstant
         return object;
     }
 
-    public static ProvaObject wrap(Object o) {
-        return (o instanceof ProvaObject) ? (ProvaObject) o : create(o);
+    public static PObj wrap(Object o) {
+        return (o instanceof PObj) ? (PObj) o : create(o);
     }
 
     @Override
-    public boolean updateGround(List<ProvaVariable> variables) {
+    public boolean updateGround(List<Variable> variables) {
         return true;
     }
 

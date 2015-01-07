@@ -1,19 +1,19 @@
 package ws.prova.reference2.messaging;
 
-import ws.prova.agent2.ProvaReagent;
+import ws.prova.agent2.Reagent;
 import ws.prova.esb2.ProvaAgent;
-import ws.prova.kernel2.ProvaList;
+import ws.prova.kernel2.PList;
 import ws.prova.reference2.ProvaConstantImpl;
 
 public class ProvaESBMessageImpl implements ProvaDelayedCommand {
 
 	private final String dest;
 	
-	private final ProvaList terms;
+	private final PList terms;
 	
 	private final ProvaAgent esb;
 	
-	public ProvaESBMessageImpl(String dest, ProvaList terms,
+	public ProvaESBMessageImpl(String dest, PList terms,
 			ProvaAgent esb) {
 		this.dest = dest;
 		this.terms = terms;
@@ -22,7 +22,7 @@ public class ProvaESBMessageImpl implements ProvaDelayedCommand {
 	}
 
 	@Override
-	public void process(ProvaReagent prova) {
+	public void process(Reagent prova) {
 		try {
 			esb.send(dest, terms);
 		} catch (Exception e) {

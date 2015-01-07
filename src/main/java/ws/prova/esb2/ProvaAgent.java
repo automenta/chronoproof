@@ -1,6 +1,6 @@
 package ws.prova.esb2;
 
-import ws.prova.kernel2.ProvaList;
+import ws.prova.kernel2.PList;
 
 /**
  * Basic contract on ESB Agent class.
@@ -12,9 +12,9 @@ import ws.prova.kernel2.ProvaList;
  */
 public interface ProvaAgent {
 
-	public void receive( ProvaList terms ) throws Exception;
+	public void receive( PList terms ) throws Exception;
 
-	public void send(String dest, ProvaList terms) throws Exception;
+	public void send(String dest, PList terms) throws Exception;
 
 	public String getAgentName();
 

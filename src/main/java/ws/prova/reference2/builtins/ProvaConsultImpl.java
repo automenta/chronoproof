@@ -3,43 +3,43 @@ package ws.prova.reference2.builtins;
 import java.io.BufferedReader;
 import java.io.StringReader;
 import java.util.List;
-import ws.prova.agent2.ProvaReagent;
+import ws.prova.agent2.Reagent;
 import ws.prova.exchange.ProvaSolution;
-import ws.prova.kernel2.ProvaConstant;
-import ws.prova.kernel2.ProvaDerivationNode;
-import ws.prova.kernel2.ProvaGoal;
-import ws.prova.kernel2.ProvaKnowledgeBase;
-import ws.prova.kernel2.ProvaList;
-import ws.prova.kernel2.ProvaLiteral;
-import ws.prova.kernel2.ProvaObject;
-import ws.prova.kernel2.ProvaRule;
-import ws.prova.kernel2.ProvaVariable;
-import ws.prova.kernel2.ProvaVariablePtr;
+import ws.prova.kernel2.Constant;
+import ws.prova.kernel2.Derivation;
+import ws.prova.kernel2.Goal;
+import ws.prova.kernel2.KB;
+import ws.prova.kernel2.PList;
+import ws.prova.kernel2.Literal;
+import ws.prova.kernel2.PObj;
+import ws.prova.kernel2.Rule;
+import ws.prova.kernel2.Variable;
+import ws.prova.kernel2.VariableIndex;
 
 public class ProvaConsultImpl extends ProvaBuiltinImpl {
 
-	public ProvaConsultImpl(ProvaKnowledgeBase kb) {
+	public ProvaConsultImpl(KB kb) {
 		super(kb, "consult");
 	}
 
 	@Override
-	public boolean process(ProvaReagent prova, ProvaDerivationNode node,
-			ProvaGoal goal, List<ProvaLiteral> newLiterals, ProvaRule query) {
-		ProvaLiteral literal = goal.getGoal();
-		List<ProvaVariable> variables = query.getVariables();
-		ProvaList terms = (ProvaList) literal.getTerms().cloneWithVariables(variables);
-		ProvaObject[] data = terms.getFixed();
+	public boolean process(Reagent prova, Derivation node,
+			Goal goal, List<Literal> newLiterals, Rule query) {
+		Literal literal = goal.getGoal();
+		List<Variable> variables = query.getVariables();
+		PList terms = (PList) literal.getTerms().cloneWithVariables(variables);
+		PObj[] data = terms.getFixed();
 		if( data.length!=1 )
 				return false;
-		ProvaObject source = data[0];
-		if( data[0] instanceof ProvaVariablePtr ) {
-			ProvaVariablePtr varPtr = (ProvaVariablePtr) data[0];
+		PObj source = data[0];
+		if( data[0] instanceof VariableIndex ) {
+			VariableIndex varPtr = (VariableIndex) data[0];
 			source = variables.get(varPtr.getIndex()).getRecursivelyAssigned();
 		}
-		if( !(source instanceof ProvaConstant) ) {
+		if( !(source instanceof Constant) ) {
 			return false;
 		}
-		Object rules = ((ProvaConstant) source).getObject();
+		Object rules = ((Constant) source).getObject();
 		@SuppressWarnings("unused")
 		List<ProvaSolution[]> resultSets = null;
 		try {

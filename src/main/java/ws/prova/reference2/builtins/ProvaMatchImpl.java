@@ -1,20 +1,20 @@
 package ws.prova.reference2.builtins;
 
 import java.util.List;
-import ws.prova.agent2.ProvaReagent;
-import ws.prova.kernel2.ProvaConstant;
-import ws.prova.kernel2.ProvaDerivationNode;
-import ws.prova.kernel2.ProvaGoal;
-import ws.prova.kernel2.ProvaKnowledgeBase;
-import ws.prova.kernel2.ProvaList;
-import ws.prova.kernel2.ProvaLiteral;
-import ws.prova.kernel2.ProvaObject;
-import ws.prova.kernel2.ProvaPredicate;
-import ws.prova.kernel2.ProvaRule;
-import ws.prova.kernel2.ProvaRuleSet;
-import ws.prova.kernel2.ProvaUnification;
-import ws.prova.kernel2.ProvaVariable;
-import ws.prova.kernel2.ProvaVariablePtr;
+import ws.prova.agent2.Reagent;
+import ws.prova.kernel2.Constant;
+import ws.prova.kernel2.Derivation;
+import ws.prova.kernel2.Goal;
+import ws.prova.kernel2.KB;
+import ws.prova.kernel2.PList;
+import ws.prova.kernel2.Literal;
+import ws.prova.kernel2.PObj;
+import ws.prova.kernel2.Predicate;
+import ws.prova.kernel2.Rule;
+import ws.prova.kernel2.RuleSet;
+import ws.prova.kernel2.Unification;
+import ws.prova.kernel2.Variable;
+import ws.prova.kernel2.VariableIndex;
 import ws.prova.reference2.ProvaConstantImpl;
 import ws.prova.reference2.ProvaGoalImpl;
 import ws.prova.reference2.ProvaListImpl;
@@ -26,69 +26,69 @@ import ws.prova.reference2.builtins.target.ProvaTargetImpl;
 
 public class ProvaMatchImpl extends ProvaBuiltinImpl {
 
-	private ProvaLiteral targetLiteral;
+	private Literal targetLiteral;
 
-	private ProvaRule targetQuery;
+	private Rule targetQuery;
 	
-	public ProvaMatchImpl(ProvaKnowledgeBase kb) {
+	public ProvaMatchImpl(KB kb) {
 		super(kb,"match");
 	}
 
 	@Override
-	public boolean process(ProvaReagent prova, ProvaDerivationNode node,
-			ProvaGoal goal, List<ProvaLiteral> newLiterals, ProvaRule query) {
-		ProvaLiteral literal = goal.getGoal();
-		List<ProvaVariable> variables = query.getVariables();
-		ProvaList terms = literal.getTerms();
-		ProvaObject[] data = terms.getFixed();
+	public boolean process(Reagent prova, Derivation node,
+			Goal goal, List<Literal> newLiterals, Rule query) {
+		Literal literal = goal.getGoal();
+		List<Variable> variables = query.getVariables();
+		PList terms = literal.getTerms();
+		PObj[] data = terms.getFixed();
 		if( data.length!=3 )
 			return false;
-		ProvaObject handle = data[2];
-		if( handle instanceof ProvaVariablePtr ) {
-			ProvaVariablePtr varPtr = (ProvaVariablePtr) handle;
-			ProvaObject o = variables.get(varPtr.getIndex()).getRecursivelyAssigned();
+		PObj handle = data[2];
+		if( handle instanceof VariableIndex ) {
+			VariableIndex varPtr = (VariableIndex) handle;
+			PObj o = variables.get(varPtr.getIndex()).getRecursivelyAssigned();
 			handle = o;
 		}
-		ProvaObject[] target = ((ProvaList) data[0]).getFixed();
-		String symbol = ((ProvaConstant) target[0]).getObject().toString();
-		ProvaRuleSet clauses = kb.getPredicates(symbol,target.length-1);
-		ProvaGoal targetGoal = null;
+		PObj[] target = ((PList) data[0]).getFixed();
+		String symbol = ((Constant) target[0]).getObject().toString();
+		RuleSet clauses = kb.getPredicates(symbol,target.length-1);
+		Goal targetGoal = null;
 		ProvaTarget ptr = null;
-		if( handle instanceof ProvaVariable ) {
-			targetLiteral = kb.generateLiteral(target);
-			targetQuery = kb.generateGoal(new ProvaLiteral[] {targetLiteral},variables);
+		if( handle instanceof Variable ) {
+			targetLiteral = kb.newLiteral(target);
+			targetQuery = kb.newGoal(new Literal[] {targetLiteral},variables);
 			targetGoal = new ProvaGoalImpl(targetQuery);
 			ptr = ProvaTargetImpl.create(targetGoal); 
-			((ProvaVariable) handle).setAssigned(ProvaConstantImpl.create(ptr));
-		} else if( handle instanceof ProvaConstant ) {
-			ptr = (ProvaTarget) ((ProvaConstant) handle).getObject();
+			((Variable) handle).setAssigned(ProvaConstantImpl.create(ptr));
+		} else if( handle instanceof Constant ) {
+			ptr = (ProvaTarget) ((Constant) handle).getObject();
 			targetGoal = ptr.getTarget();
 		}
-		ProvaUnification unification = clauses.nextMatch(kb,targetGoal);
+		Unification unification = clauses.nextMatch(kb,targetGoal);
 		if( unification== null )
 			return false;
-		ProvaRule candidate = unification.getTarget();
+		Rule candidate = unification.getTarget();
 		ptr.setCandidate(candidate);
-		ProvaObject lt = data[1];
-		if( lt instanceof ProvaVariablePtr ) {
-			ProvaVariablePtr varPtr = (ProvaVariablePtr) lt;
-			ProvaObject o = variables.get(varPtr.getIndex()).getRecursivelyAssigned();
+		PObj lt = data[1];
+		if( lt instanceof VariableIndex ) {
+			VariableIndex varPtr = (VariableIndex) lt;
+			PObj o = variables.get(varPtr.getIndex()).getRecursivelyAssigned();
 			lt = o;
 		}
-		ProvaLiteral l = (ProvaLiteral) candidate.getHead().cloneWithVariables(variables);
-		ProvaObject[] arr = l.getTerms().getFixed();
-		ProvaObject[] newArr = new ProvaObject[1+arr.length];
+		Literal l = (Literal) candidate.getHead().cloneWithVariables(variables);
+		PObj[] arr = l.getTerms().getFixed();
+		PObj[] newArr = new PObj[1+arr.length];
 		System.arraycopy(arr,0,newArr,1,arr.length);
 		newArr[0] = ProvaConstantImpl.create(l.getPredicate().getSymbol());
-		if( lt instanceof ProvaVariable ) {
-			((ProvaVariable) lt).setAssigned(ProvaListImpl.create(newArr));
+		if( lt instanceof Variable ) {
+			((Variable) lt).setAssigned(ProvaListImpl.create(newArr));
 			return true;
-		} else if( lt instanceof ProvaList ) {
-			ProvaPredicate pred = new ProvaPredicateImpl("",1,kb);
-			ProvaLiteral lit = new ProvaLiteralImpl(pred,ProvaListImpl.create(newArr));
-			ProvaRule clause = ProvaRuleImpl.createVirtualRule(1, lit, null);
+		} else if( lt instanceof PList ) {
+			Predicate pred = new ProvaPredicateImpl("",1,kb);
+			Literal lit = new ProvaLiteralImpl(pred,ProvaListImpl.create(newArr));
+			Rule clause = ProvaRuleImpl.createVirtualRule(1, lit, null);
 			pred.addClause(clause);
-			ProvaLiteral newLiteral = new ProvaLiteralImpl(pred,(ProvaList) lt.cloneWithVariables(variables));
+			Literal newLiteral = new ProvaLiteralImpl(pred,(PList) lt.cloneWithVariables(variables));
 			newLiterals.add(newLiteral);
 		} else
 			return false;

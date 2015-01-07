@@ -1,9 +1,15 @@
 package ws.prova.parser2;
 
+import java.util.Map;
+
 public interface ProvaErrorReporter {
 
-	void reportError(String error);
+    public Map getErrors();
 
-	ProvaParsingException getErrors();
+    public void addError(final String line, final String desc);
+
+    void reportError(String error);
+
+    ProvaParsingException newException();
 
 }

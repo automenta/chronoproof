@@ -1,16 +1,16 @@
 package ws.prova.reference2.cache;
 
 import java.util.List;
-import ws.prova.kernel2.ProvaGoal;
-import ws.prova.kernel2.ProvaList;
-import ws.prova.kernel2.ProvaLiteral;
-import ws.prova.kernel2.ProvaObject;
-import ws.prova.kernel2.ProvaPredicate;
-import ws.prova.kernel2.ProvaUnification;
-import ws.prova.kernel2.ProvaVariable;
+import ws.prova.kernel2.Goal;
+import ws.prova.kernel2.PList;
+import ws.prova.kernel2.Literal;
+import ws.prova.kernel2.PObj;
+import ws.prova.kernel2.Predicate;
+import ws.prova.kernel2.Unification;
+import ws.prova.kernel2.Variable;
 import ws.prova.kernel2.cache.ProvaCacheState;
 import ws.prova.kernel2.cache.ProvaCachedLiteral;
-import ws.prova.kernel2.cache.ProvaLocalAnswers;
+import ws.prova.kernel2.cache.Answers;
 import ws.prova.reference2.ProvaListImpl;
 import ws.prova.reference2.ProvaLiteralImpl;
 import ws.prova.reference2.ProvaVariableImpl;
@@ -19,24 +19,24 @@ public class ProvaCachedLiteralImpl extends ProvaLiteralImpl implements ProvaCac
 
 	private static final long serialVersionUID = -4320866097994244461L;
 
-	private ProvaGoal goal;
+	private Goal goal;
 	
 	private final ProvaCacheState cacheState;
 
-	private final ProvaLocalAnswers answers;
+	private final Answers answers;
 	
-	public ProvaCachedLiteralImpl(ProvaPredicate predicate, ProvaList terms,
-			ProvaCacheState cacheState, ProvaLocalAnswers answers) {
+	public ProvaCachedLiteralImpl(Predicate predicate, PList terms,
+			ProvaCacheState cacheState, Answers answers) {
 		super(predicate,terms);
 		this.cacheState = cacheState;
 		this.answers = answers;
 	}
 
 	@Override
-	public ProvaLiteral rebuildSource(ProvaUnification unification) {
+	public Literal rebuildSource(Unification unification) {
 		if( ground || terms==null )
 			return this;
-		ProvaList newTerms = terms.rebuildSource(unification);
+		PList newTerms = terms.rebuildSource(unification);
 		ProvaCachedLiteralImpl cachedLit = new ProvaCachedLiteralImpl(predicate, newTerms, cacheState, answers);
 		cachedLit.setGoal(goal);
 		return cachedLit;
@@ -52,15 +52,15 @@ public class ProvaCachedLiteralImpl extends ProvaLiteralImpl implements ProvaCac
 	}
 
 	@Override
-	public ProvaObject cloneWithVariables(List<ProvaVariable> variables) {
+	public PObj cloneWithVariables(List<Variable> variables) {
 		if( terms==null )
 			return this;
 		if( predicate.getSymbol().equals("cut") ) {
-			ProvaVariable any1 = ProvaVariableImpl.create();
-			ProvaList lany1 = ProvaListImpl.create( new ProvaObject[] {any1});
+			Variable any1 = ProvaVariableImpl.create();
+			PList lany1 = ProvaListImpl.create(new PObj[] {any1});
 			return new ProvaLiteralImpl(predicate,lany1);
 		}
-		ProvaList newTerms = (ProvaList) terms.cloneWithVariables(variables);
+		PList newTerms = (PList) terms.cloneWithVariables(variables);
 		ProvaCachedLiteralImpl newLit = new ProvaCachedLiteralImpl(predicate,newTerms,cacheState,answers);
 		newLit.ground = ground;
 		newLit.line = line;
@@ -71,7 +71,7 @@ public class ProvaCachedLiteralImpl extends ProvaLiteralImpl implements ProvaCac
 	}
 
 	@Override
-	public void setGoal(ProvaGoal goal) {
+	public void setGoal(Goal goal) {
 		this.goal = goal;
 		if( cacheState!=null ) {
 			cacheState.addGoal(goal);
@@ -79,7 +79,7 @@ public class ProvaCachedLiteralImpl extends ProvaLiteralImpl implements ProvaCac
 	}
 
 	@Override
-	public ProvaGoal getGoal() {
+	public Goal getGoal() {
 		return this.goal;
 	}
 	
@@ -89,7 +89,7 @@ public class ProvaCachedLiteralImpl extends ProvaLiteralImpl implements ProvaCac
 	}
 
 	@Override
-	public ProvaLocalAnswers getAnswers() {
+	public Answers getAnswers() {
 		return answers;
 	}
 

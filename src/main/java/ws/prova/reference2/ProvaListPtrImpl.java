@@ -2,42 +2,42 @@ package ws.prova.reference2;
 
 import java.util.Arrays;
 import java.util.List;
-import ws.prova.kernel2.ProvaList;
-import ws.prova.kernel2.ProvaListPtr;
-import ws.prova.kernel2.ProvaObject;
-import ws.prova.kernel2.ProvaUnification;
-import ws.prova.kernel2.ProvaVariable;
-import ws.prova.kernel2.ProvaVariablePtr;
+import ws.prova.kernel2.PList;
+import ws.prova.kernel2.PListIndex;
+import ws.prova.kernel2.PObj;
+import ws.prova.kernel2.Unification;
+import ws.prova.kernel2.Variable;
+import ws.prova.kernel2.VariableIndex;
 
-public class ProvaListPtrImpl implements ProvaListPtr {
+public class ProvaListPtrImpl implements PListIndex {
 
 	private static final long serialVersionUID = 4407774077342578415L;
 
-	private ProvaList assigned;
+	private PList assigned;
 	
 	private int offset;
 
-	public ProvaListPtrImpl(ProvaList assigned, int offset) {
+	public ProvaListPtrImpl(PList assigned, int offset) {
 		this.assigned = assigned;
 		this.offset = offset;
 	}
 
-	public void setAssigned(ProvaList assigned) {
+	public void setAssigned(PList assigned) {
 		this.assigned = assigned;
 	}
 
 	@Override
-	public ProvaList getAssigned() {
+	public PList getAssigned() {
 		return assigned;
 	}
 
 	@Override
-	public ProvaList getAssignedWithOffset() {
+	public PList getAssignedWithOffset() {
 		if( offset==0 )
 			return assigned;
 		// Make sure the tail is copied across as well
 		if( offset<assigned.getFixed().length ) {
-			ProvaObject[] newFixed = Arrays.copyOfRange(assigned.getFixed(),offset,assigned.getFixed().length);
+			PObj[] newFixed = Arrays.copyOfRange(assigned.getFixed(),offset,assigned.getFixed().length);
 			return ProvaListImpl.create(newFixed, assigned.getTail());
 		} else if( offset==assigned.getFixed().length )
 			return ProvaListImpl.create(null, assigned.getTail());
@@ -49,17 +49,17 @@ public class ProvaListPtrImpl implements ProvaListPtr {
 	}
 
 	@Override
-	public int getOffset() {
+	public int getIndex() {
 		return offset;
 	}
 	
 	@Override
-	public ProvaObject getRecursivelyAssigned() {
+	public PObj getRecursivelyAssigned() {
 		return this;
 	}
 
 	@Override
-	public int collectVariables(final long ruleId, final List<ProvaVariable> variables) {
+	public int collectVariables(final long ruleId, final List<Variable> variables) {
 		return assigned.collectVariables(ruleId, variables);
 	}
 
@@ -74,17 +74,17 @@ public class ProvaListPtrImpl implements ProvaListPtr {
 	}
 
 	@Override
-	public boolean unify(final ProvaObject target, final ProvaUnification unification) {
+	public boolean unify(final PObj target, final Unification unification) {
 		return assigned.unify(offset, target, unification);
 	}
 
 	@Override
-	public ProvaObject rebuild(final ProvaUnification unification) {
+	public PObj rebuild(final Unification unification) {
 		return assigned.rebuild(unification, offset);
 	}
 
 	@Override
-	public ProvaObject rebuildSource(final ProvaUnification unification) {
+	public PObj rebuildSource(final Unification unification) {
 		return assigned.rebuildSource(unification, offset);
 	}
 
@@ -105,7 +105,7 @@ public class ProvaListPtrImpl implements ProvaListPtr {
 	}
 
 	@Override
-	public void substituteVariables(final ProvaVariablePtr[] varsMap) {
+	public void substituteVariables(final VariableIndex[] varsMap) {
 		assigned.substituteVariables(varsMap);
 	}
 
@@ -115,27 +115,27 @@ public class ProvaListPtrImpl implements ProvaListPtr {
 	}
 
 	@Override
-	public String toString(final List<ProvaVariable> variables) {
+	public String toString(final List<Variable> variables) {
 		return toString();
 	}
 
 	@Override
-	public ProvaObject cloneWithBoundVariables(final List<ProvaVariable> variables, final List<Boolean> isConstant) {
-		final ProvaObject[] fixed = assigned.getFixed();
-		final ProvaObject[] newFixed = new ProvaObject[fixed.length-offset];
+	public PObj cloneWithBoundVariables(final List<Variable> variables, final List<Boolean> isConstant) {
+		final PObj[] fixed = assigned.getFixed();
+		final PObj[] newFixed = new PObj[fixed.length-offset];
 		System.arraycopy(fixed, offset, newFixed, 0, newFixed.length);
 		return ProvaListImpl.create(newFixed).cloneWithBoundVariables(variables, isConstant);
 	}
 
 	@Override
-	public ProvaObject cloneWithVariables(final List<ProvaVariable> variables) {
+	public PObj cloneWithVariables(final List<Variable> variables) {
 		if( assigned!=null && assigned!=this )
 			return assigned.cloneWithVariables(variables);
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public ProvaObject cloneWithVariables(final long ruleId, final List<ProvaVariable> variables) {
+	public PObj cloneWithVariables(final long ruleId, final List<Variable> variables) {
 		throw new UnsupportedOperationException();
 	}
 
@@ -145,7 +145,7 @@ public class ProvaListPtrImpl implements ProvaListPtr {
 	}
 
 	@Override
-	public boolean updateGround(final List<ProvaVariable> variables) {
+	public boolean updateGround(final List<Variable> variables) {
 		return assigned.updateGround(variables);
 	}
 

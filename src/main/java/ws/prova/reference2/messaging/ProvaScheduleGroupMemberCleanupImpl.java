@@ -2,20 +2,20 @@ package ws.prova.reference2.messaging;
 
 import java.util.List;
 import java.util.Map;
-import ws.prova.agent2.ProvaReagent;
-import ws.prova.kernel2.ProvaObject;
-import ws.prova.kernel2.ProvaPredicate;
+import ws.prova.agent2.Reagent;
+import ws.prova.kernel2.PObj;
+import ws.prova.kernel2.Predicate;
 import ws.prova.reference2.eventing.ProvaGroup;
 
 public class ProvaScheduleGroupMemberCleanupImpl implements ProvaDelayedCommand {
 
-	private ProvaObject xid;
+	private PObj xid;
 	
 	private ProvaGroup group;
 	
-	private ProvaPredicate p1;
+	private Predicate p1;
 
-	private ProvaPredicate p2;
+	private Predicate p2;
 	
 	private long ruleid;
 	
@@ -26,8 +26,8 @@ public class ProvaScheduleGroupMemberCleanupImpl implements ProvaDelayedCommand 
 	private long period;
 	
 	public ProvaScheduleGroupMemberCleanupImpl(
-			final ProvaPredicate p1,
-			final ProvaPredicate p2,
+			final Predicate p1,
+			final Predicate p2,
 			final long ruleid,
 			long delay,
 			Map<String, List<Object>> metadata ) {
@@ -42,8 +42,8 @@ public class ProvaScheduleGroupMemberCleanupImpl implements ProvaDelayedCommand 
 	}
 
 	public ProvaScheduleGroupMemberCleanupImpl(
-			ProvaObject xid, ProvaGroup group, ProvaPredicate p1,
-			ProvaPredicate p2, long ruleid, long delay, long period,
+			PObj xid, ProvaGroup group, Predicate p1,
+			Predicate p2, long ruleid, long delay, long period,
 			Map<String, List<Object>> metadata) {
 		this.xid = xid;
 		this.group = group;
@@ -56,7 +56,7 @@ public class ProvaScheduleGroupMemberCleanupImpl implements ProvaDelayedCommand 
 	}
 
 	@Override
-	public void process(ProvaReagent prova) {
+	public void process(Reagent prova) {
 		prova.getMessenger().scheduleCleanup(xid,group,p1,p2,ruleid,delay,period,metadata);
 	}
 

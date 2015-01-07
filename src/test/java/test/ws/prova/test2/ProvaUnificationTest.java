@@ -1,15 +1,15 @@
 package test.ws.prova.test2;
 
 import org.junit.Test;
-import ws.prova.kernel2.ProvaConstant;
-import ws.prova.kernel2.ProvaKnowledgeBase;
-import ws.prova.kernel2.ProvaList;
-import ws.prova.kernel2.ProvaLiteral;
-import ws.prova.kernel2.ProvaObject;
-import ws.prova.kernel2.ProvaRule;
-import ws.prova.kernel2.ProvaVariable;
+import ws.prova.kernel2.Constant;
+import ws.prova.kernel2.KB;
+import ws.prova.kernel2.PList;
+import ws.prova.kernel2.Literal;
+import ws.prova.kernel2.PObj;
+import ws.prova.kernel2.Rule;
+import ws.prova.kernel2.Variable;
 import ws.prova.reference2.ProvaConstantImpl;
-import ws.prova.reference2.ProvaKnowledgeBaseImpl;
+import ws.prova.reference2.DefaultKB;
 import ws.prova.reference2.ProvaListImpl;
 import ws.prova.reference2.ProvaUnificationImpl;
 import ws.prova.reference2.ProvaVariableImpl;
@@ -23,26 +23,26 @@ public class ProvaUnificationTest {
 	 */
 	@Test
 	public void unifyTest1() {
-		ProvaKnowledgeBase kb = new ProvaKnowledgeBaseImpl();
+		KB kb = new DefaultKB();
 		
-		ProvaConstant c2 = ProvaConstantImpl.create(2);
-		ProvaVariable a = ProvaVariableImpl.create("A");
-		ProvaList l1 = ProvaListImpl.create( new ProvaObject[] {c2},a);
-		ProvaVariable x = ProvaVariableImpl.create("X");
-		ProvaVariable z = ProvaVariableImpl.create("Z");
-		ProvaList l2 = ProvaListImpl.create( new ProvaObject[] {x,l1},z);
-		ProvaLiteral query = kb.generateLiteral("pred1",l2);
-		ProvaRule goal = kb.generateGoal(new ProvaLiteral[] {query});
+		Constant c2 = ProvaConstantImpl.create(2);
+		Variable a = ProvaVariableImpl.create("A");
+		PList l1 = ProvaListImpl.create(new PObj[] {c2},a);
+		Variable x = ProvaVariableImpl.create("X");
+		Variable z = ProvaVariableImpl.create("Z");
+		PList l2 = ProvaListImpl.create(new PObj[] {x,l1},z);
+		Literal query = kb.newLiteral("pred1",l2);
+		Rule goal = kb.newGoal(new Literal[] {query});
 		
-		ProvaVariable v = ProvaVariableImpl.create("V");
-		ProvaVariable y = ProvaVariableImpl.create("Y");
-		ProvaConstant c4 = ProvaConstantImpl.create(3);
-		ProvaVariable u = ProvaVariableImpl.create("U");
-		ProvaList l3 = ProvaListImpl.create( new ProvaObject[] {v,y,c4,y,u});
-		ProvaLiteral lit1 = kb.generateLiteral("pred1",l3);
-		ProvaList l4 = ProvaListImpl.create( new ProvaObject[] {v,y}, u);
-		ProvaLiteral lit3 = kb.generateLiteral("pred2",l4);
-		ProvaRule rule = kb.generateRule(lit1, new ProvaLiteral[] {lit3});
+		Variable v = ProvaVariableImpl.create("V");
+		Variable y = ProvaVariableImpl.create("Y");
+		Constant c4 = ProvaConstantImpl.create(3);
+		Variable u = ProvaVariableImpl.create("U");
+		PList l3 = ProvaListImpl.create(new PObj[] {v,y,c4,y,u});
+		Literal lit1 = kb.newLiteral("pred1",l3);
+		PList l4 = ProvaListImpl.create(new PObj[] {v,y}, u);
+		Literal lit3 = kb.newLiteral("pred2",l4);
+		Rule rule = kb.newRule(lit1, new Literal[] {lit3});
 		
 		ProvaUnificationImpl unification = new ProvaUnificationImpl(goal, rule);
 		boolean result = unification.unify();
@@ -50,8 +50,8 @@ public class ProvaUnificationTest {
 		org.junit.Assert.assertTrue(result);
 		
 		int countSourceSubstitutions = 0;
-		for( ProvaVariable var : unification.getSourceVariables() ) {
-			ProvaObject to = var.getRecursivelyAssigned();
+		for( Variable var : unification.getSourceVariables() ) {
+			PObj to = var.getRecursivelyAssigned();
 			if( to!=var ) {
 				countSourceSubstitutions++;
 			}
@@ -59,8 +59,8 @@ public class ProvaUnificationTest {
 		org.junit.Assert.assertEquals(countSourceSubstitutions,1);
 
 		int countTargetSubstitutions = 0;
-		for( ProvaVariable var : unification.getTargetVariables() ) {
-			ProvaObject to = var.getRecursivelyAssigned();
+		for( Variable var : unification.getTargetVariables() ) {
+			PObj to = var.getRecursivelyAssigned();
 			if( to!=var ) {
 				countTargetSubstitutions++;
 			}
@@ -68,7 +68,7 @@ public class ProvaUnificationTest {
 		org.junit.Assert.assertEquals(countTargetSubstitutions,2);
 
 		// Recover actual substitutions resulting from the unification
-		ProvaLiteral[] newGoals = unification.rebuildNewGoals();
+		Literal[] newGoals = unification.rebuildNewGoals();
 
 		org.junit.Assert.assertNotNull(newGoals);
 		// There is one actual goal: pred2(X,[1|A]|U)
@@ -86,26 +86,26 @@ public class ProvaUnificationTest {
 	 */
 	@Test
 	public void unifyTest2() {
-		ProvaKnowledgeBase kb = new ProvaKnowledgeBaseImpl();
+		KB kb = new DefaultKB();
 		
-		ProvaConstant c2 = ProvaConstantImpl.create(2);
-		ProvaVariable a = ProvaVariableImpl.create("A");
-		ProvaList l1 = ProvaListImpl.create( new ProvaObject[] {c2},a);
-		ProvaVariable x = ProvaVariableImpl.create("X");
-		ProvaVariable z = ProvaVariableImpl.create("Z");
-		ProvaList l2 = ProvaListImpl.create( new ProvaObject[] {x,l1},z);
-		ProvaLiteral query = kb.generateLiteral("pred1",l2);
-		ProvaRule goal = kb.generateGoal(new ProvaLiteral[] {query});
+		Constant c2 = ProvaConstantImpl.create(2);
+		Variable a = ProvaVariableImpl.create("A");
+		PList l1 = ProvaListImpl.create(new PObj[] {c2},a);
+		Variable x = ProvaVariableImpl.create("X");
+		Variable z = ProvaVariableImpl.create("Z");
+		PList l2 = ProvaListImpl.create(new PObj[] {x,l1},z);
+		Literal query = kb.newLiteral("pred1",l2);
+		Rule goal = kb.newGoal(new Literal[] {query});
 		
-		ProvaVariable v = ProvaVariableImpl.create("V");
-		ProvaVariable y = ProvaVariableImpl.create("Y");
-		ProvaConstant c4 = ProvaConstantImpl.create(3);
-		ProvaVariable u = ProvaVariableImpl.create("U");
-		ProvaList l3 = ProvaListImpl.create( new ProvaObject[] {v,y,c4,y,u});
-		ProvaLiteral lit1 = kb.generateLiteral("pred1",l3);
-		ProvaList l4 = ProvaListImpl.create( new ProvaObject[] {v}, y);
-		ProvaLiteral lit3 = kb.generateLiteral("pred2",l4);
-		ProvaRule rule = kb.generateRule(lit1, new ProvaLiteral[] {lit3});
+		Variable v = ProvaVariableImpl.create("V");
+		Variable y = ProvaVariableImpl.create("Y");
+		Constant c4 = ProvaConstantImpl.create(3);
+		Variable u = ProvaVariableImpl.create("U");
+		PList l3 = ProvaListImpl.create(new PObj[] {v,y,c4,y,u});
+		Literal lit1 = kb.newLiteral("pred1",l3);
+		PList l4 = ProvaListImpl.create(new PObj[] {v}, y);
+		Literal lit3 = kb.newLiteral("pred2",l4);
+		Rule rule = kb.newRule(lit1, new Literal[] {lit3});
 		
 		ProvaUnificationImpl unification = new ProvaUnificationImpl(goal, rule);
 		boolean result = unification.unify();
@@ -113,8 +113,8 @@ public class ProvaUnificationTest {
 		org.junit.Assert.assertTrue(result);
 		
 		int countSourceSubstitutions = 0;
-		for( ProvaVariable var : unification.getSourceVariables() ) {
-			ProvaObject to = var.getRecursivelyAssigned();
+		for( Variable var : unification.getSourceVariables() ) {
+			PObj to = var.getRecursivelyAssigned();
 			if( to!=var ) {
 				countSourceSubstitutions++;
 			}
@@ -122,8 +122,8 @@ public class ProvaUnificationTest {
 		org.junit.Assert.assertEquals(countSourceSubstitutions,1);
 
 		int countTargetSubstitutions = 0;
-		for( ProvaVariable var : unification.getTargetVariables() ) {
-			ProvaObject to = var.getRecursivelyAssigned();
+		for( Variable var : unification.getTargetVariables() ) {
+			PObj to = var.getRecursivelyAssigned();
 			if( to!=var ) {
 				countTargetSubstitutions++;
 			}
@@ -131,7 +131,7 @@ public class ProvaUnificationTest {
 		org.junit.Assert.assertEquals(countTargetSubstitutions,2);
 
 		// Recover actual substitutions resulting from the unification
-		ProvaLiteral[] newGoals = unification.rebuildNewGoals();
+		Literal[] newGoals = unification.rebuildNewGoals();
 
 		org.junit.Assert.assertNotNull(newGoals);
 		// There is one actual goal: pred2(X,2|A)
@@ -149,26 +149,26 @@ public class ProvaUnificationTest {
 	 */
 	@Test
 	public void unifyListPointersOffsetTest() {
-		ProvaKnowledgeBase kb = new ProvaKnowledgeBaseImpl();
+		KB kb = new DefaultKB();
 		
-		ProvaConstant c2 = ProvaConstantImpl.create(2);
-		ProvaVariable a = ProvaVariableImpl.create("A");
-		ProvaList l1 = ProvaListImpl.create( new ProvaObject[] {c2},a);
-		ProvaVariable x = ProvaVariableImpl.create("X");
-		ProvaConstant c3 = ProvaConstantImpl.create(3);
-		ProvaVariable z = ProvaVariableImpl.create("Z");
-		ProvaList l2 = ProvaListImpl.create( new ProvaObject[] {x,l1,c3},z);
-		ProvaLiteral query = kb.generateLiteral("pred1",l2);
-		ProvaRule goal = kb.generateGoal(new ProvaLiteral[] {query});
+		Constant c2 = ProvaConstantImpl.create(2);
+		Variable a = ProvaVariableImpl.create("A");
+		PList l1 = ProvaListImpl.create(new PObj[] {c2},a);
+		Variable x = ProvaVariableImpl.create("X");
+		Constant c3 = ProvaConstantImpl.create(3);
+		Variable z = ProvaVariableImpl.create("Z");
+		PList l2 = ProvaListImpl.create(new PObj[] {x,l1,c3},z);
+		Literal query = kb.newLiteral("pred1",l2);
+		Rule goal = kb.newGoal(new Literal[] {query});
 		
-		ProvaVariable v = ProvaVariableImpl.create("V");
-		ProvaVariable y = ProvaVariableImpl.create("Y");
-		ProvaVariable u = ProvaVariableImpl.create("U");
-		ProvaList l3 = ProvaListImpl.create( new ProvaObject[] {v,y}, u);
-		ProvaLiteral lit1 = kb.generateLiteral("pred1",l3);
-		ProvaList l4 = ProvaListImpl.create( new ProvaObject[] {v,y}, u);
-		ProvaLiteral lit3 = kb.generateLiteral("pred2",l4);
-		ProvaRule rule = kb.generateRule(lit1, new ProvaLiteral[] {lit3});
+		Variable v = ProvaVariableImpl.create("V");
+		Variable y = ProvaVariableImpl.create("Y");
+		Variable u = ProvaVariableImpl.create("U");
+		PList l3 = ProvaListImpl.create(new PObj[] {v,y}, u);
+		Literal lit1 = kb.newLiteral("pred1",l3);
+		PList l4 = ProvaListImpl.create(new PObj[] {v,y}, u);
+		Literal lit3 = kb.newLiteral("pred2",l4);
+		Rule rule = kb.newRule(lit1, new Literal[] {lit3});
 		
 		ProvaUnificationImpl unification = new ProvaUnificationImpl(goal, rule);
 		boolean result = unification.unify();
@@ -176,8 +176,8 @@ public class ProvaUnificationTest {
 		org.junit.Assert.assertTrue(result);
 		
 		int countSourceSubstitutions = 0;
-		for( ProvaVariable var : unification.getSourceVariables() ) {
-			ProvaObject to = var.getRecursivelyAssigned();
+		for( Variable var : unification.getSourceVariables() ) {
+			PObj to = var.getRecursivelyAssigned();
 			if( to!=var ) {
 				countSourceSubstitutions++;
 			}
@@ -185,8 +185,8 @@ public class ProvaUnificationTest {
 		org.junit.Assert.assertEquals(countSourceSubstitutions,0);
 
 		int countTargetSubstitutions = 0;
-		for( ProvaVariable var : unification.getTargetVariables() ) {
-			ProvaObject to = var.getRecursivelyAssigned();
+		for( Variable var : unification.getTargetVariables() ) {
+			PObj to = var.getRecursivelyAssigned();
 			if( to!=var ) {
 				countTargetSubstitutions++;
 			}
@@ -194,7 +194,7 @@ public class ProvaUnificationTest {
 		org.junit.Assert.assertEquals(countTargetSubstitutions,3);
 
 		// Recover actual substitutions resulting from the unification
-		ProvaLiteral[] newGoals = unification.rebuildNewGoals();
+		Literal[] newGoals = unification.rebuildNewGoals();
 
 		org.junit.Assert.assertNotNull(newGoals);
 		// There is one actual goal: pred2(X,[2|A],3|Z)
@@ -212,26 +212,26 @@ public class ProvaUnificationTest {
 	 */
 	@Test
 	public void unifyEmptyListTest() {
-		ProvaKnowledgeBase kb = new ProvaKnowledgeBaseImpl();
+		KB kb = new DefaultKB();
 		
-		ProvaConstant c1 = ProvaConstantImpl.create(1);
-		ProvaVariable z = ProvaVariableImpl.create("Z");
-		ProvaList l1 = ProvaListImpl.create( new ProvaObject[] {c1},z);
-		ProvaVariable x = ProvaVariableImpl.create("X");
-		ProvaList l2 = ProvaListImpl.create( new ProvaObject[] {x,l1},z);
-		ProvaLiteral query = kb.generateLiteral("pred1",l2);
-		ProvaRule goal = kb.generateGoal(new ProvaLiteral[] {query});
+		Constant c1 = ProvaConstantImpl.create(1);
+		Variable z = ProvaVariableImpl.create("Z");
+		PList l1 = ProvaListImpl.create(new PObj[] {c1},z);
+		Variable x = ProvaVariableImpl.create("X");
+		PList l2 = ProvaListImpl.create(new PObj[] {x,l1},z);
+		Literal query = kb.newLiteral("pred1",l2);
+		Rule goal = kb.newGoal(new Literal[] {query});
 		
-		ProvaConstant c2 = ProvaConstantImpl.create(2);
-		ProvaConstant c3 = ProvaConstantImpl.create(3);
-		ProvaList l3 = ProvaListImpl.create( new ProvaObject[] {c1,c2,c3} );
-		ProvaVariable v = ProvaVariableImpl.create("V");
-		ProvaVariable u = ProvaVariableImpl.create("U");
-		ProvaList l4 = ProvaListImpl.create( new ProvaObject[] {v,l3,c2,c3}, u);
-		ProvaLiteral lit1 = kb.generateLiteral("pred1",l4);
-		ProvaList l5 = ProvaListImpl.create( new ProvaObject[] {v}, u);
-		ProvaLiteral lit2 = kb.generateLiteral("pred2",l5);
-		ProvaRule rule = kb.generateRule(lit1, new ProvaLiteral[] {lit2});
+		Constant c2 = ProvaConstantImpl.create(2);
+		Constant c3 = ProvaConstantImpl.create(3);
+		PList l3 = ProvaListImpl.create(new PObj[] {c1,c2,c3} );
+		Variable v = ProvaVariableImpl.create("V");
+		Variable u = ProvaVariableImpl.create("U");
+		PList l4 = ProvaListImpl.create(new PObj[] {v,l3,c2,c3}, u);
+		Literal lit1 = kb.newLiteral("pred1",l4);
+		PList l5 = ProvaListImpl.create(new PObj[] {v}, u);
+		Literal lit2 = kb.newLiteral("pred2",l5);
+		Rule rule = kb.newRule(lit1, new Literal[] {lit2});
 		
 		ProvaUnificationImpl unification = new ProvaUnificationImpl(goal, rule);
 		boolean result = unification.unify();
@@ -239,8 +239,8 @@ public class ProvaUnificationTest {
 		org.junit.Assert.assertTrue(result);
 		
 		int countSourceSubstitutions = 0;
-		for( ProvaVariable var : unification.getSourceVariables() ) {
-			ProvaObject to = var.getRecursivelyAssigned();
+		for( Variable var : unification.getSourceVariables() ) {
+			PObj to = var.getRecursivelyAssigned();
 			if( to!=var ) {
 				countSourceSubstitutions++;
 			}
@@ -248,8 +248,8 @@ public class ProvaUnificationTest {
 		org.junit.Assert.assertEquals(countSourceSubstitutions,1);
 
 		int countTargetSubstitutions = 0;
-		for( ProvaVariable var : unification.getTargetVariables() ) {
-			ProvaObject to = var.getRecursivelyAssigned();
+		for( Variable var : unification.getTargetVariables() ) {
+			PObj to = var.getRecursivelyAssigned();
 			if( to!=var ) {
 				countTargetSubstitutions++;
 			}
@@ -257,7 +257,7 @@ public class ProvaUnificationTest {
 		org.junit.Assert.assertEquals(countTargetSubstitutions,2);
 
 		// Recover actual substitutions resulting from the unification
-		ProvaLiteral[] newGoals = unification.rebuildNewGoals();
+		Literal[] newGoals = unification.rebuildNewGoals();
 
 		org.junit.Assert.assertNotNull(newGoals);
 		// There is one actual goal: pred2(X)
@@ -275,27 +275,27 @@ public class ProvaUnificationTest {
 	 */
 	@Test
 	public void unifyNonEmptyListTest() {
-		ProvaKnowledgeBase kb = new ProvaKnowledgeBaseImpl();
+		KB kb = new DefaultKB();
 		
-		ProvaConstant c1 = ProvaConstantImpl.create(1);
-		ProvaVariable z = ProvaVariableImpl.create("Z");
-		ProvaList l1 = ProvaListImpl.create( new ProvaObject[] {c1},z);
-		ProvaVariable x = ProvaVariableImpl.create("X");
-		ProvaList l2 = ProvaListImpl.create( new ProvaObject[] {x,l1},z);
-		ProvaLiteral query = kb.generateLiteral("pred1",l2);
-		ProvaRule goal = kb.generateGoal(new ProvaLiteral[] {query});
+		Constant c1 = ProvaConstantImpl.create(1);
+		Variable z = ProvaVariableImpl.create("Z");
+		PList l1 = ProvaListImpl.create(new PObj[] {c1},z);
+		Variable x = ProvaVariableImpl.create("X");
+		PList l2 = ProvaListImpl.create(new PObj[] {x,l1},z);
+		Literal query = kb.newLiteral("pred1",l2);
+		Rule goal = kb.newGoal(new Literal[] {query});
 		
-		ProvaConstant c2 = ProvaConstantImpl.create(2);
-		ProvaConstant c3 = ProvaConstantImpl.create(3);
-		ProvaConstant c4 = ProvaConstantImpl.create(4);
-		ProvaList l3 = ProvaListImpl.create( new ProvaObject[] {c1,c2,c3,c4} );
-		ProvaVariable v = ProvaVariableImpl.create("V");
-		ProvaVariable u = ProvaVariableImpl.create("U");
-		ProvaList l4 = ProvaListImpl.create( new ProvaObject[] {v,l3,c2,c3}, u);
-		ProvaLiteral lit1 = kb.generateLiteral("pred1",l4);
-		ProvaList l5 = ProvaListImpl.create( new ProvaObject[] {v}, u);
-		ProvaLiteral lit2 = kb.generateLiteral("pred2",l5);
-		ProvaRule rule = kb.generateRule(lit1, new ProvaLiteral[] {lit2});
+		Constant c2 = ProvaConstantImpl.create(2);
+		Constant c3 = ProvaConstantImpl.create(3);
+		Constant c4 = ProvaConstantImpl.create(4);
+		PList l3 = ProvaListImpl.create(new PObj[] {c1,c2,c3,c4} );
+		Variable v = ProvaVariableImpl.create("V");
+		Variable u = ProvaVariableImpl.create("U");
+		PList l4 = ProvaListImpl.create(new PObj[] {v,l3,c2,c3}, u);
+		Literal lit1 = kb.newLiteral("pred1",l4);
+		PList l5 = ProvaListImpl.create(new PObj[] {v}, u);
+		Literal lit2 = kb.newLiteral("pred2",l5);
+		Rule rule = kb.newRule(lit1, new Literal[] {lit2});
 		
 		ProvaUnificationImpl unification = new ProvaUnificationImpl(goal, rule);
 		boolean result = unification.unify();
@@ -303,8 +303,8 @@ public class ProvaUnificationTest {
 		org.junit.Assert.assertTrue(result);
 		
 		int countSourceSubstitutions = 0;
-		for( ProvaVariable var : unification.getSourceVariables() ) {
-			ProvaObject to = var.getRecursivelyAssigned();
+		for( Variable var : unification.getSourceVariables() ) {
+			PObj to = var.getRecursivelyAssigned();
 			if( to!=var ) {
 				countSourceSubstitutions++;
 			}
@@ -312,8 +312,8 @@ public class ProvaUnificationTest {
 		org.junit.Assert.assertEquals(countSourceSubstitutions,1);
 
 		int countTargetSubstitutions = 0;
-		for( ProvaVariable var : unification.getTargetVariables() ) {
-			ProvaObject to = var.getRecursivelyAssigned();
+		for( Variable var : unification.getTargetVariables() ) {
+			PObj to = var.getRecursivelyAssigned();
 			if( to!=var ) {
 				countTargetSubstitutions++;
 			}
@@ -321,7 +321,7 @@ public class ProvaUnificationTest {
 		org.junit.Assert.assertEquals(countTargetSubstitutions,2);
 
 		// Recover actual substitutions resulting from the unification
-		ProvaLiteral[] newGoals = unification.rebuildNewGoals();
+		Literal[] newGoals = unification.rebuildNewGoals();
 
 		org.junit.Assert.assertNotNull(newGoals);
 		// There is one actual goal: pred2(X,4)

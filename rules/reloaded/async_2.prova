@@ -14,7 +14,7 @@ async_002() :-
 split(1) :-
 	TH=java.lang.Thread.currentThread(),
 	println([TH,1]," > "),
-	java.lang.Thread.sleep(1000L),
+	java.lang.Thread.sleep(100L),
 	sendMsg(XID,task,0,inter,[1]),
 	rcvMsg(XID,Protocol,From,inter,[3]),
 	$Count.incrementAndGet(),

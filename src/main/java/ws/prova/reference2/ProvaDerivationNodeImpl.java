@@ -1,21 +1,21 @@
 package ws.prova.reference2;
 
-import ws.prova.kernel2.ProvaDerivationNode;
-import ws.prova.kernel2.ProvaGoal;
-import ws.prova.kernel2.ProvaRule;
-import ws.prova.kernel2.ProvaUnification;
+import ws.prova.kernel2.Derivation;
+import ws.prova.kernel2.Goal;
+import ws.prova.kernel2.Rule;
+import ws.prova.kernel2.Unification;
 
-public class ProvaDerivationNodeImpl implements ProvaDerivationNode {
+public class ProvaDerivationNodeImpl implements Derivation {
 
     private boolean failed = false;
 
-    private ProvaUnification unification;
+    private Unification unification;
 
-    private ProvaGoal currentGoal;
+    private Goal currentGoal;
 
-    private ProvaRule query;
+    private Rule query;
 
-    private ProvaDerivationNode parent;
+    private Derivation parent;
 
     private int id = 0;
 
@@ -31,7 +31,7 @@ public class ProvaDerivationNodeImpl implements ProvaDerivationNode {
     }
 
     @Override
-    public void setCurrentGoal(ProvaGoal currentGoal) {
+    public void setCurrentGoal(Goal currentGoal) {
         this.currentGoal = currentGoal;
     }
 
@@ -41,7 +41,7 @@ public class ProvaDerivationNodeImpl implements ProvaDerivationNode {
      * @return the applied clause
      */
     @Override
-    public ProvaGoal getCurrentGoal() {
+    public Goal getCurrentGoal() {
         return currentGoal;
     }
 
@@ -51,7 +51,7 @@ public class ProvaDerivationNodeImpl implements ProvaDerivationNode {
      * @return the parent node
      */
     @Override
-    public ProvaDerivationNode getParent() {
+    public Derivation getParent() {
         return parent;
     }
 
@@ -61,7 +61,7 @@ public class ProvaDerivationNodeImpl implements ProvaDerivationNode {
      * @return the query
      */
     @Override
-    public ProvaRule getQuery() {
+    public Rule getQuery() {
         return query;
     }
 
@@ -72,8 +72,8 @@ public class ProvaDerivationNodeImpl implements ProvaDerivationNode {
      */
     public int getState() {
         return isFailed()
-                ? ProvaDerivationNode.FAILED
-                : ProvaDerivationNode.SUCCESS;
+                ? Derivation.FAILED
+                : Derivation.SUCCESS;
     }
 
     /**
@@ -81,7 +81,7 @@ public class ProvaDerivationNodeImpl implements ProvaDerivationNode {
      *
      * @return the unification applied
      */
-    public ProvaUnification getUnification() {
+    public Unification getUnification() {
         return unification;
     }
 
@@ -111,7 +111,7 @@ public class ProvaDerivationNodeImpl implements ProvaDerivationNode {
      * @param f a query
      */
     @Override
-    public void setQuery(ProvaRule f) {
+    public void setQuery(Rule f) {
         query = f;
     }
 
@@ -120,7 +120,7 @@ public class ProvaDerivationNodeImpl implements ProvaDerivationNode {
      *
      * @param u a unification
      */
-    public void setUnification(ProvaUnification u) {
+    public void setUnification(Unification u) {
         unification = u;
     }
 
@@ -186,7 +186,7 @@ public class ProvaDerivationNodeImpl implements ProvaDerivationNode {
 	 * @param n a node
 	 */
     @Override
-	public void setParent(ProvaDerivationNode n) {
+	public void setParent(Derivation n) {
 		parent = n;
 	}
 

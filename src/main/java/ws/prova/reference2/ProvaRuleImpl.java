@@ -8,26 +8,26 @@ import java.util.Map;
 import java.util.concurrent.RejectedExecutionException;
 import org.apache.log4j.Logger;
 import ws.prova.agent2.ProvaReagentImpl;
-import ws.prova.kernel2.ProvaConstant;
-import ws.prova.kernel2.ProvaDerivationNode;
-import ws.prova.kernel2.ProvaLiteral;
-import ws.prova.kernel2.ProvaObject;
-import ws.prova.kernel2.ProvaPredicate;
-import ws.prova.kernel2.ProvaRule;
-import ws.prova.kernel2.ProvaVariable;
-import ws.prova.kernel2.ProvaVariablePtr;
+import ws.prova.kernel2.Constant;
+import ws.prova.kernel2.Derivation;
+import ws.prova.kernel2.Literal;
+import ws.prova.kernel2.PObj;
+import ws.prova.kernel2.Predicate;
+import ws.prova.kernel2.Rule;
+import ws.prova.kernel2.Variable;
+import ws.prova.kernel2.VariableIndex;
 
-public class ProvaRuleImpl implements ProvaRule {
+public class ProvaRuleImpl implements Rule {
 
     private final static Logger log = Logger.getLogger("prova");
 
     private long ruleId;
 
-    private List<ProvaVariable> variables = new ArrayList<ProvaVariable>();
+    private List<Variable> variables = new ArrayList<Variable>();
 
-    private ProvaLiteral head;
+    private Literal head;
 
-    private ProvaLiteral[] body;
+    private Literal[] body;
 
     private int offset = 0;
 
@@ -44,18 +44,19 @@ public class ProvaRuleImpl implements ProvaRule {
     private int line;
 
     transient private ProvaReagentImpl reagent = null;
+    private long start;
 
     private ProvaRuleImpl() {
     }
 
-    public ProvaRuleImpl(long ruleId, ProvaLiteral head, ProvaLiteral[] body) {
+    public ProvaRuleImpl(long ruleId, Literal head, Literal[] body) {
         this.ruleId = ruleId;
         setHead(head);
         this.body = body;
         if (ruleId != 0) {
             collectVariables();
         }
-        for (ProvaVariable variable : variables) {
+        for (Variable variable : variables) {
             variable.setRuleId(ruleId);
         }
         if (this.head != null) {
@@ -66,15 +67,15 @@ public class ProvaRuleImpl implements ProvaRule {
         }
     }
 
-    public ProvaRuleImpl(long ruleId, ProvaLiteral head,
-            ProvaLiteral[] body, boolean addInFront) {
+    public ProvaRuleImpl(long ruleId, Literal head,
+            Literal[] body, boolean addInFront) {
         this.ruleId = ruleId;
         setHead(head);
         this.body = body;
         if (ruleId != 0) {
             collectVariables();
         }
-        for (ProvaVariable variable : variables) {
+        for (Variable variable : variables) {
             variable.setRuleId(ruleId);
         }
         if (this.head != null) {
@@ -82,7 +83,7 @@ public class ProvaRuleImpl implements ProvaRule {
         }
     }
 
-    public static ProvaRule createVirtualRule(long ruleId, ProvaLiteral head, ProvaLiteral[] body) {
+    public static Rule createVirtualRule(long ruleId, Literal head, Literal[] body) {
         ProvaRuleImpl newRule = new ProvaRuleImpl();
         newRule.ruleId = ruleId;
         newRule.setHead(head);
@@ -90,7 +91,7 @@ public class ProvaRuleImpl implements ProvaRule {
         if (ruleId != 0) {
             newRule.collectVariables();
         }
-        for (ProvaVariable variable : newRule.variables) {
+        for (Variable variable : newRule.variables) {
             variable.setRuleId(ruleId);
         }
         return newRule;
@@ -99,12 +100,12 @@ public class ProvaRuleImpl implements ProvaRule {
     /*
      * Generate rule for a goal
      */
-    public ProvaRuleImpl(ProvaLiteral[] body) {
+    public ProvaRuleImpl(Literal[] body) {
         this.ruleId = 0;
 //		this.head = null;
         this.body = body;
         collectVariables();
-        for (ProvaVariable variable : variables) {
+        for (Variable variable : variables) {
             variable.setRuleId(ruleId);
         }
         if (this.head != null) {
@@ -117,7 +118,7 @@ public class ProvaRuleImpl implements ProvaRule {
         this.variables = o.cloneVariables();
         setHead(o.head);
         if (o.offset != 0 && o.body != null && o.body.length != 0) {
-            this.body = new ProvaLiteral[o.body.length - o.offset];
+            this.body = new Literal[o.body.length - o.offset];
             System.arraycopy(o.body, o.offset, this.body, 0, o.body.length - o.offset);
             return;
         }
@@ -129,7 +130,7 @@ public class ProvaRuleImpl implements ProvaRule {
         this.variables = cloneVariables ? o.cloneVariables() : o.getVariables();
         this.head = o.head;
         if (o.offset != 0 && o.body != null && o.body.length != 0) {
-            this.body = new ProvaLiteral[o.body.length - o.offset];
+            this.body = new Literal[o.body.length - o.offset];
             System.arraycopy(o.body, o.offset, this.body, 0, o.body.length - o.offset);
             return;
         }
@@ -139,8 +140,8 @@ public class ProvaRuleImpl implements ProvaRule {
         this.metadata = o.metadata;
     }
 
-    public ProvaRuleImpl(long ruleId, ProvaLiteral head, ProvaLiteral[] body,
-            List<ProvaVariable> variables) {
+    public ProvaRuleImpl(long ruleId, Literal head, Literal[] body,
+            List<Variable> variables) {
         this.ruleId = ruleId;
         int size = variables.size();
         for (int i = 0; i < size; i++) {
@@ -156,7 +157,7 @@ public class ProvaRuleImpl implements ProvaRule {
             head.collectVariables(ruleId, variables);
         }
         if (body != null) {
-            for (ProvaLiteral literal : body) {
+            for (Literal literal : body) {
                 literal.collectVariables(ruleId, variables);
             }
         }
@@ -175,36 +176,36 @@ public class ProvaRuleImpl implements ProvaRule {
     }
 
     @Override
-    public void substituteVariables(ProvaVariablePtr[] varsMap) {
+    public void substituteVariables(VariableIndex[] varsMap) {
         if (head != null) {
             head.substituteVariables(varsMap);
         }
         if (body != null) {
-            for (ProvaLiteral literal : body) {
+            for (Literal literal : body) {
                 literal.substituteVariables(varsMap);
             }
         }
     }
 
     @Override
-    public void setVariables(List<ProvaVariable> variables) {
+    public void setVariables(List<Variable> variables) {
         this.variables = variables;
     }
 
     @Override
-    public List<ProvaVariable> getVariables() {
+    public List<Variable> getVariables() {
         return variables;
     }
 
-    public void setHead(ProvaLiteral head) {
+    public void setHead(Literal head) {
         if (head == null) {
             return;
         }
         this.head = head;
-        final ProvaObject[] fixed = head.getTerms().getFixed();
+        final PObj[] fixed = head.getTerms().getFixed();
         if (fixed != null && fixed.length != 0) {
-            if (fixed[0] instanceof ProvaConstant) {
-                this.firstArg = ((ProvaConstant) fixed[0]).getObject();
+            if (fixed[0] instanceof Constant) {
+                this.firstArg = ((Constant) fixed[0]).getObject();
             } else {
                 this.firstArg = "@";
             }
@@ -212,16 +213,16 @@ public class ProvaRuleImpl implements ProvaRule {
     }
 
     @Override
-    public ProvaLiteral getHead() {
+    public Literal getHead() {
         return head;
     }
 
-    public void setBody(ProvaLiteral[] body) {
+    public void setBody(Literal[] body) {
         this.body = body;
     }
 
     @Override
-    public ProvaLiteral[] getBody() {
+    public Literal[] getBody() {
         return body;
     }
 
@@ -230,12 +231,12 @@ public class ProvaRuleImpl implements ProvaRule {
      * ProvaGuardedLiteralImpl
      */
     @Override
-    public ProvaLiteral[] getGuardedBody(ProvaLiteral sourceLiteral) {
+    public Literal[] getGuardedBody(Literal sourceLiteral) {
         if (sourceLiteral instanceof ProvaGuardedLiteralImpl) {
-            List<ProvaLiteral> guard = ((ProvaGuardedLiteralImpl) sourceLiteral).getGuard();
-            ProvaLiteral[] guardedBody = new ProvaLiteral[guard.size() + body.length];
+            List<Literal> guard = ((ProvaGuardedLiteralImpl) sourceLiteral).getGuard();
+            Literal[] guardedBody = new Literal[guard.size() + body.length];
             int index = 0;
-            for (ProvaLiteral g : guard) {
+            for (Literal g : guard) {
                 guardedBody[index++] = g;
             }
             System.arraycopy(body, 0, guardedBody, guard.size(), body.length);
@@ -260,13 +261,13 @@ public class ProvaRuleImpl implements ProvaRule {
     }
 
     @Override
-    public ProvaRule cloneRule() {
+    public Rule cloneRule() {
         ProvaRuleImpl newRule = new ProvaRuleImpl(this);
         return newRule;
     }
 
     @Override
-    public ProvaRule cloneRule(boolean cloneVariables) {
+    public Rule cloneRule(boolean cloneVariables) {
         if (this.variables.isEmpty()) {
             return this;
         }
@@ -275,9 +276,9 @@ public class ProvaRuleImpl implements ProvaRule {
     }
 
     @Override
-    public List<ProvaVariable> cloneVariables() {
+    public List<Variable> cloneVariables() {
         int size = variables.size();
-        List<ProvaVariable> newVariables = new ArrayList<ProvaVariable>(size);
+        List<Variable> newVariables = new ArrayList<Variable>(size);
         for (int i = 0; i < size; i++) {
             newVariables.add(variables.get(i).clone());
         }
@@ -296,7 +297,7 @@ public class ProvaRuleImpl implements ProvaRule {
     }
 
     @Override
-    public ProvaLiteral getTop() {
+    public Literal getTop() {
         return offset < body.length ? body[offset] : null;
     }
 
@@ -335,8 +336,8 @@ public class ProvaRuleImpl implements ProvaRule {
     }
 
     @Override
-    public void addBodyLiteral(ProvaLiteral literal) {
-        ProvaLiteral[] newBody = new ProvaLiteral[body.length + 1];
+    public void addBodyLiteral(Literal literal) {
+        Literal[] newBody = new Literal[body.length + 1];
         System.arraycopy(body, 0, newBody, 0, body.length);
         newBody[body.length] = literal;
         body = newBody;
@@ -344,13 +345,13 @@ public class ProvaRuleImpl implements ProvaRule {
     }
 
     @Override
-    public void replaceTopBodyLiteral(List<ProvaLiteral> literals) {
+    public void replaceTopBodyLiteral(List<Literal> literals) {
         if (literals.size() == 1) {
             body[offset] = literals.get(0);
             return;
         }
         int size = literals.size() - 1;
-        ProvaLiteral[] newBody = new ProvaLiteral[body.length + size - offset];
+        Literal[] newBody = new Literal[body.length + size - offset];
         newBody[0] = literals.get(0);
         System.arraycopy(body, offset + 1, newBody, 1 + size, body.length - offset - 1);
         for (int i = 1; i <= size; i++) {
@@ -372,7 +373,7 @@ public class ProvaRuleImpl implements ProvaRule {
         if (offset + index >= body.length) {
             return;
         }
-        ProvaLiteral[] newBody = new ProvaLiteral[body.length - 1 - offset];
+        Literal[] newBody = new Literal[body.length - 1 - offset];
         System.arraycopy(body, offset + index + 1, newBody, index, body.length - 2 - offset);
         newBody[0] = body[0];
         body = newBody;
@@ -457,9 +458,9 @@ public class ProvaRuleImpl implements ProvaRule {
         }
         metadata.put("src", value);
         final String src = (String) value.get(0);
-        final ProvaPredicate predicate = head.getPredicate();
-        predicate.getClauseSet().addRuleToSrc(this, src);
-        predicate.getKnowledgeBase().addClauseSetToSrc(predicate.getClauseSet(), src);
+        final Predicate predicate = head.getPredicate();
+        predicate.getClauses().addRuleToSrc(this, src);
+        predicate.kb().addClauseSetToSrc(predicate.getClauses(), src);
     }
 
     @Override
@@ -507,27 +508,29 @@ public class ProvaRuleImpl implements ProvaRule {
 
     @Override
     public void run() {
-        long start = System.currentTimeMillis();
+        start = System.currentTimeMillis();
         try {
-            ProvaDerivationNode result = reagent.submitSyncInternal(this);
-            onFinished(result, System.currentTimeMillis() - start);
+            Derivation result = reagent.submitSyncInternal(this);
+            onFinished(result);
         } catch (RuntimeException e) {
-            onError(e, System.currentTimeMillis() - start);
+            onError(e);
         }
     }
 
     @Override
-    public void onRejected(RejectedExecutionException r) {
-        log.error(this + " IGNORED: " + r);
+    public void onRejected(RejectedExecutionException r) {                
+        log.error(new Object[] { this, "Rejected", r });
     }
     
-    private void onFinished(ProvaDerivationNode result, long timeMS) {
-        log.info(this + " OK: " + result  + " (" + timeMS + "ms)");
+    private void onFinished(Derivation result) {
+        if (log.isDebugEnabled())
+            log.debug(new Object[] { this, "Finished", result, System.currentTimeMillis() - start });
     }
 
-    private void onError(RuntimeException e, long timeMS) {
-        log.error(this + " ERR: " + e + " (" + timeMS + "ms)");
-        e.printStackTrace();
+    private void onError(RuntimeException e) {                        
+        log.error(new Object[] { this, "Error", e, System.currentTimeMillis() - start });
+        if (log.isDebugEnabled())
+            e.printStackTrace();
     }
 
 }

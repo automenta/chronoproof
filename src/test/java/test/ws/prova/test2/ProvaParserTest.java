@@ -6,15 +6,15 @@ import java.io.StringReader;
 import java.util.List;
 import org.junit.Test;
 import ws.prova.api2.ProvaCommunicatorImpl;
-import ws.prova.kernel2.ProvaKnowledgeBase;
-import ws.prova.kernel2.ProvaResolutionInferenceEngine;
-import ws.prova.kernel2.ProvaResultSet;
-import ws.prova.kernel2.ProvaRule;
+import ws.prova.kernel2.KB;
+import ws.prova.kernel2.Inference;
+import ws.prova.kernel2.Results;
+import ws.prova.kernel2.Rule;
 import ws.prova.parser2.ProvaParserImpl;
 import ws.prova.parser2.ProvaParsingException;
-import ws.prova.reference2.ProvaKnowledgeBaseImpl;
-import ws.prova.reference2.ProvaResolutionInferenceEngineImpl;
-import ws.prova.reference2.ProvaResultSetImpl;
+import ws.prova.reference2.DefaultKB;
+import ws.prova.reference2.DefaultInference;
+import ws.prova.reference2.DefaultResults;
 
 public class ProvaParserTest {
 
@@ -24,8 +24,8 @@ public class ProvaParserTest {
 
 	@Test
 	public void simpleParse() {
-		ProvaKnowledgeBase kb = new ProvaKnowledgeBaseImpl();
-		ProvaResultSet resultSet = new ProvaResultSetImpl();
+		KB kb = new DefaultKB();
+		Results resultSet = new DefaultResults();
 		StringReader sr = new StringReader(
 				":-solve(a(X,Y)).\n"+
 				"a(X,Y):-b(X),!,d(Y).\n"+
@@ -37,20 +37,17 @@ public class ProvaParserTest {
 		BufferedReader in = new BufferedReader(sr);
 		ProvaParserImpl parser = new ProvaParserImpl("inline1", new Object[] {});
 		try {
-			List<ProvaRule> rules = parser.parse(kb, resultSet, in);
+			List<Rule> rules = parser.parse(kb, resultSet, in);
 			// Run each goal
-			for( ProvaRule rule : rules ) {
+			for( Rule rule : rules ) {
 				if( rule.getHead()==null ) {
-					ProvaResolutionInferenceEngine engine = new ProvaResolutionInferenceEngineImpl(kb, rule);
+					Inference engine = new DefaultInference(kb, rule);
 					engine.run();
 
 					org.junit.Assert.assertEquals(resultSet.getSolutions().size(),2);
 				}
 			}
-		} catch (ProvaParsingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -58,8 +55,8 @@ public class ProvaParserTest {
 
 	@Test
 	public void simpleParseWithTail() {
-		ProvaKnowledgeBase kb = new ProvaKnowledgeBaseImpl();
-		ProvaResultSet resultSet = new ProvaResultSetImpl();
+		KB kb = new DefaultKB();
+		Results resultSet = new DefaultResults();
 		StringReader sr = new StringReader(
 				":-solve(a([X,Y|Z])).\n"+
 				"a([X,Y]):-b(X),!,d(Y).\n"+
@@ -71,20 +68,17 @@ public class ProvaParserTest {
 		BufferedReader in = new BufferedReader(sr);
 		ProvaParserImpl parser = new ProvaParserImpl("inline1", new Object[] {});
 		try {
-			List<ProvaRule> rules = parser.parse(kb, resultSet, in);
+			List<Rule> rules = parser.parse(kb, resultSet, in);
 			// Run each goal
-			for( ProvaRule rule : rules ) {
+			for( Rule rule : rules ) {
 				if( rule.getHead()==null ) {
-					ProvaResolutionInferenceEngine engine = new ProvaResolutionInferenceEngineImpl(kb, rule);
+					Inference engine = new DefaultInference(kb, rule);
 					engine.run();
 
 					org.junit.Assert.assertEquals(resultSet.getSolutions().size(),2);
 				}
 			}
-		} catch (ProvaParsingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -92,8 +86,8 @@ public class ProvaParserTest {
 
 	@Test
 	public void simpleParseWithDerive() {
-		ProvaKnowledgeBase kb = new ProvaKnowledgeBaseImpl();
-		ProvaResultSet resultSet = new ProvaResultSetImpl();
+		KB kb = new DefaultKB();
+		Results resultSet = new DefaultResults();
 		StringReader sr = new StringReader(
 				":-solve(a(X,b(X))).\n"+
 				"a(X,Y):-derive(Y).\n"+
@@ -103,20 +97,17 @@ public class ProvaParserTest {
 		BufferedReader in = new BufferedReader(sr);
 		ProvaParserImpl parser = new ProvaParserImpl("inline1", new Object[] {});
 		try {
-			List<ProvaRule> rules = parser.parse(kb, resultSet, in);
+			List<Rule> rules = parser.parse(kb, resultSet, in);
 			// Run each goal
-			for( ProvaRule rule : rules ) {
+			for( Rule rule : rules ) {
 				if( rule.getHead()==null ) {
-					ProvaResolutionInferenceEngine engine = new ProvaResolutionInferenceEngineImpl(kb, rule);
+					Inference engine = new DefaultInference(kb, rule);
 					engine.run();
 
 					org.junit.Assert.assertEquals(resultSet.getSolutions().size(),2);
 				}
 			}
-		} catch (ProvaParsingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -124,8 +115,8 @@ public class ProvaParserTest {
 
 	@Test
 	public void simpleParseWithNotAndFail() {
-		ProvaKnowledgeBase kb = new ProvaKnowledgeBaseImpl();
-		ProvaResultSet resultSet = new ProvaResultSetImpl();
+		KB kb = new DefaultKB();
+		Results resultSet = new DefaultResults();
 		StringReader sr = new StringReader(
 				":-solve(a([X,Y|Z])).\n"+
 				"a([X,Y]):-b(X),!,c(Y),not(d(Y)).\n"+
@@ -141,20 +132,17 @@ public class ProvaParserTest {
 		BufferedReader in = new BufferedReader(sr);
 		ProvaParserImpl parser = new ProvaParserImpl("inline1", new Object[] {});
 		try {
-			List<ProvaRule> rules = parser.parse(kb, resultSet, in);
+			List<Rule> rules = parser.parse(kb, resultSet, in);
 			// Run each goal
-			for( ProvaRule rule : rules ) {
+			for( Rule rule : rules ) {
 				if( rule.getHead()==null ) {
-					ProvaResolutionInferenceEngine engine = new ProvaResolutionInferenceEngineImpl(kb, rule);
+					Inference engine = new DefaultInference(kb, rule);
 					engine.run();
 
 					org.junit.Assert.assertEquals(resultSet.getSolutions().size(),2);
 				}
 			}
-		} catch (ProvaParsingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

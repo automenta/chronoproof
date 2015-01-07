@@ -1,43 +1,43 @@
 package ws.prova.reference2.builtins;
 
 import java.util.List;
-import ws.prova.agent2.ProvaReagent;
-import ws.prova.kernel2.ProvaConstant;
-import ws.prova.kernel2.ProvaDerivationNode;
-import ws.prova.kernel2.ProvaGoal;
-import ws.prova.kernel2.ProvaKnowledgeBase;
-import ws.prova.kernel2.ProvaList;
-import ws.prova.kernel2.ProvaLiteral;
-import ws.prova.kernel2.ProvaObject;
-import ws.prova.kernel2.ProvaRule;
-import ws.prova.kernel2.ProvaVariable;
-import ws.prova.kernel2.ProvaVariablePtr;
+import ws.prova.agent2.Reagent;
+import ws.prova.kernel2.Constant;
+import ws.prova.kernel2.Derivation;
+import ws.prova.kernel2.Goal;
+import ws.prova.kernel2.KB;
+import ws.prova.kernel2.PList;
+import ws.prova.kernel2.Literal;
+import ws.prova.kernel2.PObj;
+import ws.prova.kernel2.Rule;
+import ws.prova.kernel2.Variable;
+import ws.prova.kernel2.VariableIndex;
 import ws.prova.reference2.ProvaConstantImpl;
 import ws.prova.reference2.ProvaGlobalConstantImpl;
 
 public class ProvaEqualsMinusImpl extends ProvaBuiltinImpl {
 
-	public ProvaEqualsMinusImpl(ProvaKnowledgeBase kb) {
+	public ProvaEqualsMinusImpl(KB kb) {
 		super(kb,"equals_minus");
 	}
 
 	@Override
-	public boolean process(ProvaReagent prova, ProvaDerivationNode node,
-			ProvaGoal goal, List<ProvaLiteral> newLiterals, ProvaRule query) {
-		ProvaLiteral literal = goal.getGoal();
-		List<ProvaVariable> variables = query.getVariables();
-		ProvaList terms = literal.getTerms();
-		ProvaObject[] data = terms.getFixed();
+	public boolean process(Reagent prova, Derivation node,
+			Goal goal, List<Literal> newLiterals, Rule query) {
+		Literal literal = goal.getGoal();
+		List<Variable> variables = query.getVariables();
+		PList terms = literal.getTerms();
+		PObj[] data = terms.getFixed();
 		if( data.length!=2 )
 			return false;
-		ProvaObject rhs = data[1];
-		if( rhs instanceof ProvaVariablePtr ) {
-			ProvaVariablePtr varPtr = (ProvaVariablePtr) rhs;
+		PObj rhs = data[1];
+		if( rhs instanceof VariableIndex ) {
+			VariableIndex varPtr = (VariableIndex) rhs;
 			rhs = variables.get(varPtr.getIndex()).getRecursivelyAssigned();
 		}
-		if( !(rhs instanceof ProvaConstant) )
+		if( !(rhs instanceof Constant) )
 			return false;
-		Object o = ((ProvaConstant) rhs).getObject();
+		Object o = ((Constant) rhs).getObject();
 		Object n = null;
 		if( !(o instanceof Number) )
 			return false;
@@ -57,17 +57,17 @@ public class ProvaEqualsMinusImpl extends ProvaBuiltinImpl {
 			Double m = ((Double) o);
 			n = -m;
 		}
-		ProvaObject lt = data[0];
-		if( lt instanceof ProvaVariablePtr ) {
-			ProvaVariablePtr varPtr = (ProvaVariablePtr) lt;
+		PObj lt = data[0];
+		if( lt instanceof VariableIndex ) {
+			VariableIndex varPtr = (VariableIndex) lt;
 			lt = variables.get(varPtr.getIndex()).getRecursivelyAssigned();
 		}
-		if( lt instanceof ProvaVariable ) {
-			((ProvaVariable) lt).setAssigned(ProvaConstantImpl.create(n));
+		if( lt instanceof Variable ) {
+			((Variable) lt).setAssigned(ProvaConstantImpl.create(n));
 			return true;
 		}
-		if( lt instanceof ProvaConstant ) {
-			ProvaConstant lhsConstant = (ProvaConstant) lt;
+		if( lt instanceof Constant ) {
+			Constant lhsConstant = (Constant) lt;
 			if( lhsConstant instanceof ProvaGlobalConstantImpl ) {
 				((ProvaGlobalConstantImpl) lhsConstant).setObject(n);
 				return true;

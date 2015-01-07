@@ -2,18 +2,18 @@ package ws.prova.reference2.builtins;
 
 import java.util.ArrayList;
 import java.util.List;
-import ws.prova.agent2.ProvaReagent;
-import ws.prova.kernel2.ProvaConstant;
-import ws.prova.kernel2.ProvaDerivationNode;
-import ws.prova.kernel2.ProvaGoal;
-import ws.prova.kernel2.ProvaKnowledgeBase;
-import ws.prova.kernel2.ProvaList;
-import ws.prova.kernel2.ProvaLiteral;
-import ws.prova.kernel2.ProvaObject;
-import ws.prova.kernel2.ProvaPredicate;
-import ws.prova.kernel2.ProvaRule;
-import ws.prova.kernel2.ProvaVariable;
-import ws.prova.kernel2.ProvaVariablePtr;
+import ws.prova.agent2.Reagent;
+import ws.prova.kernel2.Constant;
+import ws.prova.kernel2.Derivation;
+import ws.prova.kernel2.Goal;
+import ws.prova.kernel2.KB;
+import ws.prova.kernel2.PList;
+import ws.prova.kernel2.Literal;
+import ws.prova.kernel2.PObj;
+import ws.prova.kernel2.Predicate;
+import ws.prova.kernel2.Rule;
+import ws.prova.kernel2.Variable;
+import ws.prova.kernel2.VariableIndex;
 import ws.prova.reference2.ProvaListImpl;
 import ws.prova.reference2.ProvaLiteralImpl;
 import ws.prova.reference2.ProvaPredicateImpl;
@@ -22,137 +22,137 @@ import ws.prova.reference2.ProvaVariableImpl;
 
 public class ProvaDeriveImpl extends ProvaBuiltinImpl {
 
-	public ProvaDeriveImpl(ProvaKnowledgeBase kb) {
+	public ProvaDeriveImpl(KB kb) {
 		super(kb,"derive");
 	}
 
 	@Override
-	public boolean process(ProvaReagent prova, ProvaDerivationNode node,
-			ProvaGoal goal, List<ProvaLiteral> newLiterals, ProvaRule query) {
-		ProvaLiteral literal = goal.getGoal();
-		List<ProvaVariable> variables = query.getVariables();
-		ProvaList terms = (ProvaList) literal.getTerms();
+	public boolean process(Reagent prova, Derivation node,
+			Goal goal, List<Literal> newLiterals, Rule query) {
+		Literal literal = goal.getGoal();
+		List<Variable> variables = query.getVariables();
+		PList terms = (PList) literal.getTerms();
 		if( terms.getFixed().length==0 )
 			return false;
-		ProvaObject first = terms.getFixed()[0];
-		if( first instanceof ProvaVariablePtr ) {
-			ProvaVariablePtr varPtr = (ProvaVariablePtr) first;
+		PObj first = terms.getFixed()[0];
+		if( first instanceof VariableIndex ) {
+			VariableIndex varPtr = (VariableIndex) first;
 			first = variables.get(varPtr.getIndex()).getRecursivelyAssigned();
 		}
-		if( !(first instanceof ProvaList) )
+		if( !(first instanceof PList) )
 			return false;
-		ProvaList firstList0 = (ProvaList) first;
+		PList firstList0 = (PList) first;
 		if( firstList0==ProvaListImpl.emptyRList )
 			return false;
-		ProvaObject[] fixed0 = firstList0.getFixed();
-		ProvaList firstList = (ProvaList) first; //.cloneWithVariables(variables);
-		ProvaObject[] fixed = firstList.getFixed();
-		ProvaObject first2 = fixed[0];
-		if( first2 instanceof ProvaVariablePtr ) {
-			ProvaVariablePtr varPtr = (ProvaVariablePtr) first2;
+		PObj[] fixed0 = firstList0.getFixed();
+		PList firstList = (PList) first; //.cloneWithVariables(variables);
+		PObj[] fixed = firstList.getFixed();
+		PObj first2 = fixed[0];
+		if( first2 instanceof VariableIndex ) {
+			VariableIndex varPtr = (VariableIndex) first2;
 			first2 = variables.get(varPtr.getIndex()).getRecursivelyAssigned();
 		}
-		if( first2 instanceof ProvaList ) {
+		if( first2 instanceof PList ) {
 			if( first2==ProvaListImpl.emptyRList )
 				return false;
-			ProvaPredicate pred = new ProvaPredicateImpl("",2,kb);
-			ProvaObject[] funs = ((ProvaList) first2).getFixed();
-			if( funs.length!=0 && funs[0] instanceof ProvaList ) {
-				ProvaList funs2 = (ProvaList) funs[0];
-				ProvaObject[] fixed3 = funs2.getFixed();
+			Predicate pred = new ProvaPredicateImpl("",2,kb);
+			PObj[] funs = ((PList) first2).getFixed();
+			if( funs.length!=0 && funs[0] instanceof PList ) {
+				PList funs2 = (PList) funs[0];
+				PObj[] fixed3 = funs2.getFixed();
 				if( fixed3.length==1 ) {
-					if( !(fixed3[0] instanceof ProvaList) )
+					if( !(fixed3[0] instanceof PList) )
 						return false;
-					funs = ((ProvaList) fixed3[0]).getFixed();
+					funs = ((PList) fixed3[0]).getFixed();
 				}
-				if( fixed3.length==2 && fixed3[0] instanceof ProvaList ) {
-					ProvaList first3 = (ProvaList) fixed3[0];
-					ProvaObject[] funs3 = first3.getFixed();
-					ProvaObject arg = fixed3[1];
-					ProvaObject[] funs4 = new ProvaObject[funs3.length];
+				if( fixed3.length==2 && fixed3[0] instanceof PList ) {
+					PList first3 = (PList) fixed3[0];
+					PObj[] funs3 = first3.getFixed();
+					PObj arg = fixed3[1];
+					PObj[] funs4 = new PObj[funs3.length];
 					System.arraycopy(funs3,0,funs4,0,funs3.length-1);
 					funs = funs4;
 					int i = funs3.length-1;
-					ProvaObject fun = funs3[i];
-					if( fun instanceof ProvaConstant ) {
-						final ProvaObject[] newFixed = new ProvaObject[2];
+					PObj fun = funs3[i];
+					if( fun instanceof Constant ) {
+						final PObj[] newFixed = new PObj[2];
 						funs[i] = ProvaListImpl.create(newFixed);
 						newFixed[0] = fun;
 						newFixed[1] = arg;
-					} else if( fun instanceof ProvaList ) {
-						ProvaObject[] complex = ((ProvaList) fun).getFixed();
-						final ProvaObject[] newFixed = new ProvaObject[1+complex.length];
+					} else if( fun instanceof PList ) {
+						PObj[] complex = ((PList) fun).getFixed();
+						final PObj[] newFixed = new PObj[1+complex.length];
 						funs[i] = ProvaListImpl.create(newFixed);
 						System.arraycopy(complex,0,newFixed,0,complex.length);
 						newFixed[complex.length] = arg;
 					}
 				}
 			}
-			List<ProvaLiteral> body = new ArrayList<ProvaLiteral>();
-			ProvaObject temp = null;
+			List<Literal> body = new ArrayList<Literal>();
+			PObj temp = null;
 			for( int i=0; i<funs.length; i++ ) {
-				ProvaObject fun = funs[i];
+				PObj fun = funs[i];
 				// Note that if the fixed part is only 1, the new query will be tail-only
-				ProvaObject[] newFixed = new ProvaObject[fixed.length-1];
+				PObj[] newFixed = new PObj[fixed.length-1];
 				System.arraycopy(fixed,1,newFixed,0,fixed.length-1);
 				String symbol = null;
-				if( fun instanceof ProvaVariablePtr ) {
-					ProvaVariablePtr varPtr = (ProvaVariablePtr) fun;
+				if( fun instanceof VariableIndex ) {
+					VariableIndex varPtr = (VariableIndex) fun;
 					fun = variables.get(varPtr.getIndex()).getRecursivelyAssigned();
 				}
-				if( fun instanceof ProvaVariable ) {
+				if( fun instanceof Variable ) {
 					return false;
-				} else if( fun instanceof ProvaConstant ) {
-					symbol = (String) ((ProvaConstant) fun).getObject();
+				} else if( fun instanceof Constant ) {
+					symbol = (String) ((Constant) fun).getObject();
 					if( temp!=null )
 						newFixed[0] = temp;
-				} else if( fun instanceof ProvaList ) {
-					ProvaObject[] complex = ((ProvaList) fun).getFixed();
-					symbol = (String) ((ProvaConstant) complex[0]).getObject();
-					ProvaObject[] attachTo = new ProvaObject[complex.length-1];
+				} else if( fun instanceof PList ) {
+					PObj[] complex = ((PList) fun).getFixed();
+					symbol = (String) ((Constant) complex[0]).getObject();
+					PObj[] attachTo = new PObj[complex.length-1];
 					System.arraycopy(complex,1,attachTo,0,complex.length-1);
-					ProvaList attachToList = ProvaListImpl.create(attachTo,null);
-					ProvaObject attachTemp = ProvaVariableImpl.create();
-					ProvaObject[] attachFixed = null;
+					PList attachToList = ProvaListImpl.create(attachTo,null);
+					PObj attachTemp = ProvaVariableImpl.create();
+					PObj[] attachFixed = null;
 					if( temp==null ) {
-						attachFixed = new ProvaObject[] {attachToList,fixed[1],attachTemp};
+						attachFixed = new PObj[] {attachToList,fixed[1],attachTemp};
 					} else {
-						attachFixed = new ProvaObject[] {attachToList,temp,attachTemp};
+						attachFixed = new PObj[] {attachToList,temp,attachTemp};
 					}
 					temp = attachTemp;
-					ProvaList attachTerms = ProvaListImpl.create(attachFixed,null);
-					body.add(kb.generateLiteral("@attach", attachTerms));
+					PList attachTerms = ProvaListImpl.create(attachFixed,null);
+					body.add(kb.newLiteral("@attach", attachTerms));
 					newFixed[0] = attachTemp;
 				}
 				if( i<funs.length-1 ) {
 					temp = ProvaVariableImpl.create();
 					newFixed[fixed.length-2] = temp;
 				}
-				ProvaList newTerms = (ProvaList) ProvaListImpl.create(newFixed,firstList.getTail());//.cloneWithVariables(variables);
-				body.add(kb.generateLiteral(symbol, newTerms));
+				PList newTerms = (PList) ProvaListImpl.create(newFixed,firstList.getTail());//.cloneWithVariables(variables);
+				body.add(kb.newLiteral(symbol, newTerms));
 			}
-			ProvaObject in = ProvaVariableImpl.create();
-			ProvaObject out = ProvaVariableImpl.create();
-			ProvaList ls = ProvaListImpl.create( new ProvaObject[] {in,out} );
-			ProvaLiteral lit = new ProvaLiteralImpl(pred,ls);
-			ProvaRule clause = ProvaRuleImpl.createVirtualRule(1, lit, body.toArray(new ProvaLiteral[] {}));
+			PObj in = ProvaVariableImpl.create();
+			PObj out = ProvaVariableImpl.create();
+			PList ls = ProvaListImpl.create(new PObj[] {in,out} );
+			Literal lit = new ProvaLiteralImpl(pred,ls);
+			Rule clause = ProvaRuleImpl.createVirtualRule(1, lit, body.toArray(new Literal[] {}));
 			pred.addClause(clause);
 			// Note that if the fixed part is only 1, the new query will be tail-only
-			ProvaObject[] newFixed = new ProvaObject[fixed0.length-1];
+			PObj[] newFixed = new PObj[fixed0.length-1];
 			System.arraycopy(fixed0,1,newFixed,0,fixed0.length-1);
-			ProvaList newTerms = ProvaListImpl.create(newFixed,firstList0.getTail());
-			ProvaLiteral newLiteral = new ProvaLiteralImpl(pred,newTerms);
+			PList newTerms = ProvaListImpl.create(newFixed,firstList0.getTail());
+			Literal newLiteral = new ProvaLiteralImpl(pred,newTerms);
 			newLiterals.add(newLiteral);
 			return true;
 		}
-		if( !(first2 instanceof ProvaConstant) || !(((ProvaConstant) first2).getObject() instanceof String) )
+		if( !(first2 instanceof Constant) || !(((Constant) first2).getObject() instanceof String) )
 			return false;
-		String symbol = (String) ((ProvaConstant) first2).getObject();
+		String symbol = (String) ((Constant) first2).getObject();
 		// Note that if the fixed part is only 1, the new query will be tail-only
-		ProvaObject[] newFixed = new ProvaObject[fixed0.length-1];
+		PObj[] newFixed = new PObj[fixed0.length-1];
 		System.arraycopy(fixed0,1,newFixed,0,fixed0.length-1);
-		ProvaList newTerms = ProvaListImpl.create(newFixed,firstList.getTail());
-		newLiterals.add(kb.generateLiteral(symbol, newTerms));
+		PList newTerms = ProvaListImpl.create(newFixed,firstList.getTail());
+		newLiterals.add(kb.newLiteral(symbol, newTerms));
 		
 		return true;
 	}

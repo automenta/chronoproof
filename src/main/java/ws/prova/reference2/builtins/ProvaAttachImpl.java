@@ -1,110 +1,110 @@
 package ws.prova.reference2.builtins;
 
 import java.util.List;
-import ws.prova.agent2.ProvaReagent;
-import ws.prova.kernel2.ProvaConstant;
-import ws.prova.kernel2.ProvaDerivationNode;
-import ws.prova.kernel2.ProvaGoal;
-import ws.prova.kernel2.ProvaKnowledgeBase;
-import ws.prova.kernel2.ProvaList;
-import ws.prova.kernel2.ProvaLiteral;
-import ws.prova.kernel2.ProvaObject;
-import ws.prova.kernel2.ProvaRule;
-import ws.prova.kernel2.ProvaVariable;
-import ws.prova.kernel2.ProvaVariablePtr;
+import ws.prova.agent2.Reagent;
+import ws.prova.kernel2.Constant;
+import ws.prova.kernel2.Derivation;
+import ws.prova.kernel2.Goal;
+import ws.prova.kernel2.KB;
+import ws.prova.kernel2.PList;
+import ws.prova.kernel2.Literal;
+import ws.prova.kernel2.PObj;
+import ws.prova.kernel2.Rule;
+import ws.prova.kernel2.Variable;
+import ws.prova.kernel2.VariableIndex;
 import ws.prova.reference2.ProvaListImpl;
 
 public class ProvaAttachImpl extends ProvaBuiltinImpl {
 
-	public ProvaAttachImpl(ProvaKnowledgeBase kb) {
+	public ProvaAttachImpl(KB kb) {
 		super(kb,"attach");
 	}
 
 	@Override
-	public boolean process(ProvaReagent prova, ProvaDerivationNode node,
-			ProvaGoal goal, List<ProvaLiteral> newLiterals, ProvaRule query) {
-		ProvaLiteral literal = goal.getGoal();
-		List<ProvaVariable> variables = query.getVariables();
-		ProvaList terms = (ProvaList) literal.getTerms();
-		ProvaObject[] data = terms.getFixed();
+	public boolean process(Reagent prova, Derivation node,
+			Goal goal, List<Literal> newLiterals, Rule query) {
+		Literal literal = goal.getGoal();
+		List<Variable> variables = query.getVariables();
+		PList terms = (PList) literal.getTerms();
+		PObj[] data = terms.getFixed();
 		if( data.length!=3 )
 			return false;
-		ProvaObject lt = data[0];
-		if( lt instanceof ProvaVariablePtr ) {
-			ProvaVariablePtr varPtr = (ProvaVariablePtr) lt;
+		PObj lt = data[0];
+		if( lt instanceof VariableIndex ) {
+			VariableIndex varPtr = (VariableIndex) lt;
 			lt = variables.get(varPtr.getIndex()).getRecursivelyAssigned();
 		}
-		if( !(lt instanceof ProvaList) )
+		if( !(lt instanceof PList) )
 			return false;
-		ProvaObject a2 = data[2];
-		if( a2 instanceof ProvaVariablePtr ) {
-			ProvaVariablePtr varPtr = (ProvaVariablePtr) a2;
+		PObj a2 = data[2];
+		if( a2 instanceof VariableIndex ) {
+			VariableIndex varPtr = (VariableIndex) a2;
 			a2 = variables.get(varPtr.getIndex()).getRecursivelyAssigned();
 		}
-		if( !(a2 instanceof ProvaVariable) )
+		if( !(a2 instanceof Variable) )
 			return false;
-		ProvaObject a1 = data[1];
-		if( a1 instanceof ProvaVariablePtr ) {
-			ProvaVariablePtr varPtr = (ProvaVariablePtr) a1;
+		PObj a1 = data[1];
+		if( a1 instanceof VariableIndex ) {
+			VariableIndex varPtr = (VariableIndex) a1;
 			a1 = variables.get(varPtr.getIndex()).getRecursivelyAssigned();
 		}
-		ProvaList prefix = (ProvaList) lt;
-		ProvaObject prefixTail = prefix.getTail();
-		ProvaObject[] prefixFixed = null;
+		PList prefix = (PList) lt;
+		PObj prefixTail = prefix.getTail();
+		PObj[] prefixFixed = null;
 		if( prefixTail!=null ) {
-			if( prefixTail instanceof ProvaVariablePtr ) {
-				ProvaVariablePtr varPtr = (ProvaVariablePtr) prefixTail;
+			if( prefixTail instanceof VariableIndex ) {
+				VariableIndex varPtr = (VariableIndex) prefixTail;
 				prefixTail = variables.get(varPtr.getIndex()).getRecursivelyAssigned();
 			}
-			if( prefixTail instanceof ProvaList ) {
-				prefixFixed = concat(prefix.getFixed(),((ProvaList) prefixTail).getFixed());
+			if( prefixTail instanceof PList ) {
+				prefixFixed = concat(prefix.getFixed(),((PList) prefixTail).getFixed());
 			} else
 				return false;
 		} else
 			prefixFixed = prefix.getFixed();
-		ProvaObject[] newFixed = null;
+		PObj[] newFixed = null;
 		boolean isMonad = false;
-		if( a1 instanceof ProvaList && a1!=ProvaListImpl.emptyRList ) {
-			Object t = ((ProvaList) a1).getFixed()[0];
-			if( t instanceof ProvaConstant ) {
-				t = ((ProvaConstant) t).getObject();
+		if( a1 instanceof PList && a1!=ProvaListImpl.emptyRList ) {
+			Object t = ((PList) a1).getFixed()[0];
+			if( t instanceof Constant ) {
+				t = ((Constant) t).getObject();
 				isMonad = t.equals("state") || t.equals("list") || t.equals("maybe") || t.equals("tree") || t.equals("fact");
 			}
 		}
-		if( a1 instanceof ProvaList && !isMonad ) {
-			ProvaList suffix = (ProvaList) a1;
-			ProvaObject[] suffixFixed = suffix.getFixed();
-			ProvaObject tail = suffix.getTail();
+		if( a1 instanceof PList && !isMonad ) {
+			PList suffix = (PList) a1;
+			PObj[] suffixFixed = suffix.getFixed();
+			PObj tail = suffix.getTail();
 			if( tail!=null ) {
 				tail = tail.cloneWithVariables(variables);
 			}
 			int len = prefixFixed.length+suffixFixed.length;
-			if( tail instanceof ProvaList )
-				len += ((ProvaList) tail).getFixed().length;
-			newFixed = new ProvaObject[len];
+			if( tail instanceof PList )
+				len += ((PList) tail).getFixed().length;
+			newFixed = new PObj[len];
 			System.arraycopy(prefixFixed,0,newFixed,0,prefixFixed.length);
 			System.arraycopy(suffixFixed,0,newFixed,prefixFixed.length,suffixFixed.length);
-			if( tail instanceof ProvaList )
-				System.arraycopy(((ProvaList) tail).getFixed(),0,newFixed,prefixFixed.length+suffixFixed.length,((ProvaList) tail).getFixed().length);
-			if( tail instanceof ProvaVariable ) {
-				ProvaList newTerms = ProvaListImpl.create(newFixed, tail);
-				((ProvaVariable) a2).setAssigned(newTerms);
+			if( tail instanceof PList )
+				System.arraycopy(((PList) tail).getFixed(),0,newFixed,prefixFixed.length+suffixFixed.length,((PList) tail).getFixed().length);
+			if( tail instanceof Variable ) {
+				PList newTerms = ProvaListImpl.create(newFixed, tail);
+				((Variable) a2).setAssigned(newTerms);
 				return true;
 			}
 		} else if( a1==ProvaListImpl.emptyRList ) {
 			newFixed = prefixFixed;
 		} else {
-			newFixed = new ProvaObject[prefixFixed.length+1];
+			newFixed = new PObj[prefixFixed.length+1];
 			System.arraycopy(prefixFixed,0,newFixed,0,prefixFixed.length);
 			newFixed[prefixFixed.length] = a1;
 		}
-		ProvaList newTerms = ProvaListImpl.create(newFixed);
-		((ProvaVariable) a2).setAssigned(newTerms);
+		PList newTerms = ProvaListImpl.create(newFixed);
+		((Variable) a2).setAssigned(newTerms);
 		return true;
 	}
 
-	private ProvaObject[] concat(ProvaObject[] left, ProvaObject[] right) { 
-		ProvaObject[] out= new ProvaObject[left.length+right.length]; 
+	private PObj[] concat(PObj[] left, PObj[] right) { 
+		PObj[] out= new PObj[left.length+right.length]; 
 		   System.arraycopy(left, 0, out, 0, left.length); 
 		   System.arraycopy(right, 0, out, left.length, right.length); 
 		   return out; 

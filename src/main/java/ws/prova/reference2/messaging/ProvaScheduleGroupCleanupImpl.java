@@ -1,6 +1,6 @@
 package ws.prova.reference2.messaging;
 
-import ws.prova.agent2.ProvaReagent;
+import ws.prova.agent2.Reagent;
 import ws.prova.reference2.eventing.ProvaGroup;
 
 public class ProvaScheduleGroupCleanupImpl implements ProvaDelayedCommand {
@@ -15,7 +15,7 @@ public class ProvaScheduleGroupCleanupImpl implements ProvaDelayedCommand {
 	}
 
 	@Override
-	public void process(ProvaReagent prova) {
+	public void process(Reagent prova) {
 		prova.getMessenger().scheduleCleanup(dynamic,delay);
 	}
 

@@ -1,20 +1,20 @@
 package ws.prova.kernel2.cache;
 
-import ws.prova.kernel2.ProvaGoal;
-import ws.prova.kernel2.ProvaLiteral;
+import ws.prova.kernel2.Goal;
+import ws.prova.kernel2.Literal;
 
-public interface ProvaCachedLiteral extends ProvaLiteral {
+public interface ProvaCachedLiteral extends Literal {
 
         @Override
-	public void setGoal(ProvaGoal provaGoal);
+	public void setGoal(Goal provaGoal);
 
         @Override
 	public ProvaCacheState getCacheState();
 
         @Override
-	public ProvaLocalAnswers getAnswers();
+	public Answers getAnswers();
 
         @Override
-	public ProvaGoal getGoal();
+	public Goal getGoal();
 
 }
